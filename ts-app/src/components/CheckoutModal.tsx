@@ -48,6 +48,7 @@ interface CheckoutModalProps {
   cartQuantities: { [id: number]: number };
   setCurrentView: (view: string) => void;
   onClearCart?: () => void;
+  onSelectProduct?: (product: Product) => void;
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -55,7 +56,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   onClose,
   cartQuantities,
   setCurrentView,
-  onClearCart
+  onClearCart,
+  onSelectProduct
 }) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
@@ -213,7 +215,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             {isAccordionOpen && (
               <div style={{ marginTop: '16px', borderTop: '1px solid #F0F0F0', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {cartItems.map(({ product, qty }) => (
-                  <div key={product.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div
+                    key={product.id}
+                    onClick={() => {
+                      if (onSelectProduct) {
+                        onSelectProduct(product);
+                        onClose();
+                      }
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '4px', borderRadius: '6px', transition: 'background 0.2s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#F5F5F5'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <img src={product.image} alt={product.name} style={{ width: '38px', height: '38px', objectFit: 'contain' }} />
                       <div>

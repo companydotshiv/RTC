@@ -175,6 +175,7 @@ export function App() {
         cartQuantities={cartQuantities}
         setCurrentView={setCurrentView}
         onClearCart={handleClearCart}
+        onSelectProduct={handleSelectProduct}
       />
     </div>
   );

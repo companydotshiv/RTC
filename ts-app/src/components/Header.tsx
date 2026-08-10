@@ -310,6 +310,12 @@ export const Header: React.FC<HeaderProps> = ({
                     <img
                       src={prod.image}
                       alt={prod.name}
+                      onClick={() => {
+                        if (onSelectProduct) {
+                          onSelectProduct(prod);
+                          handleClose();
+                        }
+                      }}
                       style={{
                         width: '64px',
                         height: '64px',
@@ -317,10 +323,19 @@ export const Header: React.FC<HeaderProps> = ({
                         borderRadius: '4px',
                         background: '#FAFAFA',
                         padding: '4px',
-                        border: '1px solid #EEEEEE'
+                        border: '1px solid #EEEEEE',
+                        cursor: 'pointer'
                       }}
                     />
-                    <div style={{ flex: 1 }}>
+                    <div
+                      style={{ flex: 1, cursor: 'pointer' }}
+                      onClick={() => {
+                        if (onSelectProduct) {
+                          onSelectProduct(prod);
+                          handleClose();
+                        }
+                      }}
+                    >
                       <h4 style={{ fontSize: '0.98rem', fontWeight: 400, color: '#222222', margin: '0 0 4px 0', textAlign: 'left' }}>
                         {prod.name}
                       </h4>
