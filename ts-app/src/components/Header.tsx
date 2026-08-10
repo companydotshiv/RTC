@@ -6,45 +6,64 @@ import type { Product } from '../types/product';
 interface HeaderProps {
   currentView: string;
   setCurrentView: (view: string) => void;
-  cartCount: number;
+  cartCount?: number;
+  wishlistCount?: number;
+  cartQuantities?: { [id: number]: number };
+  onUpdateCartQty?: (productId: number, newQty: number) => void;
   searchQuery?: string;
   setSearchQuery?: (query: string) => void;
   onSelectProduct?: (product: Product) => void;
+  isCartOpen?: boolean;
+  setIsCartOpen?: (open: boolean) => void;
+  onOpenCheckoutModal?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentView,
   setCurrentView,
-  cartCount,
+  wishlistCount = 0,
+  cartQuantities: externalCartQuantities,
+  onUpdateCartQty,
   searchQuery = '',
   setSearchQuery,
-  onSelectProduct
+  onSelectProduct,
+  isCartOpen: externalIsCartOpen,
+  setIsCartOpen: externalSetIsCartOpen,
+  onOpenCheckoutModal
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [internalIsCartOpen, setInternalIsCartOpen] = useState<boolean>(false);
+
+  const isCartOpen = externalIsCartOpen !== undefined ? externalIsCartOpen : internalIsCartOpen;
+  const setIsCartOpen = externalSetIsCartOpen || setInternalIsCartOpen;
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [localQuery, setLocalQuery] = useState<string>(searchQuery);
-  const [cartQuantities, setCartQuantities] = useState<{ [id: number]: number }>({});
+  const [localCartQuantities, setLocalCartQuantities] = useState<{ [id: number]: number }>({});
 
   const activeQuery = setSearchQuery ? searchQuery : localQuery;
+  const activeCartQuantities = externalCartQuantities !== undefined ? externalCartQuantities : localCartQuantities;
 
   const handleUpdateQuantity = (productId: number, newQty: number) => {
-    setCartQuantities((prev) => {
-      const updated = { ...prev };
-      if (newQty <= 0) {
-        delete updated[productId];
-      } else {
-        updated[productId] = newQty;
-      }
-      return updated;
-    });
+    if (onUpdateCartQty) {
+      onUpdateCartQty(productId, newQty);
+    } else {
+      setLocalCartQuantities((prev) => {
+        const updated = { ...prev };
+        if (newQty <= 0) {
+          delete updated[productId];
+        } else {
+          updated[productId] = newQty;
+        }
+        return updated;
+      });
+    }
   };
 
-  // Compute total items added across all products
-  const totalCartCount = Object.values(cartQuantities).reduce((a, b) => a + b, cartCount);
+  // Compute total items added across all products accurately
+  const totalCartCount = Object.values(activeCartQuantities).reduce((a, b) => a + b, 0);
 
   // Compute total price of items in cart
-  const cartSubtotal = Object.entries(cartQuantities).reduce((sum, [idStr, qty]) => {
+  const cartSubtotal = Object.entries(activeCartQuantities).reduce((sum, [idStr, qty]) => {
     const prod = products.find(p => p.id === Number(idStr));
     return sum + (prod ? prod.price * qty : 0);
   }, 0);
@@ -185,8 +204,9 @@ export const Header: React.FC<HeaderProps> = ({
               <button className="icon-btn" title="My Account">
                 <User size={20} />
               </button>
-              <button className="icon-btn" title="Wishlist">
-                <Heart size={20} />
+              <button className="icon-btn" onClick={() => setCurrentView('wishlist')} title="Wishlist" style={{ position: 'relative' }}>
+                <Heart size={20} color={wishlistCount > 0 ? '#E23744' : 'currentColor'} fill={wishlistCount > 0 ? '#E23744' : 'none'} />
+                {wishlistCount > 0 && <span className="badge-count" style={{ background: '#E23744' }}>{wishlistCount}</span>}
               </button>
               <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
                 <ShoppingBag size={20} />
@@ -247,7 +267,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Drawer Body - Cart Items List */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 30px' }}>
-          {Object.keys(cartQuantities).length === 0 ? (
+          {Object.keys(activeCartQuantities).length === 0 ? (
             <div style={{ padding: '60px 0', textAlign: 'center', color: '#888888' }}>
               <ShoppingBag size={48} style={{ opacity: 0.3, marginBottom: '16px' }} />
               <p style={{ fontSize: '1.05rem', fontWeight: 400, margin: '0 0 12px 0' }}>Your bag is currently empty.</p>
@@ -272,7 +292,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {Object.entries(cartQuantities).map(([idStr, qty]) => {
+              {Object.entries(activeCartQuantities).map(([idStr, qty]) => {
                 const prod = products.find(p => p.id === Number(idStr));
                 if (!prod) return null;
                 return (
@@ -368,7 +388,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Drawer Footer with Subtotal & Checkout Button */}
-        {Object.keys(cartQuantities).length > 0 && (
+        {Object.keys(activeCartQuantities).length > 0 && (
           <div style={{ padding: '24px 30px', borderTop: '1px solid #EFEFEF', background: '#FAFAFA' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <span style={{ fontSize: '1rem', fontWeight: 400, color: '#444444' }}>Subtotal:</span>
@@ -376,8 +396,11 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <button
               onClick={() => {
-                alert('Proceeding to Checkout!');
-                handleClose();
+                if (onOpenCheckoutModal) {
+                  onOpenCheckoutModal();
+                } else {
+                  setCurrentView('checkout');
+                }
               }}
               style={{
                 width: '100%',
@@ -526,7 +549,7 @@ export const Header: React.FC<HeaderProps> = ({
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {drawerResults.map((p) => {
-                  const qty = cartQuantities[p.id] || 0;
+                  const qty = activeCartQuantities[p.id] || 0;
                   return (
                     <div
                       key={p.id}
