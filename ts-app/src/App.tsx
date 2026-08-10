@@ -76,7 +76,6 @@ export function App() {
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
         onOpenCheckoutModal={() => {
-          setIsCartOpen(false);
           setIsCheckoutModalOpen(true);
         }}
         onUpdateCartQty={(id, qty) => {
