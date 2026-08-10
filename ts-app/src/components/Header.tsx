@@ -204,13 +204,17 @@ export const Header: React.FC<HeaderProps> = ({
               <button className="icon-btn" title="My Account">
                 <User size={20} />
               </button>
-              <button className="icon-btn" onClick={() => setCurrentView('wishlist')} title="Wishlist" style={{ position: 'relative' }}>
-                <Heart size={20} color={wishlistCount > 0 ? '#E23744' : 'currentColor'} fill={wishlistCount > 0 ? '#E23744' : 'none'} />
-                {wishlistCount > 0 && <span className="badge-dot badge-red-dot" title={`${wishlistCount} in Wishlist`} />}
+              <button className="icon-btn" onClick={() => setCurrentView('wishlist')} title="Wishlist">
+                <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Heart size={20} color={wishlistCount > 0 ? '#E23744' : 'currentColor'} fill={wishlistCount > 0 ? '#E23744' : 'none'} />
+                  {wishlistCount > 0 && <span className="badge-dot badge-red-dot" title={`${wishlistCount} in Wishlist`} />}
+                </span>
               </button>
-              <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ position: 'relative', border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
-                <ShoppingBag size={20} />
-                {totalCartCount > 0 && <span className="badge-dot badge-yellow-dot" title={`${totalCartCount} in Cart`} />}
+              <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
+                <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ShoppingBag size={20} />
+                  {totalCartCount > 0 && <span className="badge-dot badge-yellow-dot" title={`${totalCartCount} in Cart`} />}
+                </span>
               </button>
             </div>
           </div>
