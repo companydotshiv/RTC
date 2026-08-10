@@ -76,7 +76,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     dob: '',
     addressLine: '',
     city: '',
-    state: 'Delhi',
+    state: '',
     pincode: ''
   });
   const [isPincodeLoading, setIsPincodeLoading] = useState(false);
@@ -336,23 +336,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </div>
                   <div style={{ textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Date of Birth / DOB</label>
-                    <input
-                      type="date"
-                      value={userData.dob}
-                      onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '9px 10px',
-                        borderRadius: '6px',
-                        border: '1px solid #D8D8D8',
-                        fontSize: '0.85rem',
-                        fontWeight: 400,
-                        color: '#222222',
-                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
-                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
-                        outline: 'none'
-                      }}
-                    />
+                    <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="date"
+                        value={userData.dob}
+                        onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '9px 10px',
+                          borderRadius: '6px',
+                          border: '1px solid #D8D8D8',
+                          fontSize: '0.85rem',
+                          fontWeight: 400,
+                          color: '#222222',
+                          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                          outline: 'none',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -413,15 +416,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         border: '1px solid #D8D8D8',
                         fontSize: '0.85rem',
                         fontWeight: 400,
-                        color: '#222222',
+                        color: userData.state ? '#222222' : '#888888',
                         background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
                         boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
                         outline: 'none',
                         cursor: 'pointer'
                       }}
                     >
+                      <option value="" disabled style={{ color: '#999' }}>Select State</option>
                       {INDIAN_STATES.map((st) => (
-                        <option key={st} value={st}>{st}</option>
+                        <option key={st} value={st} style={{ color: '#222' }}>{st}</option>
                       ))}
                     </select>
                   </div>
