@@ -598,6 +598,19 @@ img {
   transform: translateY(0);
 }
 
+/* Bulk Inquiry Form Placeholder Styling */
+.bulk-input-field::placeholder {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 400 !important;
+  opacity: 1 !important;
+}
+
+.bulk-input-field::-webkit-input-placeholder {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 400 !important;
+  opacity: 1 !important;
+}
+
 .bestseller-green-footer {
   background: #007A3D;
   color: #ffffff;

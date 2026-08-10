@@ -687,15 +687,62 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 <h3 style={{ color: 'var(--primary-gold)', marginBottom: '20px', fontSize: '1.4rem' }}>Quick Business Inquiry</h3>
                 <form onSubmit={(e) => { e.preventDefault(); alert('Inquiry sent successfully!'); }}>
                   <div style={{ marginBottom: '14px' }}>
-                    <input type="text" placeholder="Your Name / Business Name" required style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.2)', color: '#fff' }} />
+                    <input
+                      type="text"
+                      className="bulk-input-field"
+                      placeholder="Your Name / Business Name"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        background: 'rgba(0,0,0,0.25)',
+                        color: '#FFFFFF',
+                        fontWeight: 400,
+                        fontSize: '0.95rem',
+                        fontFamily: "'Jost', sans-serif"
+                      }}
+                    />
                   </div>
                   <div style={{ marginBottom: '14px' }}>
-                    <input type="tel" placeholder="Mobile Number" required style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.2)', color: '#fff' }} />
+                    <input
+                      type="tel"
+                      className="bulk-input-field"
+                      placeholder="Mobile Number"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        background: 'rgba(0,0,0,0.25)',
+                        color: '#FFFFFF',
+                        fontWeight: 400,
+                        fontSize: '0.95rem',
+                        fontFamily: "'Jost', sans-serif"
+                      }}
+                    />
                   </div>
                   <div style={{ marginBottom: '18px' }}>
-                    <textarea placeholder="Requirement Details (e.g. 500kg Cashews)" rows={3} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.2)', color: '#fff' }}></textarea>
+                    <textarea
+                      className="bulk-input-field"
+                      placeholder="Requirement Details (e.g. 500kg Cashews)"
+                      rows={3}
+                      style={{
+                        width: '100%',
+                        padding: '12px 16px',
+                        borderRadius: '6px',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        background: 'rgba(0,0,0,0.25)',
+                        color: '#FFFFFF',
+                        fontWeight: 400,
+                        fontSize: '0.95rem',
+                        fontFamily: "'Jost', sans-serif"
+                      }}
+                    ></textarea>
                   </div>
-                  <button type="submit" className="btn btn-gold" style={{ width: '100%' }}>Send Bulk Inquiry</button>
+                  <button type="submit" className="btn btn-gold" style={{ width: '100%', fontWeight: 400 }}>Send Bulk Inquiry</button>
                 </form>
               </div>
             </div>
