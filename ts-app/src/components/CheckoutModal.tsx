@@ -586,10 +586,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   }}
                   style={{
                     flex: 1,
-                    padding: '8px 12px',
+                    padding: '9px 14px',
                     borderRadius: '6px',
                     border: '1px solid #D8D8D8',
                     fontSize: '0.85rem',
+                    fontWeight: 400,
+                    color: '#222222',
+                    background: '#FFFFFF',
                     outline: 'none'
                   }}
                 />
@@ -602,7 +605,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     padding: '8px 16px',
                     borderRadius: '6px',
                     fontSize: '0.82rem',
-                    fontWeight: 600,
+                    fontWeight: 400,
                     cursor: 'pointer'
                   }}
                 >
@@ -623,17 +626,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   }}
                   style={{
                     width: '100%',
-                    padding: '8px 12px',
+                    padding: '9px 12px',
                     borderRadius: '6px',
                     border: '1px solid #D8D8D8',
                     fontSize: '0.85rem',
-                    color: '#222',
-                    background: '#FFF',
+                    fontWeight: 400,
+                    color: '#222222',
+                    background: '#FFFFFF',
+                    outline: 'none',
                     cursor: 'pointer'
                   }}
                 >
-                  <option value="">Select Available Coupon</option>
-                  <option value="RTC20">RTC20 — Get 20% OFF on all orders</option>
+                  <option value="" style={{ fontWeight: 400 }}>Select Available Coupon</option>
+                  <option value="RTC20" style={{ fontWeight: 400 }}>RTC20 — Get 20% OFF on all orders</option>
                 </select>
               </div>
             </div>
@@ -675,12 +680,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </div>
             ) : (
               /* Available Coupon Card */
-              <div style={{ border: '1px solid #E5E5E5', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ border: '1px solid #E5E5E5', background: '#FFFFFF', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#222' }}>Use code "RTC20" for 20% OFF</div>
-                  <div style={{ fontSize: '0.78rem', color: '#777' }}>Valid on all items</div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 400, color: '#222222' }}>Use code "RTC20" for 20% OFF</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 400, color: '#777777' }}>Valid on all items</div>
                 </div>
-                <button onClick={() => handleApplyCoupon('RTC20')} style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 16px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => handleApplyCoupon('RTC20')} style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 16px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 400, color: '#222222', cursor: 'pointer' }}>
                   Apply
                 </button>
               </div>
