@@ -8,6 +8,8 @@ interface ProductDetailPageProps {
   onAddToCart: (qty: number) => void;
   cartQty?: number;
   onUpdateCartQty?: (qty: number) => void;
+  onToggleWishlist?: () => void;
+  isWishlisted?: boolean;
 }
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
@@ -15,7 +17,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   setCurrentView,
   onAddToCart,
   cartQty = 0,
-  onUpdateCartQty
+  onUpdateCartQty,
+  onToggleWishlist,
+  isWishlisted = false
 }) => {
   const [selectedImg, setSelectedImg] = React.useState(product.image);
   const [selectedWeight, setSelectedWeight] = React.useState(product.weights[0]);
@@ -265,21 +269,23 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 </button>
 
                 <button
-                  title="Add to Wishlist"
+                  onClick={onToggleWishlist}
+                  title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
                   style={{
                     width: '44px',
                     height: '44px',
                     borderRadius: '4px',
                     border: '1px solid #CCCCCC',
                     background: '#FFF',
-                    color: '#555555',
+                    color: isWishlisted ? '#E53935' : '#555555',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
                   }}
                 >
-                  <Heart size={18} />
+                  <Heart size={18} fill={isWishlisted ? '#E53935' : 'none'} color={isWishlisted ? '#E53935' : 'currentColor'} />
                 </button>
               </div>
 

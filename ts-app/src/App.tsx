@@ -202,6 +202,8 @@ export function App() {
                 return updated;
               });
             }}
+            onToggleWishlist={() => handleToggleWishlist(selectedProduct.id)}
+            isWishlisted={wishlistIds.includes(selectedProduct.id)}
           />
         )}
         {currentView === 'wishlist' && (
