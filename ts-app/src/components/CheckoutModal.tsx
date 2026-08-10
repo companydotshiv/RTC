@@ -25,6 +25,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
 
+  // User Details & Delivery Address State
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [userSaved, setUserSaved] = useState(false);
+  const [userData, setUserData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    dob: '',
+    addressLine: '',
+    city: '',
+    state: 'Delhi',
+    pincode: ''
+  });
+
+  const handleSaveUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    setUserSaved(true);
+    setIsEditingAddress(false);
+  };
+
   if (!isOpen) return null;
 
   // Calculate cart items
@@ -54,6 +74,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handlePlaceOrder = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userSaved && (!userData.fullName || !userData.phone || !userData.addressLine)) {
+      setIsEditingAddress(true);
+      return;
+    }
     const generatedId = 'RTC-' + Math.floor(100000 + Math.random() * 900000);
     setOrderId(generatedId);
     setIsOrderPlaced(true);
@@ -139,20 +163,144 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
           </div>
 
-          {/* Section 2: Delivery Address Card */}
-          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAEAEA', padding: '16px', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#222', marginBottom: '4px' }}>Deliver To Adity Hazra</div>
-                <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.4 }}>Swarna Rekha Nagar, Ketari Bagan, Lower Ch...</div>
-                <div style={{ fontSize: '0.82rem', color: '#555' }}>Jharkhand, 834010</div>
-                <div style={{ fontSize: '0.82rem', color: '#777', marginTop: '2px' }}>+91 8649802844 | adiandkookie97@gmail.com</div>
-              </div>
+          {/* Section 2: Delivery Address & Personal Details Card */}
+          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: userSaved ? '1px solid #EAEAEA' : '2px solid #F5A623', padding: '16px', marginBottom: '16px' }}>
+            {!userSaved || isEditingAddress ? (
+              /* User Info Input Form for New Users */
+              <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1D231F', marginBottom: '4px' }}>
+                  Enter Your Delivery & Personal Details
+                </div>
 
-              <button style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
-                Change
-              </button>
-            </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Rahul Sharma"
+                      value={userData.fullName}
+                      onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Phone Number *</label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+91 9876543210"
+                      value={userData.phone}
+                      onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Email Address *</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="rahul@example.com"
+                      value={userData.email}
+                      onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Date of Birth / DOB</label>
+                    <input
+                      type="date"
+                      value={userData.dob}
+                      onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Street Address & Flat / House No. *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="House No, Street, Locality"
+                    value={userData.addressLine}
+                    onChange={(e) => setUserData({ ...userData, addressLine: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>City *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. New Delhi"
+                      value={userData.city}
+                      onChange={(e) => setUserData({ ...userData, city: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>State *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="State"
+                      value={userData.state}
+                      onChange={(e) => setUserData({ ...userData, state: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Pincode *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="110001"
+                      value={userData.pincode}
+                      onChange={(e) => setUserData({ ...userData, pincode: e.target.value })}
+                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  style={{ background: '#007A3D', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '10px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', marginTop: '6px' }}
+                >
+                  Save Address & Continue
+                </button>
+              </form>
+            ) : (
+              /* Display Saved User Card once info is collected */
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#222', marginBottom: '4px' }}>
+                    Deliver To {userData.fullName}
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#555', lineHeight: 1.4 }}>
+                    {userData.addressLine}, {userData.city}
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#555' }}>
+                    {userData.state}, {userData.pincode}
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#777', marginTop: '2px' }}>
+                    {userData.phone} | {userData.email} {userData.dob ? `(DOB: ${userData.dob})` : ''}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setIsEditingAddress(true)}
+                  style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Change
+                </button>
+              </div>
+            )}
 
             <div style={{ marginTop: '12px', borderTop: '1px solid #F5F5F5', paddingTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ background: '#007A3D', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px' }}>Free</span>
