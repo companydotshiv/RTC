@@ -214,7 +214,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                               <Minus size={16} />
                             </button>
                             <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
-                              {qty} in Cart
+                              {qty}
                             </span>
                             <button
                               onClick={(e) => {
