@@ -15,8 +15,8 @@ import { Check, X } from 'lucide-react';
 export function App() {
   const [currentView, setCurrentView] = useState<string>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [cartQuantities, setCartQuantities] = useState<{ [id: number]: number }>({ 1: 1, 6: 2 }); // Initial demo items
-  const [wishlistIds, setWishlistIds] = useState<number[]>([1, 6, 7]); // Initial demo wishlist
+  const [cartQuantities, setCartQuantities] = useState<{ [id: number]: number }>({});
+  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
