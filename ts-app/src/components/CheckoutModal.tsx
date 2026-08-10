@@ -77,6 +77,35 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     state: 'Delhi',
     pincode: ''
   });
+  const [isPincodeLoading, setIsPincodeLoading] = useState(false);
+
+  // Auto-fill City & State from Indian PIN code
+  const handlePincodeChange = async (val: string) => {
+    const cleanPin = val.replace(/\D/g, '').slice(0, 6);
+    setUserData((prev) => ({ ...prev, pincode: cleanPin }));
+
+    if (cleanPin.length === 6) {
+      setIsPincodeLoading(true);
+      try {
+        const res = await fetch(`https://api.postalpincode.in/pincode/${cleanPin}`);
+        const data = await res.json();
+        if (data && data[0] && data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+          const po = data[0].PostOffice[0];
+          const foundState = INDIAN_STATES.find(s => s.toLowerCase() === po.State.toLowerCase()) || po.State;
+          const foundCity = po.District || po.Block || po.Name;
+          setUserData((prev) => ({
+            ...prev,
+            city: foundCity,
+            state: foundState
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching pincode:', err);
+      } finally {
+        setIsPincodeLoading(false);
+      }
+    }
+  };
 
   const handleSaveUser = (e: React.FormEvent) => {
     e.preventDefault();
@@ -384,12 +413,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     </select>
                   </div>
                   <div style={{ textAlign: 'left' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Pincode *</label>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>
+                      Pincode * {isPincodeLoading && <span style={{ fontSize: '0.72rem', color: '#007A3D' }}>(Finding location...)</span>}
+                    </label>
                     <input
                       type="text"
                       required
+                      maxLength={6}
                       value={userData.pincode}
-                      onChange={(e) => setUserData({ ...userData, pincode: e.target.value })}
+                      onChange={(e) => handlePincodeChange(e.target.value)}
                       style={{
                         width: '100%',
                         padding: '10px 12px',
