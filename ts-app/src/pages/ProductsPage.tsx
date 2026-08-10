@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
-import { Star, Minus, Plus, ShoppingBag, X } from 'lucide-react';
+import { Star, Minus, Plus, ShoppingBag, X, Heart } from 'lucide-react';
 
 interface ProductsPageProps {
   onSelectProduct: (product: Product) => void;
@@ -10,6 +10,8 @@ interface ProductsPageProps {
   cartQuantities?: { [id: number]: number };
   onAddToCart?: (productId: number, qty?: number) => void;
   onUpdateCartQty?: (productId: number, qty: number) => void;
+  onToggleWishlist?: (productId: number) => void;
+  wishlistIds?: number[];
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({
@@ -18,7 +20,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   setSearchQuery: propSetSearchQuery,
   cartQuantities = {},
   onAddToCart,
-  onUpdateCartQty
+  onUpdateCartQty,
+  onToggleWishlist,
+  wishlistIds = []
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
@@ -142,77 +146,118 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       </h3>
                     </div>
 
-                    <div className="card-price-row" style={{ marginTop: 'auto', paddingTop: '12px' }}>
-                      <div className="price-box">
-                        <span className="current-price">₹{p.price}</span>
-                        <span className="old-price">₹{p.originalPrice}</span>
-                      </div>
+                    <div style={{ marginTop: 'auto', paddingTop: '12px' }}>
+                      {/* Price Row with Heart Wishlist Button above Add to Cart */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                        <div className="price-box">
+                          <span className="current-price">₹{p.price}</span>
+                          <span className="old-price">₹{p.originalPrice}</span>
+                        </div>
 
-                      {/* Add to Cart / Quantity Toggle Button */}
-                      {qty > 0 ? (
-                        <div
+                        {/* Heart Wishlist Button above Add to Cart */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onToggleWishlist) onToggleWishlist(p.id);
+                          }}
+                          title={wishlistIds.includes(p.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                           style={{
+                            width: '38px',
+                            height: '38px',
+                            borderRadius: '50%',
+                            border: '1px solid #E2E8F0',
+                            background: '#FFFFFF',
+                            color: wishlistIds.includes(p.id) ? '#E53935' : '#555555',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px',
-                            background: '#007A3D',
-                            color: '#FFF',
-                            borderRadius: '6px',
-                            padding: '4px 10px'
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
                           }}
                         >
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (onUpdateCartQty) onUpdateCartQty(p.id, qty - 1);
-                            }}
+                          <Heart size={18} fill={wishlistIds.includes(p.id) ? '#E53935' : 'none'} color={wishlistIds.includes(p.id) ? '#E53935' : 'currentColor'} />
+                        </button>
+                      </div>
+
+                      {/* Add to Cart / Quantity Toggle Button on a line below */}
+                      <div>
+                        {qty > 0 ? (
+                          <div
                             style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#FFF',
-                              cursor: 'pointer',
                               display: 'flex',
                               alignItems: 'center',
-                              padding: '2px'
+                              justifyContent: 'space-between',
+                              background: '#007A3D',
+                              color: '#FFF',
+                              borderRadius: '6px',
+                              padding: '8px 14px',
+                              width: '100%'
                             }}
-                            title="Decrease quantity"
                           >
-                            <Minus size={14} />
-                          </button>
-                          <span style={{ fontSize: '0.88rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
-                            {qty}
-                          </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onUpdateCartQty) onUpdateCartQty(p.id, qty - 1);
+                              }}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#FFF',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '2px'
+                              }}
+                              title="Decrease quantity"
+                            >
+                              <Minus size={16} />
+                            </button>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                              {qty} in Cart
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onAddToCart) onAddToCart(p.id, 1);
+                              }}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#FFF',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '2px'
+                              }}
+                              title="Increase quantity"
+                            >
+                              <Plus size={16} />
+                            </button>
+                          </div>
+                        ) : (
                           <button
+                            className="btn btn-primary"
+                            style={{
+                              width: '100%',
+                              padding: '10px 16px',
+                              fontSize: '0.88rem',
+                              background: '#007A3D',
+                              borderColor: '#007A3D',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px'
+                            }}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (onAddToCart) onAddToCart(p.id, 1);
                             }}
-                            style={{
-                              background: 'none',
-                              border: 'none',
-                              color: '#FFF',
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              padding: '2px'
-                            }}
-                            title="Increase quantity"
                           >
-                            <Plus size={14} />
+                            <ShoppingBag size={16} /> Add to cart
                           </button>
-                        </div>
-                      ) : (
-                        <button
-                          className="btn btn-primary"
-                          style={{ padding: '8px 16px', fontSize: '0.85rem', background: '#007A3D', borderColor: '#007A3D' }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (onAddToCart) onAddToCart(p.id, 1);
-                          }}
-                        >
-                          <ShoppingBag size={15} style={{ marginRight: '6px' }} /> Add to cart
-                        </button>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

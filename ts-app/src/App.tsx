@@ -183,6 +183,8 @@ export function App() {
                 return updated;
               });
             }}
+            onToggleWishlist={handleToggleWishlist}
+            wishlistIds={wishlistIds}
           />
         )}
         {currentView === 'detail' && selectedProduct && (
