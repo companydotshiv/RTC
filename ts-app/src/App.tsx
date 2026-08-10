@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
@@ -7,19 +7,85 @@ import { ProductDetailPage } from './pages/ProductDetailPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { CheckoutModal } from './components/CheckoutModal';
+import { products } from './data/productsData';
 import type { Product } from './types/product';
 import './App.css';
 
 import { Check, X } from 'lucide-react';
 
+// Helper to derive view state from window.location.pathname
+const parseLocation = (): { view: string; product: Product | null } => {
+  const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
+  if (!path || path === '') {
+    return { view: 'home', product: null };
+  }
+  if (path === '/products' || path === '/shop') {
+    return { view: 'products', product: null };
+  }
+  if (path === '/wishlist') {
+    return { view: 'wishlist', product: null };
+  }
+  if (path === '/checkout') {
+    return { view: 'checkout', product: null };
+  }
+  if (path.startsWith('/product/')) {
+    const slug = path.replace('/product/', '');
+    const found = products.find((p) => p.slug.toLowerCase() === slug || p.id.toString() === slug);
+    if (found) {
+      return { view: 'detail', product: found };
+    }
+  }
+  return { view: 'home', product: null };
+};
+
 export function App() {
-  const [currentView, setCurrentView] = useState<string>('home');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const initial = parseLocation();
+  const [currentView, setCurrentViewInternal] = useState<string>(initial.view);
+  const [selectedProduct, setSelectedProductInternal] = useState<Product | null>(initial.product);
   const [cartQuantities, setCartQuantities] = useState<{ [id: number]: number }>({});
   const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
+
+  // Synchronize view state with browser URL & history
+  const setCurrentView = (view: string, pushHistory = true) => {
+    setCurrentViewInternal(view);
+    if (pushHistory) {
+      let path = '/';
+      if (view === 'products') path = '/products';
+      else if (view === 'wishlist') path = '/wishlist';
+      else if (view === 'checkout') path = '/checkout';
+      else if (view === 'detail' && selectedProduct) path = `/product/${selectedProduct.slug}`;
+
+      if (window.location.pathname !== path) {
+        window.history.pushState({ view, productSlug: selectedProduct?.slug }, '', path);
+      }
+    }
+  };
+
+  const handleSelectProduct = (product: Product, pushHistory = true) => {
+    setSelectedProductInternal(product);
+    setCurrentViewInternal('detail');
+    if (pushHistory) {
+      const path = `/product/${product.slug}`;
+      if (window.location.pathname !== path) {
+        window.history.pushState({ view: 'detail', productSlug: product.slug }, '', path);
+      }
+    }
+  };
+
+  // Handle browser Back / Forward navigation buttons (popstate event)
+  useEffect(() => {
+    const handlePopState = () => {
+      const parsed = parseLocation();
+      setCurrentViewInternal(parsed.view);
+      setSelectedProductInternal(parsed.product);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Toast Notification State
   const [toastMessage, setToastMessage] = useState<string>('');
@@ -42,11 +108,6 @@ export function App() {
         setToastHiding(false);
       }, 400);
     }, 3000);
-  };
-
-  const handleSelectProduct = (product: Product) => {
-    setSelectedProduct(product);
-    setCurrentView('detail');
   };
 
   const handleAddToCart = (productId: number = 1, qty: number = 1) => {
