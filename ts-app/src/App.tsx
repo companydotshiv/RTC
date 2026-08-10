@@ -213,6 +213,18 @@ export function App() {
             onAddToCart={handleAddToCart}
             onSelectProduct={handleSelectProduct}
             setCurrentView={setCurrentView}
+            cartQuantities={cartQuantities}
+            onUpdateCartQty={(productId, newQty) => {
+              setCartQuantities((prev) => {
+                const updated = { ...prev };
+                if (newQty <= 0) {
+                  delete updated[productId];
+                } else {
+                  updated[productId] = newQty;
+                }
+                return updated;
+              });
+            }}
           />
         )}
         {currentView === 'checkout' && (

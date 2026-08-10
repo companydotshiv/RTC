@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, ShoppingBag, Trash2, ArrowRight } from 'lucide-react';
+import { Heart, ShoppingBag, Trash2, ArrowRight, Minus, Plus } from 'lucide-react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
 
@@ -9,6 +9,8 @@ interface WishlistPageProps {
   onAddToCart: (productId: number, qty?: number) => void;
   onSelectProduct: (product: Product) => void;
   setCurrentView: (view: string) => void;
+  cartQuantities?: { [id: number]: number };
+  onUpdateCartQty?: (productId: number, qty: number) => void;
 }
 
 export const WishlistPage: React.FC<WishlistPageProps> = ({
@@ -17,6 +19,8 @@ export const WishlistPage: React.FC<WishlistPageProps> = ({
   onAddToCart,
   onSelectProduct,
   setCurrentView,
+  cartQuantities = {},
+  onUpdateCartQty
 }) => {
   const wishlistProducts = products.filter((p) => wishlistIds.includes(p.id));
 
@@ -70,123 +74,180 @@ export const WishlistPage: React.FC<WishlistPageProps> = ({
         ) : (
           /* Grid of Wishlist Items */
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
-            {wishlistProducts.map((product) => (
-              <div
-                key={product.id}
-                style={{
-                  background: '#FFFFFF',
-                  borderRadius: '14px',
-                  overflow: 'hidden',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-                  border: '1px solid #EFEFEF',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  position: 'relative',
-                  transition: 'transform 0.25s ease, boxShadow 0.25s ease'
-                }}
-              >
-                {/* Remove Trash Button Top Right */}
-                <button
-                  onClick={() => onToggleWishlist(product.id)}
-                  title="Remove from Wishlist"
-                  style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '50%',
-                    background: 'rgba(255,255,255,0.9)',
-                    border: '1px solid #EEEEEE',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    color: '#E23744',
-                    zIndex: 2,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                    transition: 'all 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#E23744';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.9)';
-                    e.currentTarget.style.color = '#E23744';
-                  }}
-                >
-                  <Trash2 size={18} />
-                </button>
-
-                {/* Product Image Box */}
+            {wishlistProducts.map((product) => {
+              const qty = cartQuantities[product.id] || 0;
+              return (
                 <div
-                  onClick={() => onSelectProduct(product)}
-                  style={{ background: '#FAFAFA', padding: '24px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '220px' }}
+                  key={product.id}
+                  style={{
+                    background: '#FFFFFF',
+                    borderRadius: '14px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+                    border: '1px solid #EFEFEF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    position: 'relative',
+                    transition: 'transform 0.25s ease, boxShadow 0.25s ease'
+                  }}
                 >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    style={{ maxHeight: '170px', maxWidth: '100%', objectFit: 'contain' }}
-                  />
-                </div>
-
-                {/* Product Info Footer */}
-                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1, textAlign: 'left' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#888888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
-                    {product.categoryName}
-                  </span>
-                  <h3
-                    onClick={() => onSelectProduct(product)}
-                    style={{ fontSize: '1.05rem', fontWeight: 600, color: '#222222', margin: '0 0 8px 0', cursor: 'pointer', lineHeight: 1.3 }}
+                  {/* Remove Trash Button Top Right */}
+                  <button
+                    onClick={() => onToggleWishlist(product.id)}
+                    title="Remove from Wishlist"
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.9)',
+                      border: '1px solid #EEEEEE',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: '#E23744',
+                      zIndex: 2,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      transition: 'all 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = '#E23744';
+                      e.currentTarget.style.color = '#FFFFFF';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.9)';
+                      e.currentTarget.style.color = '#E23744';
+                    }}
                   >
-                    {product.name}
-                  </h3>
+                    <Trash2 size={18} />
+                  </button>
 
-                  {/* Stock Status Badge */}
-                  <div style={{ marginBottom: '14px' }}>
-                    <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#007A3D', background: '#EAF7F0', padding: '3px 8px', borderRadius: '4px' }}>
-                      In Stock
-                    </span>
+                  {/* Product Image Box */}
+                  <div
+                    onClick={() => onSelectProduct(product)}
+                    style={{ background: '#FAFAFA', padding: '24px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '220px' }}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{ maxHeight: '170px', maxWidth: '100%', objectFit: 'contain' }}
+                    />
                   </div>
 
-                  {/* Price and Add to Bag Button Row */}
-                  <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #F5F5F5' }}>
-                    <div>
-                      <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#007A3D' }}>
-                        ₹{product.price.toFixed(2)}
-                      </div>
-                      {product.originalPrice > product.price && (
-                        <div style={{ fontSize: '0.85rem', color: '#999999', textDecoration: 'line-through' }}>
-                          ₹{product.originalPrice.toFixed(2)}
+                  {/* Product Info Footer */}
+                  <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1, textAlign: 'left' }}>
+                    <span style={{ fontSize: '0.8rem', color: '#888888', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
+                      {product.categoryName}
+                    </span>
+                    <h3
+                      onClick={() => onSelectProduct(product)}
+                      style={{ fontSize: '1.05rem', fontWeight: 600, color: '#222222', margin: '0 0 8px 0', cursor: 'pointer', lineHeight: 1.3 }}
+                    >
+                      {product.name}
+                    </h3>
+
+                    {/* Stock Status Badge */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#007A3D', background: '#EAF7F0', padding: '3px 8px', borderRadius: '4px' }}>
+                        In Stock
+                      </span>
+                    </div>
+
+                    {/* Price and Add to Cart / Quantity Row */}
+                    <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '12px', borderTop: '1px solid #F5F5F5' }}>
+                      <div>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 700, color: '#007A3D' }}>
+                          ₹{product.price.toFixed(2)}
                         </div>
+                        {product.originalPrice > product.price && (
+                          <div style={{ fontSize: '0.85rem', color: '#999999', textDecoration: 'line-through' }}>
+                            ₹{product.originalPrice.toFixed(2)}
+                          </div>
+                        )}
+                      </div>
+
+                      {qty > 0 ? (
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: '#007A3D',
+                            color: '#FFF',
+                            borderRadius: '6px',
+                            padding: '4px 10px'
+                          }}
+                        >
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onUpdateCartQty) onUpdateCartQty(product.id, qty - 1);
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#FFF',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              padding: '2px'
+                            }}
+                            title="Decrease quantity"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span style={{ fontSize: '0.88rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
+                            {qty}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onAddToCart) onAddToCart(product.id, 1);
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#FFF',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              padding: '2px'
+                            }}
+                            title="Increase quantity"
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => onAddToCart(product.id, 1)}
+                          style={{
+                            background: '#007A3D',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '10px 18px',
+                            fontSize: '0.88rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 2px 8px rgba(0,122,61,0.2)'
+                          }}
+                        >
+                          <ShoppingBag size={16} /> Add to Cart
+                        </button>
                       )}
                     </div>
 
-                    <button
-                      onClick={() => onAddToCart(product.id, 1)}
-                      style={{
-                        background: '#007A3D',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '10px 18px',
-                        fontSize: '0.88rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        boxShadow: '0 2px 8px rgba(0,122,61,0.2)'
-                      }}
-                    >
-                      <ShoppingBag size={16} /> Add to Bag
-                    </button>
                   </div>
-
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
