@@ -54,10 +54,20 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ onSelectProduct, sea
                 placeholder="Search catalog..."
                 value={activeSearchQuery}
                 onChange={(e) => updateSearchQuery(e.target.value)}
-                style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.2)', fontSize: '0.9rem' }}
+                style={{
+                  padding: '9px 16px',
+                  borderRadius: '6px',
+                  border: '1px solid #D8D8D8',
+                  fontSize: '0.9rem',
+                  fontWeight: 400,
+                  color: '#222222',
+                  background: '#FFFFFF',
+                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                  outline: 'none'
+                }}
               />
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                Showing <strong>{filteredProducts.length}</strong> items
+              <span style={{ color: '#555555', fontSize: '0.9rem', fontWeight: 400 }}>
+                Showing <span style={{ fontWeight: 400 }}>{filteredProducts.length}</span> items
               </span>
             </div>
           </div>
