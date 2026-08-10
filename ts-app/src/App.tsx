@@ -23,11 +23,13 @@ export function App() {
 
   // Toast Notification State
   const [toastMessage, setToastMessage] = useState<string>('');
+  const [toastType, setToastType] = useState<'cart' | 'wishlist'>('cart');
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastHiding, setToastHiding] = useState<boolean>(false);
 
-  const triggerToast = (msg: string) => {
+  const triggerToast = (msg: string, type: 'cart' | 'wishlist' = 'cart') => {
     setToastMessage(msg);
+    setToastType(type);
     setShowToast(true);
     setToastHiding(false);
 
@@ -52,13 +54,17 @@ export function App() {
       ...prev,
       [productId]: (prev[productId] || 0) + qty,
     }));
-    triggerToast('Item added to your cart');
+    triggerToast('Item added to your cart', 'cart');
   };
 
   const handleToggleWishlist = (productId: number) => {
+    const isAdding = !wishlistIds.includes(productId);
     setWishlistIds((prev) =>
       prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
     );
+    if (isAdding) {
+      triggerToast('Item added to your wishlist', 'wishlist');
+    }
   };
 
   const handleClearCart = () => {
@@ -96,7 +102,7 @@ export function App() {
 
       <main>
         {currentView === 'home' && (
-          <HomePage onSelectProduct={handleSelectProduct} setCurrentView={setCurrentView} />
+          <HomePage onSelectProduct={handleSelectProduct} setCurrentView={setCurrentView} onToggleWishlist={handleToggleWishlist} wishlistIds={wishlistIds} />
         )}
         {currentView === 'products' && (
           <ProductsPage onSelectProduct={handleSelectProduct} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
@@ -143,13 +149,17 @@ export function App() {
       {/* Floating Toast Notification matching Aqualogica style */}
       {showToast && (
         <div
-          className={`toast-notification ${toastHiding ? 'hide' : ''}`}
+          className={`toast-notification ${toastType === 'wishlist' ? 'toast-wishlist' : ''} ${toastHiding ? 'hide' : ''}`}
           onClick={() => {
-            setIsCartOpen(true);
+            if (toastType === 'wishlist') {
+              setCurrentView('wishlist');
+            } else {
+              setIsCartOpen(true);
+            }
             setShowToast(false);
           }}
           style={{ cursor: 'pointer' }}
-          title="Click to view cart"
+          title={toastType === 'wishlist' ? 'Click to view wishlist' : 'Click to view cart'}
         >
           <Check size={18} color="#FFFFFF" strokeWidth={3} />
           <span>{toastMessage}</span>

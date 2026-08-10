@@ -6,9 +6,11 @@ import { ShoppingBag, Star, CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart 
 interface HomePageProps {
   onSelectProduct: (product: Product) => void;
   setCurrentView: (view: string) => void;
+  onToggleWishlist?: (productId: number) => void;
+  wishlistIds?: number[];
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentView }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentView, onToggleWishlist, wishlistIds = [] }) => {
   return (
     <div>
       {/* 1. Hero Banner Carousel Replica */}
@@ -95,8 +97,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(1); }}>
+                        <Heart size={20} fill={wishlistIds.includes(1) ? "#E53935" : "none"} color={wishlistIds.includes(1) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -130,8 +132,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
+                        <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -165,8 +167,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(3); }}>
+                        <Heart size={20} fill={wishlistIds.includes(3) ? "#E53935" : "none"} color={wishlistIds.includes(3) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -200,8 +202,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(4); }}>
+                        <Heart size={20} fill={wishlistIds.includes(4) ? "#E53935" : "none"} color={wishlistIds.includes(4) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -347,8 +349,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(5); }}>
+                        <Heart size={20} fill={wishlistIds.includes(5) ? "#E53935" : "none"} color={wishlistIds.includes(5) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -382,8 +384,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
+                        <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -417,8 +419,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(6); }}>
+                        <Heart size={20} fill={wishlistIds.includes(6) ? "#E53935" : "none"} color={wishlistIds.includes(6) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
@@ -453,8 +455,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => e.stopPropagation()}>
-                        <Heart size={20} />
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(7); }}>
+                        <Heart size={20} fill={wishlistIds.includes(7) ? "#E53935" : "none"} color={wishlistIds.includes(7) ? "#E53935" : "#222222"} />
                       </button>
                     </div>
                   </div>
