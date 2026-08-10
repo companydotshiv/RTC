@@ -319,37 +319,6 @@ export const products: Product[] = [
     ]
   },
   {
-    id: 5,
-    slug: 'chia-seeds',
-    name: 'Organic Chia Seeds',
-    category: 'seeds-berries',
-    categoryName: 'Seeds & Berries',
-    price: 27,
-    originalPrice: 45,
-    badge: 'Superfood',
-    rating: 4.9,
-    reviewsCount: 110,
-    image: '/chia.jpg',
-    gallery: ['/chia.jpg'],
-    shortDesc: 'Raw, unroasted black chia seeds high in Omega-3 fatty acids, fiber, and plant protein.',
-    description: 'Organic Chia Seeds from RTC Foods absorb water quickly to form a nourishing gel. Ideal for smoothies, weight management, and healthy pudding breakfasts.',
-    weights: ['100g', '250g', '500g'],
-    sku: 'RTC-CHI-01',
-    stock: true,
-    origin: 'India',
-    shelfLife: '12 Months',
-    nutrition: {
-      'Omega-3': '4915 mg',
-      'Fiber': '34g',
-      'Protein': '16.5g'
-    },
-    features: [
-      'Raw & Unprocessed',
-      'Superfood for weight management',
-      'High in plant-based Omega-3'
-    ]
-  },
-  {
     id: 6,
     slug: 'walnut-kernels-platinum',
     name: 'Walnut Kernels Platinum',

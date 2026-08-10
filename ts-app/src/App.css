@@ -1053,3 +1053,15 @@ img {
     width: 0%;
   }
 }
+
+/* Date of Birth input calendar picker icon styling */
+.dob-date-input::-webkit-calendar-picker-indicator {
+  opacity: 0.7;
+  cursor: pointer;
+  filter: invert(0.2);
+}
+
+.dob-date-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+  filter: invert(0);
+}

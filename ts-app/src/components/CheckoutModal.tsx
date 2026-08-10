@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, CheckCircle2, Truck, CreditCard, X, ChevronDown, Lock } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, Truck, CreditCard, X, ChevronDown, Lock, Calendar } from 'lucide-react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
 
@@ -341,9 +341,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                         type="date"
                         value={userData.dob}
                         onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
+                        className="dob-date-input"
                         style={{
                           width: '100%',
-                          padding: '9px 10px',
+                          padding: '9px 32px 9px 10px',
                           borderRadius: '6px',
                           border: '1px solid #D8D8D8',
                           fontSize: '0.85rem',
@@ -353,6 +354,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                           boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
                           outline: 'none',
                           cursor: 'pointer'
+                        }}
+                      />
+                      <Calendar
+                        size={16}
+                        color="#555555"
+                        style={{
+                          position: 'absolute',
+                          right: '10px',
+                          pointerEvents: 'none'
                         }}
                       />
                     </div>

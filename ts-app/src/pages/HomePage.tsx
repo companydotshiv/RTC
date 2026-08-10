@@ -71,8 +71,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
             {/* 4 Bestseller Cards Matching Exact WordPress Screenshot Layout */}
             <div className="bestsellers-grid">
-              {/* Card 1: California Almonds */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[0])}>
+              {/* Card 1: California Almonds (ID: 1) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 1) || products[0])}>
                 <div className="bestseller-img-container">
                   <img src="/california_almonds_pouch.png" alt="California Almonds" className="main-img" />
                   <img src="/california_almonds_back.png" alt="California Almonds Back" className="hover-img" />
@@ -81,14 +81,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[0]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 1) || products[0]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
 
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[0]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 1) || products[0]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -108,23 +108,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
               </div>
 
-              {/* Card 2: Poppy seeds */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[1])}>
+              {/* Card 2: Chia Seeds (ID: 2) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 2) || products[1])}>
                 <div className="bestseller-img-container">
-                  <img src="/poppy_seeds_front.png" alt="Poppy seeds" className="main-img" />
-                  <img src="/poppy_seeds_back.png" alt="Poppy seeds Back" className="hover-img" />
+                  <img src="/chia_seeds_front.jpg" alt="Chia Seeds" className="main-img" />
+                  <img src="/chia_seeds_back.jpg" alt="Chia Seeds Back" className="hover-img" />
 
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[1]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[1]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -138,13 +138,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
                 <div className="bestseller-green-footer">
                   <span className="bestseller-cat">Seeds</span>
-                  <h3 className="bestseller-title">Poppy seeds</h3>
-                  <div className="bestseller-price">₹27.00 – ₹375.00</div>
+                  <h3 className="bestseller-title">Chia Seeds</h3>
+                  <div className="bestseller-price">₹27.00 – ₹108.00</div>
                 </div>
               </div>
 
-              {/* Card 3: Cashew */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[2])}>
+              {/* Card 3: Cashew (ID: 3) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 3) || products[2])}>
                 <div className="bestseller-img-container">
                   <img src="/cashew_front.png" alt="Cashew" className="main-img" />
                   <img src="/cashew_back.png" alt="Cashew Back" className="hover-img" />
@@ -153,13 +153,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[2]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 3) || products[2]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[2]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 3) || products[2]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -178,8 +178,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
               </div>
 
-              {/* Card 4: Dry Figs Diamond */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[3])}>
+              {/* Card 4: Dry Figs Diamond (ID: 4) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 4) || products[3])}>
                 <div className="bestseller-img-container">
                   <img src="/dry_figs_front.png" alt="Dry Figs Diamond" className="main-img" />
                   <img src="/dry_figs_back.jpg" alt="Dry Figs Diamond Back" className="hover-img" />
@@ -188,13 +188,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[3]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 4) || products[3]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[3]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 4) || products[3]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -310,12 +310,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
         </div>
       </section>
 
-      {/* Screenshot 5: Top Choice Carousel */}
-      <section className="section" style={{ background: '#FFF', padding: '60px 0 60px 0' }}>
-        <div className="bestsellers-wrapper">
-          <h2 style={{ textAlign: 'center', fontSize: '2.5rem', fontWeight: '700', marginBottom: '40px', color: '#222222', fontFamily: "'Jost', sans-serif" }}>
-            Top Choice
-          </h2>
+      {/* 4. Secondary Bestsellers Section (Matching Bottom Carousel) */}
+      <section className="section" style={{ background: '#FBF9F4', padding: '60px 0' }}>
+        <div className="container">
+          <div className="section-title">
+            <h2>Trending Products</h2>
+            <div className="title-underline"></div>
+          </div>
 
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
             <button className="carousel-nav-btn left-nav" title="Previous Products">
@@ -323,8 +324,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
             </button>
 
             <div className="bestsellers-grid">
-              {/* Card 1: Exotic Dried Kiwi */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[4] || products[0])}>
+              {/* Card 1: Exotic Dried Kiwi (ID: 5) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 5) || products[4])}>
                 <div className="bestseller-img-container">
                   <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
                   <img src="/exotic_kiwi_front.png" alt="Exotic Dried Kiwi" className="main-img" />
@@ -334,13 +335,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[4] || products[0]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 5) || products[4]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[4] || products[0]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 5) || products[4]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -359,8 +360,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
               </div>
 
-              {/* Card 2: Chia Seeds */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products[1])}>
+              {/* Card 2: Chia Seeds (ID: 2) */}
+              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 2) || products[1])}>
                 <div className="bestseller-img-container">
                   <img src="/chia_seeds_front.jpg" alt="Chia Seeds" className="main-img" />
                   <img src="/chia_seeds_back.jpg" alt="Chia Seeds Back" className="hover-img" />
@@ -369,13 +370,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   <div className="card-hover-actions">
                     <div className="hover-action-item">
                       <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[1]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
                         <ShoppingBag size={20} />
                       </button>
                     </div>
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products[1]); }}>
+                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
                         <Eye size={20} />
                       </button>
                     </div>
@@ -394,7 +395,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
               </div>
 
-              {/* Card 3: Walnut Kernels Platinum */}
+              {/* Card 3: Walnut Kernels Platinum (ID: 6) */}
               <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 6) || products[5])}>
                 <div className="bestseller-img-container">
                   <img src="/walnut_platinum_front.jpg" alt="Walnut Kernels Platinum" className="main-img" />
@@ -429,7 +430,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                 </div>
               </div>
 
-              {/* Card 4: Whole Cranberries Dried (Gold) */}
+              {/* Card 4: Whole Cranberries Dried Gold (ID: 7) */}
               <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 7) || products[6])}>
                 <div className="bestseller-img-container">
                   <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
