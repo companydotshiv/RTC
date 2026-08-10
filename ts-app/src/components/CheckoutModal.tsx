@@ -61,8 +61,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 }) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
-  const [discountAmount, setDiscountAmount] = useState(164.7);
-  const [appliedCoupon, setAppliedCoupon] = useState('AQAUTO15');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [inputCouponCode, setInputCouponCode] = useState('');
+  const [couponError, setCouponError] = useState('');
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
 
@@ -128,18 +130,35 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const totalItemsCount = cartItems.reduce((sum, i) => sum + i.qty, 0);
   const originalSubtotal = cartItems.reduce((sum, item) => sum + item.product.originalPrice * item.qty, 0);
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.qty, 0);
-  const totalSavings = originalSubtotal - subtotal + discountAmount;
-  const grandTotal = Math.max(0, subtotal - discountAmount);
+  
+  // Shipping rule: Free for orders above 599, else 50
+  const shippingFee = subtotal >= 599 || subtotal === 0 ? 0 : 50;
+  // COD Charge: ₹10 for COD orders, 0 for Prepaid (UPI/Card)
+  const codFee = paymentMethod === 'cod' ? 10 : 0;
+  
+  const totalSavings = (originalSubtotal - subtotal) + discountAmount;
+  const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
   const handleApplyCoupon = (codeToApply: string) => {
-    if (codeToApply.toUpperCase() === 'FRESH') {
-      setDiscountAmount(399);
-      setAppliedCoupon('FRESH');
-    } else if (codeToApply.toUpperCase() === 'AQAUTO15' || codeToApply.toUpperCase() === 'RTC20') {
-      const disc = Math.round(subtotal * 0.15);
+    setCouponError('');
+    const cleanCode = codeToApply.trim().toUpperCase();
+    if (!cleanCode) return;
+
+    if (cleanCode === 'RTC20') {
+      const disc = Math.round(subtotal * 0.20);
       setDiscountAmount(disc);
-      setAppliedCoupon(codeToApply.toUpperCase());
+      setAppliedCoupon('RTC20');
+      setInputCouponCode('RTC20');
+    } else {
+      setCouponError('Invalid Code');
     }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon('');
+    setDiscountAmount(0);
+    setCouponError('');
+    setInputCouponCode('');
   };
 
   const handlePlaceOrder = (e: React.FormEvent) => {
@@ -532,8 +551,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             )}
 
             <div style={{ marginTop: '12px', borderTop: '1px solid #F5F5F5', paddingTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ background: '#007A3D', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px' }}>Free</span>
-              <span style={{ fontSize: '0.82rem', color: '#333', fontWeight: 500 }}>Free Shipping</span>
+              <span style={{ background: '#007A3D', color: '#FFFFFF', fontSize: '0.72rem', fontWeight: 700, padding: '2px 6px', borderRadius: '4px' }}>
+                {subtotal >= 599 ? 'Free' : '₹50'}
+              </span>
+              <span style={{ fontSize: '0.82rem', color: '#333', fontWeight: 500 }}>
+                {subtotal >= 599 ? 'Free Shipping (Orders above ₹599)' : 'Standard Shipping (Free on orders above ₹599)'}
+              </span>
             </div>
           </div>
 
@@ -544,28 +567,124 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
 
             {/* Savings Highlight */}
-            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#007A3D', marginBottom: '14px' }}>
-              You saved ₹{discountAmount.toFixed(2)}
+            {discountAmount > 0 && (
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#007A3D', marginBottom: '14px' }}>
+                You saved ₹{discountAmount.toFixed(2)}
+              </div>
+            )}
+
+            {/* Select active coupon from Dropdown or enter manually */}
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Enter Coupon Code (e.g. RTC20)"
+                  value={inputCouponCode}
+                  onChange={(e) => {
+                    setInputCouponCode(e.target.value);
+                    setCouponError('');
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #D8D8D8',
+                    fontSize: '0.85rem',
+                    outline: 'none'
+                  }}
+                />
+                <button
+                  onClick={() => handleApplyCoupon(inputCouponCode)}
+                  style={{
+                    border: '1px solid #007A3D',
+                    background: '#007A3D',
+                    color: '#FFF',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Apply
+                </button>
+              </div>
+
+              {/* Dropdown Select Coupon option */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <select
+                  value={appliedCoupon}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleApplyCoupon(e.target.value);
+                    } else {
+                      handleRemoveCoupon();
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #D8D8D8',
+                    fontSize: '0.85rem',
+                    color: '#222',
+                    background: '#FFF',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">Select Available Coupon</option>
+                  <option value="RTC20">RTC20 — Get 20% OFF on all orders</option>
+                </select>
+              </div>
             </div>
 
-            {/* Available Coupon Card 1 */}
-            <div style={{ border: '1px solid #E5E5E5', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#222' }}>Save ₹399 with "FRESH"</div>
+            {/* Invalid Code Warning: Red mini notification box with transparent bg & white outline */}
+            {couponError && (
+              <div
+                style={{
+                  background: 'transparent',
+                  border: '1px solid #FFFFFF',
+                  color: '#E53935',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 8px rgba(229,57,53,0.15)',
+                  marginBottom: '10px',
+                  display: 'inline-block'
+                }}
+              >
+                {couponError}
               </div>
-              <button onClick={() => handleApplyCoupon('FRESH')} style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 16px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
-                Apply
-              </button>
-            </div>
+            )}
 
-            {/* Applied Coupon Card 2 */}
-            <div style={{ border: '1px solid #007A3D', background: '#F4FBF7', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#007A3D' }}>"{appliedCoupon}" applied</div>
-                <div style={{ fontSize: '0.78rem', color: '#666', cursor: 'pointer' }}>View all coupons &gt;</div>
+            {/* Applied Coupon Card */}
+            {appliedCoupon ? (
+              <div style={{ border: '1px solid #007A3D', background: '#F4FBF7', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#007A3D' }}>"{appliedCoupon}" applied</div>
+                  <div style={{ fontSize: '0.78rem', color: '#666' }}>20% OFF flat discount</div>
+                </div>
+                <button
+                  onClick={handleRemoveCoupon}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                  title="Click green tick to unselect coupon"
+                >
+                  <CheckCircle2 size={22} color="#007A3D" fill="#007A3D" stroke="#FFFFFF" />
+                </button>
               </div>
-              <CheckCircle2 size={20} color="#007A3D" />
-            </div>
+            ) : (
+              /* Available Coupon Card */
+              <div style={{ border: '1px solid #E5E5E5', borderRadius: '8px', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#222' }}>Use code "RTC20" for 20% OFF</div>
+                  <div style={{ fontSize: '0.78rem', color: '#777' }}>Valid on all items</div>
+                </div>
+                <button onClick={() => handleApplyCoupon('RTC20')} style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '6px 16px', borderRadius: '6px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}>
+                  Apply
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Section 4: Payment Options */}
@@ -579,7 +698,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '8px', border: paymentMethod === 'upi' ? '2px solid #007A3D' : '1px solid #E5E5E5', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <input type="radio" name="pay" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} />
-                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>UPI / QR Code</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>UPI / QR Code (Free)</span>
                 </div>
                 <CreditCard size={18} color="#007A3D" />
               </label>
@@ -588,7 +707,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '8px', border: paymentMethod === 'card' ? '2px solid #007A3D' : '1px solid #E5E5E5', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <input type="radio" name="pay" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
-                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Credit / Debit Card</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Credit / Debit Card (Free)</span>
                 </div>
                 <ShieldCheck size={18} color="#007A3D" />
               </label>
@@ -597,7 +716,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: '8px', border: paymentMethod === 'cod' ? '2px solid #007A3D' : '1px solid #E5E5E5', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <input type="radio" name="pay" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
-                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Cash on Delivery</span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#222' }}>Cash on Delivery (+₹10 Fee)</span>
                 </div>
                 <Truck size={18} color="#007A3D" />
               </label>

@@ -29,9 +29,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
   const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponError, setCouponError] = useState('');
-  const [couponSuccess, setCouponSuccess] = useState('');
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [orderId, setOrderId] = useState('');
 
@@ -44,28 +44,34 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     .filter((item): item is { product: Product; qty: number } => item !== null);
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.qty, 0);
-  const shippingFee = subtotal >= 500 || subtotal === 0 ? 0 : 60;
-  const grandTotal = Math.max(0, subtotal + shippingFee - discountAmount);
+  const shippingFee = subtotal >= 599 || subtotal === 0 ? 0 : 50;
+  const codFee = paymentMethod === 'cod' ? 10 : 0;
+  const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleApplyCoupon = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleApplyCoupon = (codeToApply: string) => {
     setCouponError('');
-    setCouponSuccess('');
-    if (couponCode.toUpperCase() === 'RTC20') {
+    const clean = codeToApply.trim().toUpperCase();
+    if (!clean) return;
+
+    if (clean === 'RTC20') {
       const disc = Math.round(subtotal * 0.2);
       setDiscountAmount(disc);
-      setCouponSuccess('Coupon RTC20 applied! (20% OFF)');
-    } else if (couponCode.toUpperCase() === 'FIRST100') {
-      const disc = Math.min(100, subtotal);
-      setDiscountAmount(disc);
-      setCouponSuccess('Coupon FIRST100 applied! (₹100 OFF)');
+      setAppliedCoupon('RTC20');
+      setCouponCode('RTC20');
     } else {
-      setCouponError('Invalid coupon code. Try RTC20 or FIRST100');
+      setCouponError('Invalid Code');
     }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon('');
+    setDiscountAmount(0);
+    setCouponError('');
+    setCouponCode('');
   };
 
   const handlePlaceOrder = (e: React.FormEvent) => {
@@ -442,13 +448,16 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               </div>
 
               {/* Coupon Box */}
-              <form onSubmit={handleApplyCoupon} style={{ marginBottom: '20px', borderTop: '1px solid #F0F0F0', paddingTop: '18px' }}>
-                <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ marginBottom: '20px', borderTop: '1px solid #F0F0F0', paddingTop: '18px' }}>
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                   <input
                     type="text"
                     placeholder="Coupon (e.g. RTC20)"
                     value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
+                    onChange={(e) => {
+                      setCouponCode(e.target.value);
+                      setCouponError('');
+                    }}
                     style={{
                       flex: 1,
                       padding: '10px 14px',
@@ -457,18 +466,89 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       fontSize: '0.88rem',
                       fontWeight: 400,
                       color: '#222222',
-                      background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
-                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)',
+                      background: '#FFFFFF',
                       outline: 'none'
                     }}
                   />
-                  <button type="submit" style={{ background: '#F5A623', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '0 18px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}>
+                  <button
+                    onClick={() => handleApplyCoupon(couponCode)}
+                    style={{ background: '#007A3D', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '0 18px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer' }}
+                  >
                     Apply
                   </button>
                 </div>
-                {couponSuccess && <div style={{ fontSize: '0.82rem', color: '#007A3D', marginTop: '6px', fontWeight: 400 }}>{couponSuccess}</div>}
-                {couponError && <div style={{ fontSize: '0.82rem', color: '#E23744', marginTop: '6px', fontWeight: 400 }}>{couponError}</div>}
-              </form>
+
+                {/* Dropdown Select Coupon option */}
+                <div style={{ marginBottom: '10px' }}>
+                  <select
+                    value={appliedCoupon}
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        handleApplyCoupon(e.target.value);
+                      } else {
+                        handleRemoveCoupon();
+                      }
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid #D8D8D8',
+                      fontSize: '0.85rem',
+                      color: '#222',
+                      background: '#FFF',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="">Select Available Coupon</option>
+                    <option value="RTC20">RTC20 — Get 20% OFF on all orders</option>
+                  </select>
+                </div>
+
+                {/* Red mini notification box with transparent bg & white outline */}
+                {couponError && (
+                  <div
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid #FFFFFF',
+                      color: '#E53935',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      boxShadow: '0 2px 8px rgba(229,57,53,0.15)',
+                      marginBottom: '10px',
+                      display: 'inline-block'
+                    }}
+                  >
+                    {couponError}
+                  </div>
+                )}
+
+                {/* Applied / Available Coupon Status */}
+                {appliedCoupon ? (
+                  <div style={{ border: '1px solid #007A3D', background: '#F4FBF7', borderRadius: '8px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#007A3D' }}>"{appliedCoupon}" applied</div>
+                      <div style={{ fontSize: '0.78rem', color: '#666' }}>20% OFF flat discount</div>
+                    </div>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      title="Click green tick to unselect coupon"
+                    >
+                      <CheckCircle2 size={22} color="#007A3D" fill="#007A3D" stroke="#FFFFFF" />
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ border: '1px solid #E5E5E5', borderRadius: '8px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#444' }}>Use code "RTC20" for 20% OFF</div>
+                    <button onClick={() => handleApplyCoupon('RTC20')} style={{ border: '1px solid #CCCCCC', background: '#FFFFFF', padding: '4px 12px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer' }}>
+                      Apply
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Pricing Breakdown */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.92rem', color: '#555555', borderTop: '1px solid #F0F0F0', paddingTop: '18px' }}>
