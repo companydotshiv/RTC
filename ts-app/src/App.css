@@ -219,6 +219,25 @@ img {
   color: #F5A623;
 }
 
+.badge-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.badge-red-dot {
+  background: #E53935;
+}
+
+.badge-yellow-dot {
+  background: #F5A623;
+}
+
 .badge-count {
   position: absolute;
   top: 2px;

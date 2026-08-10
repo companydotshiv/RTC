@@ -206,11 +206,11 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
               <button className="icon-btn" onClick={() => setCurrentView('wishlist')} title="Wishlist" style={{ position: 'relative' }}>
                 <Heart size={20} color={wishlistCount > 0 ? '#E23744' : 'currentColor'} fill={wishlistCount > 0 ? '#E23744' : 'none'} />
-                {wishlistCount > 0 && <span className="badge-count" style={{ background: '#E23744' }}>{wishlistCount}</span>}
+                {wishlistCount > 0 && <span className="badge-dot badge-red-dot" title={`${wishlistCount} in Wishlist`} />}
               </button>
-              <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
+              <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ position: 'relative', border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
                 <ShoppingBag size={20} />
-                <span className="badge-count">{totalCartCount}</span>
+                {totalCartCount > 0 && <span className="badge-dot badge-yellow-dot" title={`${totalCartCount} in Cart`} />}
               </button>
             </div>
           </div>
