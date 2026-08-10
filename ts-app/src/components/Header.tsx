@@ -174,7 +174,18 @@ export const Header: React.FC<HeaderProps> = ({
                 </button>
                 <div className="dropdown-menu">
                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>All Product Range</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Dry fruits</a>
+                  <div className="sub-dropdown-parent" style={{ position: 'relative' }}>
+                    <a href="#" className="has-sub-menu" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>
+                      Dry fruits <span className="sub-arrow">›</span>
+                    </a>
+                    <div className="sub-dropdown-menu">
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Cashew</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Walnut</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Almonds</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Raisins</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Dried Apricot</a>
+                    </div>
+                  </div>
                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Seeds</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Fusions</a>
                   <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Dehydrated Fruits</a>
