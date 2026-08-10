@@ -3,6 +3,45 @@ import { ShieldCheck, CheckCircle2, Truck, CreditCard, X, ChevronDown, Lock } fr
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
 
+const INDIAN_STATES = [
+  'Andaman and Nicobar Islands',
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chandigarh',
+  'Chhattisgarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Delhi',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jammu and Kashmir',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Ladakh',
+  'Lakshadweep',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Puducherry',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal'
+];
+
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -164,113 +203,223 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           </div>
 
           {/* Section 2: Delivery Address & Personal Details Card */}
-          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: userSaved ? '1px solid #EAEAEA' : '2px solid #F5A623', padding: '16px', marginBottom: '16px' }}>
+          <div style={{ background: '#FFFFFF', borderRadius: '12px', border: '1px solid #EAEAEA', padding: '18px', marginBottom: '16px' }}>
             {!userSaved || isEditingAddress ? (
               /* User Info Input Form for New Users */
-              <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1D231F', marginBottom: '4px' }}>
+              <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+                <div style={{ fontSize: '1.02rem', fontWeight: 700, color: '#1D231F', marginBottom: '4px', letterSpacing: '0.3px', textAlign: 'left' }}>
                   Enter Your Delivery & Personal Details
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Full Name *</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Full Name *</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Rahul Sharma"
                       value={userData.fullName}
                       onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.88rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none'
+                      }}
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Phone Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      placeholder="+91 9876543210"
-                      value={userData.phone}
-                      onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
-                    />
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Phone Number *</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        padding: '10px 10px',
+                        background: '#EEEEEE',
+                        border: '1px solid #D8D8D8',
+                        borderRadius: '6px',
+                        fontSize: '0.88rem',
+                        fontWeight: 500,
+                        color: '#444444',
+                        userSelect: 'none'
+                      }}>
+                        +91
+                      </span>
+                      <input
+                        type="tel"
+                        required
+                        value={userData.phone}
+                        onChange={(e) => setUserData({ ...userData, phone: e.target.value })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 12px',
+                          borderRadius: '6px',
+                          border: '1px solid #D8D8D8',
+                          fontSize: '0.88rem',
+                          fontWeight: 400,
+                          color: '#222222',
+                          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '10px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Email Address *</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '12px' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Email Address *</label>
                     <input
                       type="email"
                       required
-                      placeholder="rahul@example.com"
                       value={userData.email}
                       onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.88rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none'
+                      }}
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Date of Birth / DOB</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Date of Birth / DOB</label>
                     <input
                       type="date"
                       value={userData.dob}
                       onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '9px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.85rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none'
+                      }}
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Street Address & Flat / House No. *</label>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Street Address & Flat / House No. *</label>
                   <input
                     type="text"
                     required
-                    placeholder="House No, Street, Locality"
                     value={userData.addressLine}
                     onChange={(e) => setUserData({ ...userData, addressLine: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '6px',
+                      border: '1px solid #D8D8D8',
+                      fontSize: '0.88rem',
+                      fontWeight: 400,
+                      color: '#222222',
+                      background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                      boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                      outline: 'none'
+                    }}
                   />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>City *</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>City *</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. New Delhi"
                       value={userData.city}
                       onChange={(e) => setUserData({ ...userData, city: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.88rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none'
+                      }}
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>State *</label>
-                    <input
-                      type="text"
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>State *</label>
+                    <select
                       required
-                      placeholder="State"
                       value={userData.state}
                       onChange={(e) => setUserData({ ...userData, state: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
-                    />
+                      style={{
+                        width: '100%',
+                        padding: '10px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.85rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {INDIAN_STATES.map((st) => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', color: '#555', marginBottom: '4px' }}>Pincode *</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Pincode *</label>
                     <input
                       type="text"
                       required
-                      placeholder="110001"
                       value={userData.pincode}
                       onChange={(e) => setUserData({ ...userData, pincode: e.target.value })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.85rem' }}
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        border: '1px solid #D8D8D8',
+                        fontSize: '0.88rem',
+                        fontWeight: 400,
+                        color: '#222222',
+                        background: 'linear-gradient(180deg, #FFFFFF 0%, #FAFAFA 100%)',
+                        boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+                        outline: 'none'
+                      }}
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  style={{ background: '#007A3D', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '10px', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', marginTop: '6px' }}
+                  style={{
+                    background: '#007A3D',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '12px 18px',
+                    fontSize: '0.92rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.4px',
+                    cursor: 'pointer',
+                    marginTop: '8px'
+                  }}
                 >
                   Save Address & Continue
                 </button>
