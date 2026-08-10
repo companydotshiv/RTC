@@ -1,16 +1,106 @@
 import React from 'react';
 import type { Product } from '../types/product';
 import { products } from '../data/productsData';
-import { ShoppingBag, Star, CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart } from 'lucide-react';
+import { ShoppingBag, Star, CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart, Minus, Plus } from 'lucide-react';
 
 interface HomePageProps {
   onSelectProduct: (product: Product) => void;
   setCurrentView: (view: string) => void;
   onToggleWishlist?: (productId: number) => void;
   wishlistIds?: number[];
+  cartQuantities?: { [id: number]: number };
+  onAddToCart?: (productId: number, qty?: number) => void;
+  onUpdateCartQty?: (productId: number, qty: number) => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentView, onToggleWishlist, wishlistIds = [] }) => {
+export const HomePage: React.FC<HomePageProps> = ({
+  onSelectProduct,
+  setCurrentView,
+  onToggleWishlist,
+  wishlistIds = [],
+  cartQuantities = {},
+  onAddToCart,
+  onUpdateCartQty
+}) => {
+  const renderCartButton = (productId: number) => {
+    const qty = cartQuantities[productId] || 0;
+    if (qty > 0) {
+      return (
+        <div className="hover-action-item">
+          <span className="tooltip-label">Quantity in cart</span>
+          <div
+            style={{
+              height: '48px',
+              borderRadius: '24px',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              color: '#222222',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              padding: '0 14px',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)'
+            }}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onUpdateCartQty) onUpdateCartQty(productId, qty - 1);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#222222',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2px'
+              }}
+              title="Decrease quantity"
+            >
+              <Minus size={16} />
+            </button>
+            <span style={{ fontSize: '0.9rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
+              {qty}
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onAddToCart) onAddToCart(productId, 1);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#222222',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '2px'
+              }}
+              title="Increase quantity"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="hover-action-item">
+        <span className="tooltip-label">Add to cart</span>
+        <button
+          className="action-circle-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onAddToCart) onAddToCart(productId, 1);
+          }}
+        >
+          <ShoppingBag size={20} />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* 1. Hero Banner Carousel Replica */}
@@ -81,12 +171,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                   {/* Hover Quick-Actions Overlay matching screenshot */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 1) || products[0]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(1)}
 
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
@@ -118,12 +203,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(2)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
@@ -153,12 +233,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 3) || products[2]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(3)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 3) || products[2]); }}>
@@ -188,12 +263,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 4) || products[3]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(4)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 4) || products[3]); }}>
@@ -335,12 +405,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
 
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 5) || products[4]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(5)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 5) || products[4]); }}>
@@ -370,12 +435,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(2)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
@@ -405,12 +465,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 6) || products[5]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(6)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 6) || products[5]); }}>
@@ -441,12 +496,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onSelectProduct, setCurrentV
                   
                   {/* Hover Quick-Actions Overlay */}
                   <div className="card-hover-actions">
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Select options</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 7) || products[6]); }}>
-                        <ShoppingBag size={20} />
-                      </button>
-                    </div>
+                    {renderCartButton(7)}
                     <div className="hover-action-item">
                       <span className="tooltip-label">Quick View</span>
                       <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 7) || products[6]); }}>

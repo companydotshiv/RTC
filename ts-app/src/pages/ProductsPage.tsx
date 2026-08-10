@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
-import { Star, ShoppingBag, X, Heart, ChevronDown, Eye } from 'lucide-react';
+import { Star, ShoppingBag, X, Heart, ChevronDown, Eye, Minus, Plus } from 'lucide-react';
 
 interface ProductsPageProps {
   onSelectProduct: (product: Product) => void;
@@ -18,7 +18,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onSelectProduct,
   searchQuery: propSearchQuery,
   setSearchQuery: propSetSearchQuery,
+  cartQuantities = {},
   onAddToCart,
+  onUpdateCartQty,
   onToggleWishlist,
   wishlistIds = []
 }) => {
@@ -187,6 +189,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
         <div className="container">
           <div className="bestsellers-grid">
             {filteredProducts.map((p) => {
+              const qty = cartQuantities[p.id] || 0;
               const isWishlisted = wishlistIds.includes(p.id);
               const hoverImgSrc = (p.gallery && p.gallery.length > 1) ? p.gallery[1] : p.image;
 
@@ -244,19 +247,79 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                       {/* 3 Circle Quick Action Buttons */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {/* 1. Add to Cart / Select Options Icon */}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Add to cart</span>
-                          <button
-                            className="action-circle-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (onAddToCart) onAddToCart(p.id, 1);
-                            }}
-                          >
-                            <ShoppingBag size={20} />
-                          </button>
-                        </div>
+                        {/* 1. Add to Cart / Quantity Pill Controller */}
+                        {qty > 0 ? (
+                          <div className="hover-action-item">
+                            <span className="tooltip-label">Quantity in cart</span>
+                            <div
+                              style={{
+                                height: '48px',
+                                borderRadius: '24px',
+                                background: '#ffffff',
+                                border: '1px solid #e2e8f0',
+                                color: '#222222',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '0 14px',
+                                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)'
+                              }}
+                            >
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onUpdateCartQty) onUpdateCartQty(p.id, qty - 1);
+                                }}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#222222',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  padding: '2px'
+                                }}
+                                title="Decrease quantity"
+                              >
+                                <Minus size={16} />
+                              </button>
+                              <span style={{ fontSize: '0.9rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
+                                {qty}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onAddToCart) onAddToCart(p.id, 1);
+                                }}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#222222',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  padding: '2px'
+                                }}
+                                title="Increase quantity"
+                              >
+                                <Plus size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="hover-action-item">
+                            <span className="tooltip-label">Add to cart</span>
+                            <button
+                              className="action-circle-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (onAddToCart) onAddToCart(p.id, 1);
+                              }}
+                            >
+                              <ShoppingBag size={20} />
+                            </button>
+                          </div>
+                        )}
 
                         {/* 2. Quick View Icon */}
                         <div className="hover-action-item">

@@ -163,7 +163,25 @@ export function App() {
 
       <main>
         {currentView === 'home' && (
-          <HomePage onSelectProduct={handleSelectProduct} setCurrentView={setCurrentView} onToggleWishlist={handleToggleWishlist} wishlistIds={wishlistIds} />
+          <HomePage
+            onSelectProduct={handleSelectProduct}
+            setCurrentView={setCurrentView}
+            onToggleWishlist={handleToggleWishlist}
+            wishlistIds={wishlistIds}
+            cartQuantities={cartQuantities}
+            onAddToCart={handleAddToCart}
+            onUpdateCartQty={(productId, newQty) => {
+              setCartQuantities((prev) => {
+                const updated = { ...prev };
+                if (newQty <= 0) {
+                  delete updated[productId];
+                } else {
+                  updated[productId] = newQty;
+                }
+                return updated;
+              });
+            }}
+          />
         )}
         {currentView === 'products' && (
           <ProductsPage
