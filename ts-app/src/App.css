@@ -176,6 +176,7 @@ img {
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.25s ease-in-out;
+  text-align: left;
 }
 
 .dropdown-menu a {
@@ -185,6 +186,7 @@ img {
   color: #333333;
   transition: all 0.2s ease;
   display: block;
+  text-align: left;
 }
 
 /* Dropdown hover item turns gold/yellow */
@@ -199,6 +201,7 @@ img {
   display: flex !important;
   align-items: center;
   justify-content: space-between;
+  text-align: left;
 }
 
 .sub-arrow {
@@ -228,6 +231,7 @@ img {
   opacity: 0;
   transform: translateX(10px);
   transition: all 0.25s ease-in-out;
+  text-align: left;
 }
 
 .sub-dropdown-parent:hover .sub-dropdown-menu {
@@ -241,6 +245,7 @@ img {
   font-size: 0.92rem;
   font-weight: 400;
   color: #444444;
+  text-align: left;
 }
 
 .sub-dropdown-menu a:hover {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
-import { Star, Minus, Plus, ShoppingBag, X, Heart } from 'lucide-react';
+import { Star, Minus, Plus, ShoppingBag, X, Heart, ChevronDown } from 'lucide-react';
 
 interface ProductsPageProps {
   onSelectProduct: (product: Product) => void;
@@ -27,6 +27,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
+  const [sortOption, setSortOption] = useState<string>('default');
+  const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
 
   const activeSearchQuery = propSearchQuery !== undefined ? propSearchQuery : localSearchQuery;
   const updateSearchQuery = (val: string) => {
@@ -37,10 +39,25 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
     }
   };
 
+  const sortOptionsMap: { [key: string]: string } = {
+    default: 'Default sorting',
+    popularity: 'Sort by popularity',
+    rating: 'Sort by average rating',
+    latest: 'Sort by latest',
+    price_low: 'Sort by price: low to high',
+    price_high: 'Sort by price: high to low',
+  };
+
   const filteredProducts = products.filter((p) => {
     const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
     const matchesSearch = p.name.toLowerCase().includes(activeSearchQuery.toLowerCase()) || p.shortDesc.toLowerCase().includes(activeSearchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
+  }).sort((a, b) => {
+    if (sortOption === 'price_low') return a.price - b.price;
+    if (sortOption === 'price_high') return b.price - a.price;
+    if (sortOption === 'rating') return b.rating - a.rating;
+    if (sortOption === 'popularity') return b.reviewsCount - a.reviewsCount;
+    return a.id - b.id;
   });
 
   return (
@@ -63,7 +80,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               <button className={`btn ${selectedCategory === 'seeds-berries' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedCategory('seeds-berries')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Seeds & Berries</button>
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
               <input
                 type="text"
                 placeholder="Search catalog..."
@@ -81,6 +98,85 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                   outline: 'none'
                 }}
               />
+              
+              {/* Custom Sort Dropdown matching Razzi Shop screenshot */}
+              <div style={{ position: 'relative', width: '220px' }}>
+                <button
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  style={{
+                    width: '100%',
+                    padding: '10px 16px',
+                    background: '#FFFFFF',
+                    border: '1px solid #707070',
+                    borderRadius: '0px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    fontSize: '0.92rem',
+                    color: '#444444',
+                    fontFamily: "'Jost', sans-serif",
+                    fontWeight: 400
+                  }}
+                >
+                  <span>{sortOptionsMap[sortOption]}</span>
+                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s ease', transform: isSortOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </button>
+
+                {isSortOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      right: 0,
+                      background: '#FFFFFF',
+                      border: '1px solid #707070',
+                      borderTop: 'none',
+                      zIndex: 100,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+                      display: 'flex',
+                      flexDirection: 'column'
+                    }}
+                  >
+                    {Object.keys(sortOptionsMap).map((key) => (
+                      <div
+                        key={key}
+                        onClick={() => {
+                          setSortOption(key);
+                          setIsSortOpen(false);
+                        }}
+                        style={{
+                          padding: '10px 16px',
+                          fontSize: '0.9rem',
+                          fontFamily: "'Jost', sans-serif",
+                          fontWeight: 400,
+                          cursor: 'pointer',
+                          background: sortOption === key ? '#707070' : '#FFFFFF',
+                          color: sortOption === key ? '#FFFFFF' : '#666666',
+                          transition: 'background 0.15s ease, color 0.15s ease',
+                          textAlign: 'left'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (sortOption !== key) {
+                            e.currentTarget.style.background = '#F5F5F5';
+                            e.currentTarget.style.color = '#222222';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (sortOption !== key) {
+                            e.currentTarget.style.background = '#FFFFFF';
+                            e.currentTarget.style.color = '#666666';
+                          }
+                        }}
+                      >
+                        {sortOptionsMap[key]}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <span style={{ color: '#555555', fontSize: '0.9rem', fontWeight: 400 }}>
                 Showing <span style={{ fontWeight: 400 }}>{filteredProducts.length}</span> items
               </span>
