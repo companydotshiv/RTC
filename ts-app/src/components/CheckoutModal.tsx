@@ -148,7 +148,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       const disc = Math.round(subtotal * 0.20);
       setDiscountAmount(disc);
       setAppliedCoupon('RTC20');
-      setInputCouponCode('RTC20');
+      setInputCouponCode('');
     } else {
       setCouponError('Invalid Code');
     }
@@ -578,7 +578,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                 <input
                   type="text"
-                  placeholder="Enter Coupon Code (e.g. RTC20)"
+                  placeholder="Enter Coupon Code"
                   value={inputCouponCode}
                   onChange={(e) => {
                     setInputCouponCode(e.target.value);

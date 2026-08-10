@@ -61,7 +61,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       const disc = Math.round(subtotal * 0.2);
       setDiscountAmount(disc);
       setAppliedCoupon('RTC20');
-      setCouponCode('RTC20');
+      setCouponCode('');
     } else {
       setCouponError('Invalid Code');
     }
@@ -452,7 +452,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
                   <input
                     type="text"
-                    placeholder="Coupon (e.g. RTC20)"
+                    placeholder="Enter Coupon Code"
                     value={couponCode}
                     onChange={(e) => {
                       setCouponCode(e.target.value);
