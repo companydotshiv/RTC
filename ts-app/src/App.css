@@ -1054,10 +1054,9 @@ img {
   }
 }
 
-/* Date of Birth input native calendar picker icon styling */
+/* Date of Birth input: hide browser default picker icon so only clean Lucide outlined icon is rendered */
 .dob-date-input::-webkit-calendar-picker-indicator {
-  opacity: 1 !important;
-  cursor: pointer !important;
-  filter: none !important;
-  padding: 4px;
+  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
 }
