@@ -105,7 +105,24 @@ export function App() {
           <HomePage onSelectProduct={handleSelectProduct} setCurrentView={setCurrentView} onToggleWishlist={handleToggleWishlist} wishlistIds={wishlistIds} />
         )}
         {currentView === 'products' && (
-          <ProductsPage onSelectProduct={handleSelectProduct} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          <ProductsPage
+            onSelectProduct={handleSelectProduct}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            cartQuantities={cartQuantities}
+            onAddToCart={handleAddToCart}
+            onUpdateCartQty={(productId, newQty) => {
+              setCartQuantities((prev) => {
+                const updated = { ...prev };
+                if (newQty <= 0) {
+                  delete updated[productId];
+                } else {
+                  updated[productId] = newQty;
+                }
+                return updated;
+              });
+            }}
+          />
         )}
         {currentView === 'detail' && selectedProduct && (
           <ProductDetailPage
