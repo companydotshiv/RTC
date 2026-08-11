@@ -24,11 +24,23 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onToggleWishlist,
   wishlistIds = []
 }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string>('all');
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+
+  const toggleCategorySelection = (catKey: string, subKey?: string | null) => {
+    if (subKey) {
+      setSelectedSubCategories((prev) =>
+        prev.includes(subKey) ? prev.filter((s) => s !== subKey) : [...prev, subKey]
+      );
+    } else {
+      setSelectedCategories((prev) =>
+        prev.includes(catKey) ? prev.filter((c) => c !== catKey) : [...prev, catKey]
+      );
+    }
+  };
 
   const [isDryFruitsExpanded, setIsDryFruitsExpanded] = useState<boolean>(true);
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
@@ -80,15 +92,20 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   const filteredProducts = products.filter((p) => {
     // 1. Category & Subcategory Filter
     let matchesCategory = true;
-    if (selectedCategory !== 'all') {
-      if (selectedSubCategory) {
-        // e.g. subcategory "Cashew", "Walnut", "Almonds", "Raisins", "Dried Apricot"
-        matchesCategory =
-          p.categoryName.toLowerCase().includes(selectedSubCategory.toLowerCase()) ||
-          p.name.toLowerCase().includes(selectedSubCategory.toLowerCase());
-      } else {
-        matchesCategory = p.category === selectedCategory;
-      }
+    if (selectedCategories.length > 0 || selectedSubCategories.length > 0) {
+      const catMatch = selectedCategories.length > 0 && selectedCategories.some((cat) => {
+        if (cat === 'all') return true;
+        return p.category === cat;
+      });
+
+      const subMatch = selectedSubCategories.length > 0 && selectedSubCategories.some((sub) => {
+        return (
+          p.categoryName.toLowerCase().includes(sub.toLowerCase()) ||
+          p.name.toLowerCase().includes(sub.toLowerCase())
+        );
+      });
+
+      matchesCategory = catMatch || subMatch;
     }
 
     // 2. Search Filter
@@ -151,9 +168,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '20px' }}>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button className={`btn ${selectedCategory === 'all' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedCategory('all')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>All Categories</button>
-              <button className={`btn ${selectedCategory === 'dry-fruits' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedCategory('dry-fruits')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Dry Fruits & Nuts</button>
-              <button className={`btn ${selectedCategory === 'seeds-berries' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setSelectedCategory('seeds-berries')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Seeds & Berries</button>
+              <button className={`btn ${selectedCategories.length === 0 || selectedCategories.includes('all') ? 'btn-primary' : 'btn-outline'}`} onClick={() => { setSelectedCategories([]); setSelectedSubCategories([]); }} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>All Categories</button>
+              <button className={`btn ${selectedCategories.includes('dry-fruits') ? 'btn-primary' : 'btn-outline'}`} onClick={() => toggleCategorySelection('dry-fruits')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Dry Fruits & Nuts</button>
+              <button className={`btn ${selectedCategories.includes('seeds-berries') ? 'btn-primary' : 'btn-outline'}`} onClick={() => toggleCategorySelection('seeds-berries')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Seeds & Berries</button>
             </div>
 
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -280,10 +297,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {/* Chemical & Herbs */}
                     {(() => {
-                      const isSel = selectedSubCategory === 'Chemical';
+                      const isSel = selectedSubCategories.includes('Chemical');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
+                          onClick={() => toggleCategorySelection('spices', 'Chemical')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -316,10 +333,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Dehydrated Fruits */}
                     {(() => {
-                      const isSel = selectedCategory === 'dehydrated-fruits' && !selectedSubCategory;
+                      const isSel = selectedCategories.includes('dehydrated-fruits');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
+                          onClick={() => toggleCategorySelection('dehydrated-fruits')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -352,10 +369,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Dry Figs */}
                     {(() => {
-                      const isSel = selectedSubCategory === 'Dry Figs';
+                      const isSel = selectedSubCategories.includes('Dry Figs');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
+                          onClick={() => toggleCategorySelection('dry-fruits', 'Dry Figs')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -389,12 +406,11 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                     {/* Dry fruits (Expandable with Arrow) */}
                     <div>
                       {(() => {
-                        const isSel = selectedCategory === 'dry-fruits' && !selectedSubCategory;
+                        const isSel = selectedCategories.includes('dry-fruits') && selectedSubCategories.length === 0;
                         return (
                           <div
                             onClick={() => {
-                              setSelectedCategory('dry-fruits');
-                              setSelectedSubCategory(null);
+                              toggleCategorySelection('dry-fruits');
                               setIsDryFruitsExpanded(!isDryFruitsExpanded);
                             }}
                             style={{
@@ -462,11 +478,11 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                             { name: 'Raisins', count: 1 },
                             { name: 'Walnut', count: 4 }
                           ].map((subCat) => {
-                            const isSelSub = selectedSubCategory === subCat.name;
+                            const isSelSub = selectedSubCategories.includes(subCat.name);
                             return (
                               <div
                                 key={subCat.name}
-                                onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat.name); }}
+                                onClick={() => toggleCategorySelection('dry-fruits', subCat.name)}
                                 style={{
                                   cursor: 'pointer',
                                   fontSize: '0.85rem',
@@ -503,10 +519,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Fusions */}
                     {(() => {
-                      const isSel = selectedSubCategory === 'Fusion';
+                      const isSel = selectedSubCategories.includes('Fusion');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
+                          onClick={() => toggleCategorySelection('dry-fruits', 'Fusion')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -539,10 +555,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Seeds */}
                     {(() => {
-                      const isSel = selectedCategory === 'seeds-berries' && !selectedSubCategory;
+                      const isSel = selectedCategories.includes('seeds-berries');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
+                          onClick={() => toggleCategorySelection('seeds-berries')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -575,10 +591,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Snacking */}
                     {(() => {
-                      const isSel = selectedCategory === 'all' && !selectedSubCategory;
+                      const isSel = selectedCategories.includes('snacking');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
+                          onClick={() => toggleCategorySelection('snacking')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
@@ -611,10 +627,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                     {/* Spices */}
                     {(() => {
-                      const isSel = selectedCategory === 'spices' && !selectedSubCategory;
+                      const isSel = selectedCategories.includes('spices') && !selectedSubCategories.includes('Chemical');
                       return (
                         <div
-                          onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
+                          onClick={() => toggleCategorySelection('spices')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
