@@ -25,6 +25,35 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   wishlistIds = []
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string>('all');
+  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+
+  const [isDryFruitsExpanded, setIsDryFruitsExpanded] = useState<boolean>(true);
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>({
+    category: true,
+    type: true,
+    size: true,
+    price: true,
+  });
+
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const toggleType = (t: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(t) ? prev.filter((item) => item !== t) : [...prev, t]
+    );
+  };
+
+  const togglePrice = (p: string) => {
+    setSelectedPrices((prev) =>
+      prev.includes(p) ? prev.filter((item) => item !== p) : [...prev, p]
+    );
+  };
+
   const [localSearchQuery, setLocalSearchQuery] = useState<string>('');
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
   const [sortOption, setSortOption] = useState<string>('default');
@@ -49,9 +78,56 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   };
 
   const filteredProducts = products.filter((p) => {
-    const matchesCategory = selectedCategory === 'all' || p.category === selectedCategory;
-    const matchesSearch = p.name.toLowerCase().includes(activeSearchQuery.toLowerCase()) || p.shortDesc.toLowerCase().includes(activeSearchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+    // 1. Category & Subcategory Filter
+    let matchesCategory = true;
+    if (selectedCategory !== 'all') {
+      if (selectedSubCategory) {
+        // e.g. subcategory "Cashew", "Walnut", "Almonds", "Raisins", "Dried Apricot"
+        matchesCategory =
+          p.categoryName.toLowerCase().includes(selectedSubCategory.toLowerCase()) ||
+          p.name.toLowerCase().includes(selectedSubCategory.toLowerCase());
+      } else {
+        matchesCategory = p.category === selectedCategory;
+      }
+    }
+
+    // 2. Search Filter
+    const matchesSearch =
+      p.name.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+      p.shortDesc.toLowerCase().includes(activeSearchQuery.toLowerCase());
+
+    // 3. Type Filter (Diamond, Gold, Platinum)
+    let matchesType = true;
+    if (selectedTypes.length > 0) {
+      matchesType = selectedTypes.some((t) => {
+        const lowerT = t.toLowerCase();
+        return (
+          p.name.toLowerCase().includes(lowerT) ||
+          p.badge.toLowerCase().includes(lowerT) ||
+          (p.productTypes && p.productTypes.some((pt) => pt.toLowerCase() === lowerT))
+        );
+      });
+    }
+
+    // 4. Size Filter
+    let matchesSize = true;
+    if (selectedSize !== 'all') {
+      matchesSize = p.weights && p.weights.some((w) => w.toLowerCase() === selectedSize.toLowerCase());
+    }
+
+    // 5. Price Filter Ranges ('10-49', '50-99', '100-199', '200+')
+    let matchesPrice = true;
+    if (selectedPrices.length > 0) {
+      matchesPrice = selectedPrices.some((range) => {
+        if (range === '10-49') return p.price >= 10 && p.price <= 49;
+        if (range === '50-99') return p.price >= 50 && p.price <= 99;
+        if (range === '100-199') return p.price >= 100 && p.price <= 199;
+        if (range === '200+') return p.price >= 200;
+        return true;
+      });
+    }
+
+    return matchesCategory && matchesSearch && matchesType && matchesSize && matchesPrice;
   }).sort((a, b) => {
     if (sortOption === 'price_low') return a.price - b.price;
     if (sortOption === 'price_high') return b.price - a.price;
@@ -187,7 +263,248 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
       <section className="section" style={{ paddingTop: '20px' }}>
         <div className="container">
-          <div className="bestsellers-grid">
+          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '40px', alignItems: 'start' }}>
+            {/* Left Sidebar Filter Section matching User Screenshots */}
+            <aside style={{ fontFamily: "'Jost', sans-serif", color: '#222222' }}>
+              {/* 1. Category Section */}
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+                <div
+                  onClick={() => toggleSection('category')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                >
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Category</h3>
+                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.category ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </div>
+
+                {openSections.category && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                    {/* All Product Range */}
+                    <div
+                      onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedCategory === 'all' && !selectedSubCategory ? 600 : 400,
+                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#333333',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px'
+                      }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'all' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>All Product Range ({products.length})</span>
+                    </div>
+
+                    {/* Chemical & Herbs */}
+                    <div
+                      onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Chemical' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Chemical' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Chemical & Herbs (2)</span>
+                    </div>
+
+                    {/* Dehydrated Fruits */}
+                    <div
+                      onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Dehydrated Fruits (4)</span>
+                    </div>
+
+                    {/* Dry Figs */}
+                    <div
+                      onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Dry Figs' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Dry Figs (2)</span>
+                    </div>
+
+                    {/* Dry fruits (Expandable) */}
+                    <div>
+                      <div
+                        onClick={() => {
+                          setSelectedCategory('dry-fruits');
+                          setSelectedSubCategory(null);
+                          setIsDryFruitsExpanded(!isDryFruitsExpanded);
+                        }}
+                        style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: selectedCategory === 'dry-fruits' && !selectedSubCategory ? 600 : 400, color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#333333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <span>Dry fruits (12)</span>
+                        </div>
+                        <ChevronDown size={16} color="#666" style={{ transition: 'transform 0.2s', transform: isDryFruitsExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                      </div>
+
+                      {/* Nested Subcategories */}
+                      {isDryFruitsExpanded && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '28px', paddingTop: '8px' }}>
+                          {['Cashew', 'Walnut', 'Almonds', 'Raisins', 'Dried Apricot'].map((subCat) => (
+                            <div
+                              key={subCat}
+                              onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat); }}
+                              style={{
+                                cursor: 'pointer',
+                                fontSize: '0.92rem',
+                                color: selectedSubCategory === subCat ? '#007A3D' : '#555555',
+                                fontWeight: selectedSubCategory === subCat ? 600 : 400
+                              }}
+                            >
+                              • {subCat}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Fusions */}
+                    <div
+                      onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Fusion' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Fusion' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Fusions (5)</span>
+                    </div>
+
+                    {/* Seeds */}
+                    <div
+                      onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'seeds-berries' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'seeds-berries' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Seeds (6)</span>
+                    </div>
+
+                    {/* Snacking */}
+                    <div
+                      onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: '1px solid #CBD5E1', background: '#E2E8F0', flexShrink: 0 }} />
+                      <span>Snacking (13)</span>
+                    </div>
+
+                    {/* Spices */}
+                    <div
+                      onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
+                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                    >
+                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'spices' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Spices (4)</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Type Section */}
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+                <div
+                  onClick={() => toggleSection('type')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                >
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Type</h3>
+                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.type ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </div>
+
+                {openSections.type && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                    {['Diamond', 'Gold', 'Platinum'].map((tName) => {
+                      const isChecked = selectedTypes.includes(tName);
+                      return (
+                        <div
+                          key={tName}
+                          onClick={() => toggleType(tName)}
+                          style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                        >
+                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <span>{tName}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Size Section */}
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+                <div
+                  onClick={() => toggleSection('size')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                >
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Size</h3>
+                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.size ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </div>
+
+                {openSections.size && (
+                  <div style={{ paddingTop: '8px' }}>
+                    <select
+                      value={selectedSize}
+                      onChange={(e) => setSelectedSize(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 14px',
+                        borderRadius: '4px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.95rem',
+                        color: '#444444',
+                        background: '#FFFFFF',
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="all">Any Size</option>
+                      <option value="250g">250g</option>
+                      <option value="500g">500g</option>
+                      <option value="1kg">1kg</option>
+                      <option value="50gm">50gm</option>
+                      <option value="100gm">100gm</option>
+                      <option value="200g">200g</option>
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* 4. Price Section */}
+              <div style={{ paddingBottom: '20px', marginBottom: '24px' }}>
+                <div
+                  onClick={() => toggleSection('price')}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                >
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Price</h3>
+                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.price ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                </div>
+
+                {openSections.price && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                    {[
+                      { key: '10-49', label: '₹10.00 - ₹49.00' },
+                      { key: '50-99', label: '₹50.00 - ₹99.00' },
+                      { key: '100-199', label: '₹100.00 - ₹199.00' },
+                      { key: '200+', label: '₹200.00 +' }
+                    ].map((priceItem) => {
+                      const isChecked = selectedPrices.includes(priceItem.key);
+                      return (
+                        <div
+                          key={priceItem.key}
+                          onClick={() => togglePrice(priceItem.key)}
+                          style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                        >
+                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <span>{priceItem.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </aside>
+
+            {/* Right Product Grid */}
+            <div>
+              <div className="bestsellers-grid">
             {filteredProducts.map((p) => {
               const qty = cartQuantities[p.id] || 0;
               const isWishlisted = wishlistIds.includes(p.id);
@@ -370,7 +687,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
             })}
           </div>
         </div>
-      </section>
+      </div>
+    </div>
+  </section>
 
       {/* Mini Pop-Up Modal Card */}
       {modalProduct && (
