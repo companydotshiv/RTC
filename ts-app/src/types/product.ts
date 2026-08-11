@@ -25,6 +25,7 @@ export interface Product {
   additionalInfoTable?: { label: string; value: string }[];
   paragraphs?: string[];
   productTypes?: string[];
+  stockCount?: number;
 }
 
 export interface Category {

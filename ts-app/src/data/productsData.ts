@@ -217,35 +217,42 @@ export const products: Product[] = [
     reviewsCount: 86,
     image: '/dried_apricot_front.png',
     gallery: ['/dried_apricot_front.png', '/dried_apricot_back.png'],
-    shortDesc: 'RTC Foods Dried Apricot (Khurmani) – Premium quality sun-dried apricots with rich golden color, sweet-tangy taste, and locked-in freshness.',
-    description: 'RTC Gold Dried Apricot (Khurmani) is a delicious, nutritious dry fruit packed with natural fiber, essential vitamins, and minerals. Sourced directly from Afghanistan and packed under strict hygienic conditions to preserve sweet-tangy taste and soft chewy texture.',
-    weights: ['250g'],
+    shortDesc: '10 in stock. Premium Quality Apricots – Handpicked, naturally sun-dried for rich taste. Naturally Sweet & Delicious – No added artificial flavors or preservatives.',
+    description: 'RTC Dried Apricot Gold is a premium dried fruit that offers a naturally sweet taste and soft, enjoyable texture in every bite. Carefully selected for quality, these dried apricots are a delicious choice for people who enjoy wholesome snacks and naturally sweet foods.',
+    weights: ['250gm'],
+    productTypes: ['Gold'],
     sku: 'RTC-APR-GLD',
     stock: true,
-    origin: 'Afghanistan',
+    stockCount: 10,
+    origin: 'Afganistan',
     shelfLife: '12 Months',
     bullets: [
-      { title: 'Gold Quality Dried Apricots', text: 'Carefully selected Afghanistan Khurmani dried apricots with rich golden color and natural sweet-tangy taste.' },
-      { title: 'Healthy Super Food', text: 'A natural source of dietary fiber, potassium, calcium, iron, and essential vitamins.' },
-      { title: 'Freshness Locked', text: 'Packed with care in double layer packaging to retain nutrients, moisture, and natural flavor.' },
-      { title: 'Versatile Snacking & Culinary Use', text: 'Perfect for direct healthy snacking, baking, smoothies, desserts, and breakfast bowls.' },
-      { title: '100% Pure & Natural', text: 'Hygienically packed without artificial colors or preservatives.' }
+      { title: 'Premium Quality Apricots', text: 'Handpicked, naturally sun-dried for rich taste' },
+      { title: 'Naturally Sweet & Delicious', text: 'No added artificial flavors or preservatives' },
+      { title: 'Rich in Nutrients', text: 'High in fiber, vitamins (A & C), and antioxidants' },
+      { title: 'Healthy Snacking Option', text: 'Ideal for boosting energy anytime, anywhere' },
+      { title: 'Supports Digestion', text: 'Helps maintain gut health due to high fiber content' },
+      { title: 'Multipurpose Use', text: 'Perfect for snacks, desserts, smoothies, and baking' },
+      { title: 'Hygienically Packed', text: 'Ensures freshness, purity, and long shelf life' },
+      { title: 'Perfect for All Ages', text: 'A nutritious choice for kids and adults alike' }
     ],
     additionalInfoTable: [
-      { label: 'Country of Origin', value: 'Afghanistan' },
+      { label: 'Country of origin', value: 'Afganistan' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Product Name', value: 'RTC Gold Dried Apricot (Khurmani)' },
-      { label: 'Net Quantity', value: '250g' },
-      { label: 'Product Dimensions', value: '20 × 15 × 3.5 cm (L × W × H)' },
-      { label: 'Manufacturer/Packer', value: 'RTC Foods' },
-      { label: 'Ingredients', value: 'Dried Apricot (Khurmani)' },
-      { label: 'Consumer Care', value: 'RTC Foods — info@rtcfoods.in' }
+      { label: 'Common name', value: 'RTC Dried Apricot (Gold)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Gold Dried Apricot (Khurmani) is a premium wholesome dry fruit naturally dried to preserve its delicious sweet and tangy taste. Sourced directly from Afghanistan, these apricots offer a rich golden appearance and soft chewy texture.',
-      'Dried Apricots have been cherished for generations as a healthy superfood. They make a fantastic guilt-free snack, energy booster during busy workdays, or wholesome addition to kids lunchboxes.',
-      'Easily incorporate RTC Dried Apricots into your daily diet by slicing them into breakfast oats, fruit bowls, puddings, baked desserts, or blending them into nutrient-rich smoothies. They also pair wonderfully with almonds and walnuts for a classic dry fruit platter.',
-      'Packed under strict quality standards in double-layer packaging, RTC Foods ensures every dried apricot delivers maximum freshness, taste, and natural goodness.'
+      'RTC Dried Apricot Gold is a premium dried fruit that offers a naturally sweet taste and soft, enjoyable texture in every bite. Carefully selected for quality, these dried apricots are a delicious choice for people who enjoy wholesome snacks and naturally sweet foods. They are easy to carry, ready to eat, and suitable for every age group.',
+      'Dried apricots are a versatile ingredient that can be enjoyed in many ways. Eat them straight from the pack as a quick snack or add them to breakfast cereals, oats, yogurt, and smoothie bowls for extra flavour. They also work wonderfully in cakes, cookies, muffins, puddings, homemade energy bars, and festive desserts. Their natural sweetness makes them an excellent ingredient for recipes without relying on extra sugar.',
+      'Whether you are packing a lunch box, travelling, or looking for a convenient snack during a busy day, RTC Dried Apricot Gold is an excellent choice. Keep a pack at home, in your office, or in your travel bag so you always have a delicious dried fruit ready to enjoy. They also make a wonderful addition to premium dry fruit gift boxes during festivals and special occasions.',
+      'If you are looking to buy dried apricots online, RTC Foods offers carefully selected apricots that are packed with care to preserve their taste, texture, and freshness. Every pack is prepared to deliver consistent quality, making it a reliable choice for everyday snacking and cooking.',
+      'RTC Dried Apricot Gold is a pantry essential for anyone who enjoys premium dried fruits. Whether you enjoy them on their own or add them to your favourite recipes, they bring natural sweetness and rich flavour to every bite.'
     ],
     nutrition: {
       'Energy (kcal)': '241.0',
@@ -258,10 +265,10 @@ export const products: Product[] = [
       'Iron': '2.66 mg'
     },
     features: [
-      'Origin: Afghanistan',
-      '100% Pure Dried Apricot (Khurmani)',
-      'Rich in Fiber, Potassium & Iron',
-      'Double Layer Freshness Sealed'
+      'Origin: Afganistan',
+      '100% Pure Dried Apricot (Gold)',
+      'Rich in Fiber, Vitamins A & C',
+      'Freshness Sealed Packaging'
     ]
   },
   {
