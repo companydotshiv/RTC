@@ -277,7 +277,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                 </div>
 
                 {openSections.category && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '8px' }}>
                     {/* All Product Range */}
                     <div
                       onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
@@ -285,44 +285,52 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         cursor: 'pointer',
                         fontSize: '0.98rem',
                         fontWeight: selectedCategory === 'all' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#333333',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px'
+                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#555555'
                       }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'all' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>All Product Range ({products.length})</span>
+                      All Product Range ({products.length})
                     </div>
 
                     {/* Chemical & Herbs */}
                     <div
                       onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedSubCategory === 'Chemical' ? 600 : 400,
+                        color: selectedSubCategory === 'Chemical' ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Chemical' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Chemical' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Chemical & Herbs (2)</span>
+                      Chemical & Herbs (2)
                     </div>
 
                     {/* Dehydrated Fruits */}
                     <div
                       onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? 600 : 400,
+                        color: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Dehydrated Fruits (4)</span>
+                      Dehydrated Fruits (4)
                     </div>
 
                     {/* Dry Figs */}
                     <div
                       onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedSubCategory === 'Dry Figs' ? 600 : 400,
+                        color: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Dry Figs' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Dry Figs (2)</span>
+                      Dry Figs (2)
                     </div>
 
-                    {/* Dry fruits (Expandable) */}
+                    {/* Dry fruits (Expandable with Arrow) */}
                     <div>
                       <div
                         onClick={() => {
@@ -330,30 +338,67 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                           setSelectedSubCategory(null);
                           setIsDryFruitsExpanded(!isDryFruitsExpanded);
                         }}
-                        style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: selectedCategory === 'dry-fruits' && !selectedSubCategory ? 600 : 400, color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#333333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                        style={{
+                          cursor: 'pointer',
+                          fontSize: '0.98rem',
+                          fontWeight: selectedCategory === 'dry-fruits' && !selectedSubCategory ? 600 : 400,
+                          color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#555555',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                          <span>Dry fruits (12)</span>
-                        </div>
-                        <ChevronDown size={16} color="#666" style={{ transition: 'transform 0.2s', transform: isDryFruitsExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                        <span>Dry fruits (12)</span>
+                        <button
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '2px 4px',
+                            display: 'flex',
+                            alignItems: 'center'
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDryFruitsExpanded(!isDryFruitsExpanded);
+                          }}
+                        >
+                          <ChevronDown
+                            size={16}
+                            color="#666666"
+                            style={{
+                              transition: 'transform 0.2s ease',
+                              transform: isDryFruitsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                            }}
+                          />
+                        </button>
                       </div>
 
-                      {/* Nested Subcategories */}
+                      {/* Nested Subcategories matching Screenshot 2 */}
                       {isDryFruitsExpanded && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '28px', paddingTop: '8px' }}>
-                          {['Cashew', 'Walnut', 'Almonds', 'Raisins', 'Dried Apricot'].map((subCat) => (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '14px', paddingTop: '10px' }}>
+                          {[
+                            { name: 'Almonds', count: 1 },
+                            { name: 'Cashew', count: 1 },
+                            { name: 'Dried Apricot', count: 1 },
+                            { name: 'Raisins', count: 1 },
+                            { name: 'Walnut', count: 4 }
+                          ].map((subCat) => (
                             <div
-                              key={subCat}
-                              onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat); }}
+                              key={subCat.name}
+                              onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat.name); }}
                               style={{
                                 cursor: 'pointer',
-                                fontSize: '0.92rem',
-                                color: selectedSubCategory === subCat ? '#007A3D' : '#555555',
-                                fontWeight: selectedSubCategory === subCat ? 600 : 400
+                                fontSize: '0.94rem',
+                                color: selectedSubCategory === subCat.name ? '#007A3D' : '#555555',
+                                fontWeight: selectedSubCategory === subCat.name ? 600 : 400,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
                               }}
                             >
-                              • {subCat}
+                              <div style={{ width: '12px', height: '12px', background: '#E2E8F0', borderRadius: '2px', flexShrink: 0 }} />
+                              <span>{subCat.name} ({subCat.count})</span>
                             </div>
                           ))}
                         </div>
@@ -363,37 +408,53 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                     {/* Fusions */}
                     <div
                       onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedSubCategory === 'Fusion' ? 600 : 400,
+                        color: selectedSubCategory === 'Fusion' ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedSubCategory === 'Fusion' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Fusion' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Fusions (5)</span>
+                      Fusions (5)
                     </div>
 
                     {/* Seeds */}
                     <div
                       onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedCategory === 'seeds-berries' ? 600 : 400,
+                        color: selectedCategory === 'seeds-berries' ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'seeds-berries' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'seeds-berries' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Seeds (6)</span>
+                      Seeds (6)
                     </div>
 
                     {/* Snacking */}
                     <div
                       onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: 400,
+                        color: '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: '1px solid #CBD5E1', background: '#E2E8F0', flexShrink: 0 }} />
-                      <span>Snacking (13)</span>
+                      Snacking (13)
                     </div>
 
                     {/* Spices */}
                     <div
                       onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
-                      style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                      style={{
+                        cursor: 'pointer',
+                        fontSize: '0.98rem',
+                        fontWeight: selectedCategory === 'spices' && !selectedSubCategory ? 600 : 400,
+                        color: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#555555'
+                      }}
                     >
-                      <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: selectedCategory === 'spices' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Spices (4)</span>
+                      Spices (4)
                     </div>
                   </div>
                 )}
