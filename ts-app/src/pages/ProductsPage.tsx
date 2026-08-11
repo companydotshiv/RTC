@@ -278,23 +278,6 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
                 {openSections.category && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
-                    {/* All Product Range */}
-                    <div
-                      onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedCategory === 'all' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'all' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>All Product Range ({products.length})</span>
-                    </div>
-
                     {/* Chemical & Herbs */}
                     <div
                       onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
