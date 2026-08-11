@@ -261,34 +261,38 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: '20px' }}>
+      <section className="section" style={{ paddingTop: '16px' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '40px', alignItems: 'start' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '30px', alignItems: 'start' }}>
             {/* Left Sidebar Filter Section matching User Screenshots */}
             <aside style={{ fontFamily: "'Jost', sans-serif", color: '#222222' }}>
               {/* 1. Category Section */}
-              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '18px' }}>
                 <div
                   onClick={() => toggleSection('category')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '8px' }}
                 >
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Category</h3>
-                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.category ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Category</h3>
+                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.category ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </div>
 
                 {openSections.category && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {/* All Product Range */}
                     <div
                       onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedCategory === 'all' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#555555'
+                        color: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      All Product Range ({products.length})
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'all' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'all' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>All Product Range ({products.length})</span>
                     </div>
 
                     {/* Chemical & Herbs */}
@@ -296,12 +300,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedSubCategory === 'Chemical' ? 600 : 400,
-                        color: selectedSubCategory === 'Chemical' ? '#007A3D' : '#555555'
+                        color: selectedSubCategory === 'Chemical' ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Chemical & Herbs (2)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Chemical' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Chemical' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Chemical & Herbs (2)</span>
                     </div>
 
                     {/* Dehydrated Fruits */}
@@ -309,12 +317,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#555555'
+                        color: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Dehydrated Fruits (4)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Dehydrated Fruits (4)</span>
                     </div>
 
                     {/* Dry Figs */}
@@ -322,12 +334,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedSubCategory === 'Dry Figs' ? 600 : 400,
-                        color: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#555555'
+                        color: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Dry Figs (2)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Dry Figs' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Dry Figs (2)</span>
                     </div>
 
                     {/* Dry fruits (Expandable with Arrow) */}
@@ -340,21 +356,24 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         }}
                         style={{
                           cursor: 'pointer',
-                          fontSize: '0.98rem',
+                          fontSize: '0.88rem',
                           fontWeight: selectedCategory === 'dry-fruits' && !selectedSubCategory ? 600 : 400,
-                          color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#555555',
+                          color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#444444',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between'
                         }}
                       >
-                        <span>Dry fruits (12)</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <span>Dry fruits (12)</span>
+                        </div>
                         <button
                           style={{
                             background: 'none',
                             border: 'none',
                             cursor: 'pointer',
-                            padding: '2px 4px',
+                            padding: '2px',
                             display: 'flex',
                             alignItems: 'center'
                           }}
@@ -364,7 +383,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                           }}
                         >
                           <ChevronDown
-                            size={16}
+                            size={14}
                             color="#666666"
                             style={{
                               transition: 'transform 0.2s ease',
@@ -374,30 +393,31 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         </button>
                       </div>
 
-                      {/* Nested Subcategories matching Screenshot 2 */}
+                      {/* Nested Subcategories with Checkboxes, Left Aligned, NO bullets */}
                       {isDryFruitsExpanded && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingLeft: '14px', paddingTop: '10px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '23px', paddingTop: '8px' }}>
                           {[
-                            { name: 'Almonds', count: 1 },
                             { name: 'Cashew', count: 1 },
-                            { name: 'Dried Apricot', count: 1 },
+                            { name: 'Walnut', count: 4 },
+                            { name: 'Almonds', count: 1 },
                             { name: 'Raisins', count: 1 },
-                            { name: 'Walnut', count: 4 }
+                            { name: 'Dried Apricot', count: 1 }
                           ].map((subCat) => (
                             <div
                               key={subCat.name}
                               onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat.name); }}
                               style={{
                                 cursor: 'pointer',
-                                fontSize: '0.94rem',
+                                fontSize: '0.85rem',
                                 color: selectedSubCategory === subCat.name ? '#007A3D' : '#555555',
                                 fontWeight: selectedSubCategory === subCat.name ? 600 : 400,
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px'
+                                gap: '8px',
+                                textAlign: 'left'
                               }}
                             >
-                              <div style={{ width: '12px', height: '12px', background: '#E2E8F0', borderRadius: '2px', flexShrink: 0 }} />
+                              <div style={{ width: '13px', height: '13px', borderRadius: '3px', border: selectedSubCategory === subCat.name ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === subCat.name ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
                               <span>{subCat.name} ({subCat.count})</span>
                             </div>
                           ))}
@@ -410,12 +430,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedSubCategory === 'Fusion' ? 600 : 400,
-                        color: selectedSubCategory === 'Fusion' ? '#007A3D' : '#555555'
+                        color: selectedSubCategory === 'Fusion' ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Fusions (5)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Fusion' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Fusion' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Fusions (5)</span>
                     </div>
 
                     {/* Seeds */}
@@ -423,12 +447,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedCategory === 'seeds-berries' ? 600 : 400,
-                        color: selectedCategory === 'seeds-berries' ? '#007A3D' : '#555555'
+                        color: selectedCategory === 'seeds-berries' ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Seeds (6)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'seeds-berries' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'seeds-berries' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Seeds (6)</span>
                     </div>
 
                     {/* Snacking */}
@@ -436,12 +464,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: 400,
-                        color: '#555555'
+                        color: '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Snacking (13)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: '1px solid #CBD5E1', background: '#E2E8F0', flexShrink: 0 }} />
+                      <span>Snacking (13)</span>
                     </div>
 
                     {/* Spices */}
@@ -449,38 +481,42 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                       onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
                       style={{
                         cursor: 'pointer',
-                        fontSize: '0.98rem',
+                        fontSize: '0.88rem',
                         fontWeight: selectedCategory === 'spices' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#555555'
+                        color: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#444444',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                       }}
                     >
-                      Spices (4)
+                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'spices' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                      <span>Spices (4)</span>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* 2. Type Section */}
-              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '18px' }}>
                 <div
                   onClick={() => toggleSection('type')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '8px' }}
                 >
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Type</h3>
-                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.type ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Type</h3>
+                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.type ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </div>
 
                 {openSections.type && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {['Diamond', 'Gold', 'Platinum'].map((tName) => {
                       const isChecked = selectedTypes.includes(tName);
                       return (
                         <div
                           key={tName}
                           onClick={() => toggleType(tName)}
-                          style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                          style={{ cursor: 'pointer', fontSize: '0.88rem', fontWeight: 400, color: '#444444', display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
-                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
                           <span>{tName}</span>
                         </div>
                       );
@@ -490,26 +526,26 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               </div>
 
               {/* 3. Size Section */}
-              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+              <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '18px' }}>
                 <div
                   onClick={() => toggleSection('size')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '8px' }}
                 >
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Size</h3>
-                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.size ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Size</h3>
+                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.size ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </div>
 
                 {openSections.size && (
-                  <div style={{ paddingTop: '8px' }}>
+                  <div style={{ paddingTop: '6px' }}>
                     <select
                       value={selectedSize}
                       onChange={(e) => setSelectedSize(e.target.value)}
                       style={{
                         width: '100%',
-                        padding: '10px 14px',
+                        padding: '8px 12px',
                         borderRadius: '4px',
                         border: '1px solid #CBD5E1',
-                        fontSize: '0.95rem',
+                        fontSize: '0.88rem',
                         color: '#444444',
                         background: '#FFFFFF',
                         outline: 'none',
@@ -529,17 +565,17 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               </div>
 
               {/* 4. Price Section */}
-              <div style={{ paddingBottom: '20px', marginBottom: '24px' }}>
+              <div style={{ paddingBottom: '16px', marginBottom: '18px' }}>
                 <div
                   onClick={() => toggleSection('price')}
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '12px' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '8px' }}
                 >
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Price</h3>
-                  <ChevronDown size={20} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.price ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#1A1A1A', margin: 0 }}>Price</h3>
+                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s', transform: openSections.price ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </div>
 
                 {openSections.price && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '8px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {[
                       { key: '10-49', label: '₹10.00 - ₹49.00' },
                       { key: '50-99', label: '₹50.00 - ₹99.00' },
@@ -551,9 +587,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         <div
                           key={priceItem.key}
                           onClick={() => togglePrice(priceItem.key)}
-                          style={{ cursor: 'pointer', fontSize: '0.98rem', fontWeight: 400, color: '#333333', display: 'flex', alignItems: 'center', gap: '10px' }}
+                          style={{ cursor: 'pointer', fontSize: '0.88rem', fontWeight: 400, color: '#444444', display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
-                          <div style={{ width: '18px', height: '18px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
                           <span>{priceItem.label}</span>
                         </div>
                       );
