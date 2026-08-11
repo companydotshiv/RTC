@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
-import { Star, ShoppingBag, X, Heart, ChevronDown, Eye, Minus, Plus } from 'lucide-react';
+import { Star, ShoppingBag, X, Heart, ChevronDown, Eye, Minus, Plus, Check } from 'lucide-react';
 
 interface ProductsPageProps {
   onSelectProduct: (product: Product) => void;
@@ -279,202 +279,371 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                 {openSections.category && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {/* Chemical & Herbs */}
-                    <div
-                      onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedSubCategory === 'Chemical' ? 600 : 400,
-                        color: selectedSubCategory === 'Chemical' ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Chemical' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Chemical' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Chemical & Herbs (2)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedSubCategory === 'Chemical';
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory('Chemical'); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Chemical & Herbs (2)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Dehydrated Fruits */}
-                    <div
-                      onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dehydrated-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Dehydrated Fruits (4)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedCategory === 'dehydrated-fruits' && !selectedSubCategory;
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('dehydrated-fruits'); setSelectedSubCategory(null); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Dehydrated Fruits (4)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Dry Figs */}
-                    <div
-                      onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedSubCategory === 'Dry Figs' ? 600 : 400,
-                        color: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Dry Figs' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Dry Figs' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Dry Figs (2)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedSubCategory === 'Dry Figs';
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Dry Figs'); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Dry Figs (2)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Dry fruits (Expandable with Arrow) */}
                     <div>
-                      <div
-                        onClick={() => {
-                          setSelectedCategory('dry-fruits');
-                          setSelectedSubCategory(null);
-                          setIsDryFruitsExpanded(!isDryFruitsExpanded);
-                        }}
-                        style={{
-                          cursor: 'pointer',
-                          fontSize: '0.88rem',
-                          fontWeight: selectedCategory === 'dry-fruits' && !selectedSubCategory ? 600 : 400,
-                          color: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#444444',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'dry-fruits' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                          <span>Dry fruits (12)</span>
-                        </div>
-                        <button
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            padding: '2px',
-                            display: 'flex',
-                            alignItems: 'center'
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsDryFruitsExpanded(!isDryFruitsExpanded);
-                          }}
-                        >
-                          <ChevronDown
-                            size={14}
-                            color="#666666"
-                            style={{
-                              transition: 'transform 0.2s ease',
-                              transform: isDryFruitsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                      {(() => {
+                        const isSel = selectedCategory === 'dry-fruits' && !selectedSubCategory;
+                        return (
+                          <div
+                            onClick={() => {
+                              setSelectedCategory('dry-fruits');
+                              setSelectedSubCategory(null);
+                              setIsDryFruitsExpanded(!isDryFruitsExpanded);
                             }}
-                          />
-                        </button>
-                      </div>
+                            style={{
+                              cursor: 'pointer',
+                              fontSize: '0.88rem',
+                              fontWeight: isSel ? 600 : 400,
+                              color: isSel ? '#111111' : '#777777',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between'
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div
+                                style={{
+                                  width: '15px',
+                                  height: '15px',
+                                  borderRadius: '2px',
+                                  border: isSel ? 'none' : '1px solid #D1D5DB',
+                                  background: isSel ? '#222222' : '#EAEAEA',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  flexShrink: 0
+                                }}
+                              >
+                                {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                              </div>
+                              <span>Dry fruits (12)</span>
+                            </div>
+                            <button
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '2px',
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsDryFruitsExpanded(!isDryFruitsExpanded);
+                              }}
+                            >
+                              <ChevronDown
+                                size={14}
+                                color="#666666"
+                                style={{
+                                  transition: 'transform 0.2s ease',
+                                  transform: isDryFruitsExpanded ? 'rotate(180deg)' : 'rotate(0deg)'
+                                }}
+                              />
+                            </button>
+                          </div>
+                        );
+                      })()}
 
                       {/* Nested Subcategories with Checkboxes, Left Aligned, NO bullets */}
                       {isDryFruitsExpanded && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '23px', paddingTop: '8px' }}>
                           {[
-                            { name: 'Cashew', count: 1 },
-                            { name: 'Walnut', count: 4 },
                             { name: 'Almonds', count: 1 },
+                            { name: 'Cashew', count: 1 },
+                            { name: 'Dried Apricot', count: 1 },
                             { name: 'Raisins', count: 1 },
-                            { name: 'Dried Apricot', count: 1 }
-                          ].map((subCat) => (
-                            <div
-                              key={subCat.name}
-                              onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat.name); }}
-                              style={{
-                                cursor: 'pointer',
-                                fontSize: '0.85rem',
-                                color: selectedSubCategory === subCat.name ? '#007A3D' : '#555555',
-                                fontWeight: selectedSubCategory === subCat.name ? 600 : 400,
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                textAlign: 'left'
-                              }}
-                            >
-                              <div style={{ width: '13px', height: '13px', borderRadius: '3px', border: selectedSubCategory === subCat.name ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === subCat.name ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                              <span>{subCat.name} ({subCat.count})</span>
-                            </div>
-                          ))}
+                            { name: 'Walnut', count: 4 }
+                          ].map((subCat) => {
+                            const isSelSub = selectedSubCategory === subCat.name;
+                            return (
+                              <div
+                                key={subCat.name}
+                                onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory(subCat.name); }}
+                                style={{
+                                  cursor: 'pointer',
+                                  fontSize: '0.85rem',
+                                  color: isSelSub ? '#111111' : '#777777',
+                                  fontWeight: isSelSub ? 600 : 400,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px',
+                                  textAlign: 'left'
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: '14px',
+                                    height: '14px',
+                                    borderRadius: '2px',
+                                    border: isSelSub ? 'none' : '1px solid #D1D5DB',
+                                    background: isSelSub ? '#222222' : '#EAEAEA',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0
+                                  }}
+                                >
+                                  {isSelSub && <Check size={10} color="#FFFFFF" strokeWidth={3.5} />}
+                                </div>
+                                <span>{subCat.name} ({subCat.count})</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
 
                     {/* Fusions */}
-                    <div
-                      onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedSubCategory === 'Fusion' ? 600 : 400,
-                        color: selectedSubCategory === 'Fusion' ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedSubCategory === 'Fusion' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedSubCategory === 'Fusion' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Fusions (5)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedSubCategory === 'Fusion';
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('dry-fruits'); setSelectedSubCategory('Fusion'); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Fusions (5)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Seeds */}
-                    <div
-                      onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedCategory === 'seeds-berries' ? 600 : 400,
-                        color: selectedCategory === 'seeds-berries' ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'seeds-berries' ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'seeds-berries' ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Seeds (6)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedCategory === 'seeds-berries' && !selectedSubCategory;
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('seeds-berries'); setSelectedSubCategory(null); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Seeds (6)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Snacking */}
-                    <div
-                      onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: 400,
-                        color: '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: '1px solid #CBD5E1', background: '#E2E8F0', flexShrink: 0 }} />
-                      <span>Snacking (13)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedCategory === 'all' && !selectedSubCategory;
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('all'); setSelectedSubCategory(null); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Snacking (13)</span>
+                        </div>
+                      );
+                    })()}
 
                     {/* Spices */}
-                    <div
-                      onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
-                      style={{
-                        cursor: 'pointer',
-                        fontSize: '0.88rem',
-                        fontWeight: selectedCategory === 'spices' && !selectedSubCategory ? 600 : 400,
-                        color: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#444444',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: selectedCategory === 'spices' && !selectedSubCategory ? '2px solid #007A3D' : '1px solid #CBD5E1', background: selectedCategory === 'spices' && !selectedSubCategory ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
-                      <span>Spices (4)</span>
-                    </div>
+                    {(() => {
+                      const isSel = selectedCategory === 'spices' && !selectedSubCategory;
+                      return (
+                        <div
+                          onClick={() => { setSelectedCategory('spices'); setSelectedSubCategory(null); }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isSel ? 600 : 400,
+                            color: isSel ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isSel ? 'none' : '1px solid #D1D5DB',
+                              background: isSel ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
+                          <span>Spices (4)</span>
+                        </div>
+                      );
+                    })()}
                   </div>
                 )}
               </div>
@@ -497,9 +666,31 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         <div
                           key={tName}
                           onClick={() => toggleType(tName)}
-                          style={{ cursor: 'pointer', fontSize: '0.88rem', fontWeight: 400, color: '#444444', display: 'flex', alignItems: 'center', gap: '8px' }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isChecked ? 600 : 400,
+                            color: isChecked ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
                         >
-                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isChecked ? 'none' : '1px solid #D1D5DB',
+                              background: isChecked ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isChecked && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
                           <span>{tName}</span>
                         </div>
                       );
@@ -570,9 +761,31 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         <div
                           key={priceItem.key}
                           onClick={() => togglePrice(priceItem.key)}
-                          style={{ cursor: 'pointer', fontSize: '0.88rem', fontWeight: 400, color: '#444444', display: 'flex', alignItems: 'center', gap: '8px' }}
+                          style={{
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            fontWeight: isChecked ? 600 : 400,
+                            color: isChecked ? '#111111' : '#777777',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}
                         >
-                          <div style={{ width: '15px', height: '15px', borderRadius: '3px', border: isChecked ? '2px solid #007A3D' : '1px solid #CBD5E1', background: isChecked ? '#007A3D' : '#E2E8F0', flexShrink: 0 }} />
+                          <div
+                            style={{
+                              width: '15px',
+                              height: '15px',
+                              borderRadius: '2px',
+                              border: isChecked ? 'none' : '1px solid #D1D5DB',
+                              background: isChecked ? '#222222' : '#EAEAEA',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}
+                          >
+                            {isChecked && <Check size={11} color="#FFFFFF" strokeWidth={3.5} />}
+                          </div>
                           <span>{priceItem.label}</span>
                         </div>
                       );
