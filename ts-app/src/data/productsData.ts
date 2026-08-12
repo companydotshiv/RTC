@@ -721,6 +721,51 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 21,
+    slug: 'dry-dates',
+    name: 'Dry Dates',
+    category: 'dry-fruits',
+    categoryName: 'Dry Dates',
+    price: 120,
+    priceDisplay: '₹120.00',
+    originalPrice: 120,
+    badge: '',
+    rating: 4.8,
+    reviewsCount: 74,
+    image: '/dry_dates_front.jpg',
+    gallery: ['/dry_dates_front.jpg', '/dry_dates_back.png'],
+    shortDesc: 'Premium quality naturally dried yellow dates rich in fiber, iron, and natural minerals.',
+    description: 'RTC Dry Dates (Chuara) are carefully selected naturally dried dates known for their sweet taste, rich nutritional profile, and daily wellness benefits.',
+    weights: ['250gm'],
+    productTypes: ['Standard'],
+    sku: 'RTC-DAT-01',
+    stock: true,
+    stockCount: 10,
+    origin: 'India',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: '100% Natural Dry Dates', text: 'Carefully selected premium yellow chuara.' },
+      { title: 'Rich in Iron & Fiber', text: 'Helps boost daily energy and supports digestion.' },
+      { title: 'Freshness Sealed', text: 'Hygienically packed in multi-layered pouch.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Dry Dates' }
+    ],
+    paragraphs: [
+      'RTC Dry Dates offer natural sweetness and rich wholesome nutrition for daily health and traditional recipes.'
+    ],
+    nutrition: {
+      'Energy': '282 kcal',
+      'Fiber': '8g'
+    },
+    features: [
+      '100% Natural Yellow Dry Dates',
+      'Rich in Energy & Iron'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
