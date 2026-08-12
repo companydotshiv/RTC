@@ -632,33 +632,47 @@ export const products: Product[] = [
     reviewsCount: 58,
     image: '/walnut_silver_front.png',
     gallery: ['/walnut_silver_front.png', '/walnut_silver_back.png'],
-    shortDesc: 'RTC Foods Walnut Kernals Silver – Value grade 2-piece walnut kernels ideal for cooking, baking, and daily family consumption.',
-    description: 'RTC Foods Walnut Kernals Silver are high-quality 2-piece walnut kernels selected for everyday cooking, baking, and family snacking.',
-    weights: ['250g', '500g', '1kg'],
+    shortDesc: '10 in stock. Economical 4 – piece kernals: Value pack walnut kernals suitable for bulk and daily use. White Apperanance : Clean look with Practical quality for regular consumption.',
+    description: 'RTC Walnut Kernels Silver are a practical choice for families, home cooks, and bakeries looking for quality walnuts at great value. These walnut kernels are suitable for everyday use and can be easily added to a wide variety of recipes.',
+    weights: ['250gm'],
+    productTypes: ['Silver'],
     sku: 'RTC-WAL-SLV',
     stock: true,
-    origin: 'India',
+    stockCount: 10,
+    origin: 'U.S.A',
     shelfLife: '9 Months',
     bullets: [
-      { title: 'Silver Grade Walnut Kernels', text: 'Wholesome 2-piece walnut kernels at an economical value.' },
-      { title: 'Nutrient Rich', text: 'Good source of Omega-3, fiber, and essential minerals.' },
-      { title: 'Freshness Sealed', text: 'Hygienically packed to retain freshness and natural taste.' }
+      { title: 'Economical 4 – piece kernals', text: 'Value pack walnut kernals suitable for bulk and daily use.' },
+      { title: 'White Apperanance', text: 'Clean look with Practical quality for regular consumption.' },
+      { title: 'Fresh & hygenically Packed', text: 'Freshness and usability for longer duration.' },
+      { title: 'Best for cooking & Baking', text: 'Ideal for recipes, deserts, and large – scale usage.' },
+      { title: 'Rtc Foods Quality Assurance', text: 'Affordable option witrhout compromising on essential quality.' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'India' },
+      { label: 'Country of origin', value: 'U.S.A' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Walnut Kernals Silver' }
+      { label: 'Common name', value: 'RTC Walnut kernals (Silver)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '19L x 13W x 4H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Foods Walnut Kernals Silver offer great taste and quality for everyday cooking, baking, and daily snacking.'
+      'RTC Walnut Kernels Silver are a practical choice for families, home cooks, and bakeries looking for quality walnuts at great value. These walnut kernels are suitable for everyday use and can be easily added to a wide variety of recipes. Their mild nutty flavour and crunchy texture make them a useful ingredient for both sweet and savoury dishes.',
+      'Walnut kernels are widely used in baking, cooking, and homemade snacks. Add them to cakes, cookies, brownies, muffins, breads, and desserts for extra crunch and flavour. They are also perfect for breakfast cereals, oats, yogurt, smoothie bowls, salads, and homemade trail mixes. Their versatility makes them a pantry essential for everyday meal preparation.',
+      'Whether you are preparing festive sweets, family meals, or recipes in larger quantities, RTC Walnut Kernels Silver offer convenience and consistent quality. They are easy to chop, blend, or use directly, making them suitable for home kitchens as well as commercial food preparation.',
+      'If you are looking to buy walnut kernels online, RTC Foods offers carefully packed walnut kernels that are prepared to maintain freshness and quality. Every pack is designed to provide a reliable cooking and baking ingredient that delivers great taste and convenience for daily use.',
+      'RTC Walnut Kernels Silver are an excellent option for anyone who wants premium quality walnuts for regular cooking, baking, and snacking. Keep them in your kitchen and enjoy the convenience of a versatile dry fruit that can be used in countless recipes throughout the year.'
     ],
     nutrition: {
       'Energy': '654 kcal',
       'Protein': '15.2g'
     },
     features: [
-      '100% Pure Walnut Kernels',
-      'Economical & Wholesome'
+      'Silver Quality Kernels',
+      'Rich in Omega-3'
     ]
   },
   {
