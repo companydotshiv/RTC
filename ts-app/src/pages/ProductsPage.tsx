@@ -87,6 +87,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
     latest: 'Sort by latest',
     price_low: 'Sort by price: low to high',
     price_high: 'Sort by price: high to low',
+    name_asc: 'Sort by name: A ↓ Z',
+    name_desc: 'Sort by name: A ↑ Z',
   };
 
   const filteredProducts = products.filter((p) => {
@@ -150,6 +152,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
     if (sortOption === 'price_high') return b.price - a.price;
     if (sortOption === 'rating') return b.rating - a.rating;
     if (sortOption === 'popularity') return b.reviewsCount - a.reviewsCount;
+    if (sortOption === 'name_asc') return a.name.localeCompare(b.name);
+    if (sortOption === 'name_desc') return b.name.localeCompare(a.name);
     return a.id - b.id;
   });
 
