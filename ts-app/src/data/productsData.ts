@@ -518,25 +518,39 @@ export const products: Product[] = [
     reviewsCount: 76,
     image: '/walnut_diamond_front.png',
     gallery: ['/walnut_diamond_front.png', '/walnut_diamond_back.jpg'],
-    shortDesc: 'RTC Foods Walnut Kernals Diamond – Handpicked premium walnut kernels with rich taste, crunchy texture, and locked-in freshness.',
-    description: 'RTC Foods Walnut Kernals Diamond are high quality walnut kernels known for their rich nutty taste, pale color, and crunchy texture. Packed under strict hygienic protocols.',
-    weights: ['250g', '500g', '1kg'],
+    shortDesc: '10 in stock. Premium Chile Origin: High – Quality 2- Piece Walnut Kernals Sourced From India. White & Celan Appearance : Attractive light color with good taste and consistent quality.',
+    description: 'RTC Walnut Kernels Diamond are premium quality walnut kernels selected for their excellent appearance, fresh taste, and versatile use. With their light colour and pleasant nutty flavour, these walnut kernels are an ideal choice for everyday meals as well as special recipes.',
+    weights: ['250gm'],
+    productTypes: ['Diamond'],
     sku: 'RTC-WAL-DMD',
     stock: true,
+    stockCount: 10,
     origin: 'Chile',
     shelfLife: '9 Months',
     bullets: [
-      { title: 'Diamond Grade Walnut Kernels', text: 'Carefully selected 2-piece walnut kernels with rich taste.' },
-      { title: 'Omega-3 & Protein Rich', text: 'Supports brain health, heart health, and overall daily vitality.' },
-      { title: 'Freshness Locked Packaging', text: 'Hygienically packed to retain freshness and natural flavor.' }
+      { title: 'Premium Chile Origin', text: 'High – Quality 2- Piece Walnut Kernals Sourced From India.' },
+      { title: 'White & Celan Appearance', text: 'Attractive light color with good taste and consistent quality.' },
+      { title: 'Fresh & Hygenically Packed', text: 'Ensures natural freshness texture, and nutritional intgrity.' },
+      { title: 'Perfect for daily use', text: 'Suitable for snacking, cooking,baking and regular consumption.' },
+      { title: 'Rtc foods Quality Assurance', text: 'From a brand committed to purity and premium standards.' }
     ],
     additionalInfoTable: [
       { label: 'Country of origin', value: 'Chile' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Walnut Kernals Diamond' }
+      { label: 'Common name', value: 'RTC Walnut kernals (Diamond)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '19L x 13W x 4H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Foods Walnut Kernals Diamond are premium wholesome walnut kernels naturally packed to preserve rich taste and nutrition.'
+      'RTC Walnut Kernels Diamond are premium quality walnut kernels selected for their excellent appearance, fresh taste, and versatile use. With their light colour and pleasant nutty flavour, these walnut kernels are an ideal choice for everyday meals as well as special recipes. They are easy to use and make a valuable addition to every kitchen.',
+      'These walnut kernels can be enjoyed straight from the pack or added to a variety of dishes. They are perfect for breakfast cereals, oats, yogurt, smoothie bowls, homemade granola, and trail mixes. They are also widely used in cakes, cookies, brownies, muffins, breads, chocolates, desserts, and traditional sweets, adding a delicious crunch and rich flavour to every recipe.',
+      'Whether you are cooking for your family, preparing festive treats, or baking at home, RTC Walnut Kernels Diamond offer convenience and consistent quality. They are easy to chop, blend, or use whole, making them suitable for home kitchens, cafés, bakeries, and professional food preparation.',
+      'If you are looking to buy premium walnut kernels online, RTC Foods offers carefully selected walnut kernels that are packed to preserve their freshness and quality. Every pack is prepared with strict quality standards so you can enjoy reliable taste and texture in every serving.',
+      'RTC Walnut Kernels Diamond are a smart choice for anyone who enjoys premium dry fruits. Keep them in your pantry and use them in your favourite snacks, desserts, baked goods, and everyday recipes to add rich flavour and natural goodness.'
     ],
     nutrition: {
       'Energy': '654 kcal',
