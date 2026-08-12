@@ -483,7 +483,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <div className="bestseller-green-footer">
                   <span className="bestseller-cat">Dry fruits</span>
                   <h3 className="bestseller-title">Walnut Kernels Platinum</h3>
-                  <div className="bestseller-price">₹388.00</div>
+                  <div className="bestseller-price">₹420.00</div>
                 </div>
               </div>
 

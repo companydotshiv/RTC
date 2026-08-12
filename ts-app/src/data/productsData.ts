@@ -285,27 +285,39 @@ export const products: Product[] = [
     reviewsCount: 94,
     image: '/indian_raisins_front.png',
     gallery: ['/indian_raisins_front.png', '/indian_raisins_back.png'],
-    shortDesc: 'RTC Foods Indian Raisins (Kishmish) – Naturally sweet, golden, chewy raisins packed with iron, fiber, and quick energy.',
-    description: 'RTC Foods Indian Raisins are handpicked high-grade golden raisins sourced from India. Carefully processed and freshness-locked to maintain natural sweetness, soft texture, and wholesome nutrition.',
-    weights: ['250g', '500g', '1kg'],
+    shortDesc: 'Premium Indian Origin: Sourced from quality farms across India for natural sweetness and freshness. Naturally Sweet & Nutritious: Rich in iron, fiber, and essential nutrients for daily wellness.',
+    description: 'RTC Indian Raisins are a delicious dried fruit that brings natural sweetness to your everyday meals and snacks. Carefully selected for their quality, these raisins have a soft texture and pleasant taste that make them a favourite for both children and adults.',
+    weights: ['250gm', '1kg'],
     sku: 'RTC-RAI-IND',
     stock: true,
     origin: 'India',
     shelfLife: '12 Months',
     bullets: [
-      { title: 'Golden Quality Raisins', text: 'Naturally sweet and juicy Indian Kishmish with soft texture.' },
-      { title: 'Nutrient Rich', text: 'High in natural energy, iron, fiber, and essential minerals.' },
-      { title: 'Freshness Locked', text: 'Packed under hygienic conditions in double-layered protective pouches.' }
+      { title: 'Premium Indian Origin', text: 'Sourced from quality farms across India for natural sweetness and freshness.' },
+      { title: 'Naturally Sweet & Nutritious', text: 'Rich in iron, fiber, and essential nutrients for daily wellness.' },
+      { title: 'Energy Boosting Snack', text: 'Provides instant energy, making it perfect for daily consumption.' },
+      { title: 'Supports Digestion', text: 'Contains natural fiber that helps promote healthy digestion.' },
+      { title: 'Soft & Juicy Texture', text: 'Carefully selected raisins with a plump, soft, and delicious taste.' },
+      { title: 'Versatile Use', text: 'Ideal for snacking, sweets, baking, cereals, and traditional recipes.' },
+      { title: '100% Natural', text: 'No added sugar, preservatives, or artificial flavors.' }
     ],
     additionalInfoTable: [
       { label: 'Country of origin', value: 'India' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Indian Raisins' },
-      { label: 'Additive info', value: 'Refer to product packaging' }
+      { label: 'Common name', value: 'RTC India Raisins' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '13L x 11W x 4H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Foods Indian Raisins are a delicious, wholesome dry fruit naturally dried to preserve rich flavor and golden appearance.',
-      'Perfect for daily snacking, baking, desserts, rice dishes, and breakfast bowls.'
+      'RTC Indian Raisins are a delicious dried fruit that brings natural sweetness to your everyday meals and snacks. Carefully selected for their quality, these raisins have a soft texture and pleasant taste that make them a favourite for both children and adults. They are easy to enjoy on their own or use in a wide variety of recipes.',
+      'Raisins are a versatile pantry ingredient that can be added to breakfast cereals, oats, yogurt, smoothie bowls, and homemade granola. They are also widely used in cakes, cookies, muffins, breads, desserts, kheer, halwa, and festive sweets. Their natural sweetness makes them a great addition to recipes where you want extra flavour without relying on refined sugar.',
+      'Keep a pack of RTC Indian Raisins at home, in your office, or while travelling for a convenient snack anytime. They are perfect for school lunch boxes, evening snacks, and homemade trail mixes. Their soft texture and naturally sweet taste make them enjoyable straight from the pack whenever you need a quick bite.',
+      'If you are looking to buy premium Indian raisins online, RTC Foods offers carefully selected raisins that are packed with care to preserve their freshness and quality. Every pack is prepared to deliver consistent taste, making them suitable for everyday use in cooking, baking, and snacking.',
+      'RTC Indian Raisins are a simple way to add natural sweetness and premium quality dried fruit to your daily routine. Whether you are preparing traditional recipes, baking delicious treats, or enjoying a healthy snack, these raisins are a pantry essential for every home.'
     ],
     nutrition: {
       'Calories': '299 kcal',
@@ -313,8 +325,10 @@ export const products: Product[] = [
       'Iron': '1.9 mg'
     },
     features: [
+      'Origin: India',
       '100% Natural Indian Kishmish',
-      'Naturally Sweet & Soft'
+      'Soft & Plump Texture',
+      'No Added Sugar or Preservatives'
     ]
   },
   {
@@ -438,10 +452,10 @@ export const products: Product[] = [
     name: 'Walnut Kernels Platinum',
     category: 'dry-fruits',
     categoryName: 'Dry fruits',
-    price: 388,
-    priceDisplay: '₹388.00',
+    price: 420,
+    priceDisplay: '₹420.00',
     originalPrice: 480,
-    badge: 'Premium',
+    badge: '',
     rating: 4.9,
     reviewsCount: 88,
     image: '/walnut_platinum_front.jpg',
