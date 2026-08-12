@@ -575,32 +575,46 @@ export const products: Product[] = [
     reviewsCount: 65,
     image: '/walnut_gold_front.png',
     gallery: ['/walnut_gold_front.png', '/walnut_gold_back.png'],
-    shortDesc: 'RTC Foods Walnut Kernals Gold – Premium quality sun-dried walnut kernels with rich taste, crunchy texture, and sealed freshness.',
-    description: 'RTC Foods Walnut Kernals Gold are high-grade walnut kernels sourced from premium crops. Carefully processed and freshness-locked to maintain rich taste and essential nutrition.',
-    weights: ['250g', '500g', '1kg'],
+    shortDesc: '10 in stock. Reliable Everyday quality : 2- piece walnut kernals with natural golden color for regular use. Balance Taste & Value : Offers good taste and quality at an economical price point.',
+    description: 'RTC Walnut Kernels Gold are a premium everyday dry fruit that combines excellent taste with dependable quality. Carefully packed for regular use, these walnut kernels are a great choice for families who enjoy adding wholesome ingredients to their daily meals.',
+    weights: ['250gm'],
+    productTypes: ['Gold'],
     sku: 'RTC-WAL-GLD',
     stock: true,
+    stockCount: 10,
     origin: 'India',
     shelfLife: '9 Months',
     bullets: [
-      { title: 'Gold Quality Walnut Kernels', text: 'Naturally rich, wholesome 2-piece walnut kernels.' },
-      { title: 'Nutrient Superfood', text: 'Packed with natural Omega-3, protein, and essential minerals.' },
-      { title: 'Freshness Locked Packaging', text: 'Hygienically sealed to retain crunch, flavor, and purity.' }
+      { title: 'Reliable Everyday quality', text: '2- piece walnut kernals with natural golden color for regular use.' },
+      { title: 'Balance Taste & Value', text: 'Offers good taste and quality at an economical price point.' },
+      { title: 'Fresh & hygenically Packed', text: 'Packed to maintain freshness amd usability.' },
+      { title: 'Versatile Usage', text: 'Ideal For cooking baking, snacking and daily nutrition.' },
+      { title: 'Rtcfoods Quality Assurance', text: 'Consistent quality From a Trusted dry fruit brand.' }
     ],
     additionalInfoTable: [
       { label: 'Country of origin', value: 'India' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Walnut Kernals Gold' }
+      { label: 'Common name', value: 'RTC Walnut kernals (Gold)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '19L x 13W x 4H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Foods Walnut Kernals Gold are premium dry fruit kernels packed under strict quality standards for everyday healthy snacking.'
+      'RTC Walnut Kernels Gold are a premium everyday dry fruit that combines excellent taste with dependable quality. Carefully packed for regular use, these walnut kernels are a great choice for families who enjoy adding wholesome ingredients to their daily meals. Their natural texture and pleasant flavour make them suitable for a wide variety of recipes and snacks.',
+      'These walnut kernels can be enjoyed straight from the pack or added to breakfast cereals, oats, yogurt, smoothie bowls, and homemade granola. They are also a popular ingredient for cakes, cookies, brownies, muffins, breads, desserts, chocolates, and traditional sweets. Their rich nutty flavour adds extra taste and texture to both sweet and savoury dishes.',
+      'RTC Walnut Kernels Gold are perfect for home kitchens, cafés, and bakeries because they are easy to chop, mix, or blend into recipes. Whether you are preparing festive treats, everyday meals, or homemade snack mixes, these walnut kernels offer convenience and versatility for every occasion.',
+      'If you are looking to buy premium walnut kernels online, RTC Foods offers carefully selected walnut kernels that are packed to preserve their freshness and quality. Every pack is prepared to deliver a consistent experience, making them a reliable choice for cooking, baking, and everyday use.',
+      'RTC Walnut Kernels Gold are an essential pantry ingredient for anyone who enjoys premium dry fruits. Whether you use them for baking, cooking, or healthy snacking, they provide great taste, dependable quality, and endless ways to enhance your favourite recipes.'
     ],
     nutrition: {
       'Energy': '654 kcal',
       'Protein': '15.2g'
     },
     features: [
-      '100% Pure Walnut Kernels',
+      'Gold Quality Kernels',
       'Rich in Omega-3'
     ]
   },
