@@ -454,7 +454,7 @@ export const products: Product[] = [
     categoryName: 'Dry fruits',
     price: 420,
     priceDisplay: '₹420.00',
-    originalPrice: 480,
+    originalPrice: 420,
     badge: '',
     rating: 4.9,
     reviewsCount: 88,
