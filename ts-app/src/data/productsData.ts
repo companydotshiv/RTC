@@ -689,34 +689,50 @@ export const products: Product[] = [
     reviewsCount: 92,
     image: '/dry_figs_gold_front.png',
     gallery: ['/dry_figs_gold_front.png', '/dry_figs_gold_back.png'],
-    shortDesc: 'Premium Quality Gold Grade Afghan Anjeer (Dried Figs) naturally sweet with rich flavor and soft texture.',
-    description: 'RTC Anjeer Gold is a premium selection of dried figs chosen for their rich taste, soft bite, and excellent quality.',
+    shortDesc: '10 in stock. Premium quality Gold dry figs sourced from Afghanistan. Naturally large size, soft texture & rich sweetness.',
+    description: 'RTC Dry Figs Gold are a premium dried fruit known for their naturally sweet taste, soft texture, and excellent quality. Carefully selected for everyday enjoyment, these dried figs are a delicious choice for people who prefer wholesome snacks made from natural ingredients.',
     weights: ['250gm'],
     productTypes: ['Gold'],
     sku: 'RTC-FIG-GLD',
     stock: true,
     stockCount: 10,
-    origin: 'Afganistan',
+    origin: 'Afganistain',
     shelfLife: '9 Months',
     bullets: [
-      { title: 'Premium Gold Quality', text: 'Gold Grade Afghan Anjeer (Dried Figs)' },
-      { title: 'Naturally Sweet', text: 'Rich flavor and soft texture' },
-      { title: 'Rich in Fiber', text: 'Good source of dietary fiber and essential minerals' }
+      { title: '', text: 'Premium quality Gold dry figs sourced from Afghanistan' },
+      { title: '', text: 'Naturally large size, soft texture & rich sweetness' },
+      { title: '', text: 'High in dietary fiber, calcium & antioxidants' },
+      { title: '', text: 'Supports digestion, bone strength & overall wellness' },
+      { title: '', text: 'Naturally dried with no added preservatives or chemicals' },
+      { title: '', text: 'Carefully sorted, cleaned & hygienically packed' },
+      { title: '', text: 'Ideal for healthy snacking, desserts & daily nutrition' },
+      { title: '', text: 'Perfect for fasting, gifting & festive use' },
+      { title: '', text: 'Best stored in a cool & dry place for freshness' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'Afganistan' },
+      { label: 'Country of origin', value: 'Afganistain' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Anjeer Gold' }
+      { label: 'Common name', value: 'RTC Dry Figs (Gold)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Anjeer Gold is a premium selection of dried figs chosen for their rich taste, soft bite, and excellent quality.'
+      'RTC Dry Figs Gold are a premium dried fruit known for their naturally sweet taste, soft texture, and excellent quality. Carefully selected for everyday enjoyment, these dried figs are a delicious choice for people who prefer wholesome snacks made from natural ingredients. They are easy to carry, ready to eat, and suitable for both children and adults.',
+      'Dry figs are a versatile ingredient that can be enjoyed in many different ways. Eat them straight from the pack as a quick snack or add them to breakfast cereals, oats, yogurt, and smoothie bowls for extra flavour. They are also perfect for cakes, cookies, muffins, energy bars, desserts, and traditional Indian sweets. Their natural sweetness makes them a popular ingredient in recipes without the need for additional sweeteners.',
+      'Whether you are preparing lunch boxes, travelling, observing fasting, or looking for a convenient snack during the day, RTC Dry Figs Gold are an excellent choice. They are also a thoughtful addition to festive dry fruit hampers and gift boxes, making them suitable for celebrations and special occasions.',
+      'If you are looking to buy premium dry figs online, RTC Foods offers carefully selected dried figs that are packed with care to maintain their freshness, taste, and quality. Every pack is prepared to deliver a consistently enjoyable experience, making them a reliable choice for everyday snacking and cooking.',
+      'RTC Dry Figs Gold are a pantry essential for anyone who enjoys premium dried fruits. Whether you enjoy them on their own or use them in your favourite recipes, they bring natural sweetness, rich flavour, and premium quality to every bite.'
     ],
     nutrition: {
       'Energy': '249 kcal',
       'Dietary Fiber': '9.8g'
     },
     features: [
-      '100% Natural Afghan Anjeer',
+      '100% Natural Afghan Anjeer (Gold)',
       'Rich in Iron & Calcium'
     ]
   },
