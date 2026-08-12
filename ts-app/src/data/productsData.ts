@@ -562,6 +562,49 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 18,
+    slug: 'walnut-kernals-gold',
+    name: 'Walnut Kernals Gold',
+    category: 'dry-fruits',
+    categoryName: 'Walnut',
+    price: 325,
+    priceDisplay: '₹325.00',
+    originalPrice: 325,
+    badge: '',
+    rating: 4.7,
+    reviewsCount: 65,
+    image: '/walnut_gold_front.png',
+    gallery: ['/walnut_gold_front.png', '/walnut_gold_back.png'],
+    shortDesc: 'RTC Foods Walnut Kernals Gold – Premium quality sun-dried walnut kernels with rich taste, crunchy texture, and sealed freshness.',
+    description: 'RTC Foods Walnut Kernals Gold are high-grade walnut kernels sourced from premium crops. Carefully processed and freshness-locked to maintain rich taste and essential nutrition.',
+    weights: ['250g', '500g', '1kg'],
+    sku: 'RTC-WAL-GLD',
+    stock: true,
+    origin: 'India',
+    shelfLife: '9 Months',
+    bullets: [
+      { title: 'Gold Quality Walnut Kernels', text: 'Naturally rich, wholesome 2-piece walnut kernels.' },
+      { title: 'Nutrient Superfood', text: 'Packed with natural Omega-3, protein, and essential minerals.' },
+      { title: 'Freshness Locked Packaging', text: 'Hygienically sealed to retain crunch, flavor, and purity.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Walnut Kernals Gold' }
+    ],
+    paragraphs: [
+      'RTC Foods Walnut Kernals Gold are premium dry fruit kernels packed under strict quality standards for everyday healthy snacking.'
+    ],
+    nutrition: {
+      'Energy': '654 kcal',
+      'Protein': '15.2g'
+    },
+    features: [
+      '100% Pure Walnut Kernels',
+      'Rich in Omega-3'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
