@@ -340,7 +340,7 @@ export const products: Product[] = [
     price: 233,
     priceDisplay: '₹233.00',
     originalPrice: 233,
-    badge: 'Popular',
+    badge: '',
     rating: 4.9,
     reviewsCount: 104,
     image: '/dry_figs_front.png',
