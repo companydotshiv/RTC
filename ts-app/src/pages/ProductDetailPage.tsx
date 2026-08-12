@@ -36,6 +36,22 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [originPos, setOriginPos] = React.useState({ x: 50, y: 50 });
   const containerRef = React.useRef<HTMLDivElement>(null);
 
+  const [showStickyBar, setShowStickyBar] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      // Trigger sticky bar when user scrolls past 350px (down into the description/details area)
+      if (window.scrollY > 350) {
+        setShowStickyBar(true);
+      } else {
+        setShowStickyBar(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
@@ -630,6 +646,164 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
         </div>
       </section>
+
+      {/* Sticky Bottom Action Bar matching user screenshot */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 999,
+          background: '#FFFFFF',
+          borderTop: '1px solid #E5E7EB',
+          boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.12)',
+          padding: '12px 0',
+          transform: showStickyBar ? 'translateY(0)' : 'translateY(100%)',
+          opacity: showStickyBar ? 1 : 0,
+          transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease'
+        }}
+      >
+        <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          {/* Left: Thumbnail Image & Product Title */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: '220px' }}>
+            <img
+              src={product.image}
+              alt={product.name}
+              style={{ width: '48px', height: '48px', objectFit: 'contain', border: '1px solid #F0F0F0', borderRadius: '2px' }}
+            />
+            <span style={{ fontWeight: 700, fontSize: '0.95rem', color: '#333333' }}>
+              {product.name}
+            </span>
+          </div>
+
+          {/* Center-Right: Controls (Size, Product Type, Quantity Box, Add to Cart, Buy Now) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            {/* Size Dropdown */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '0.75rem', color: '#777777', fontWeight: 500 }}>Size</label>
+              <select
+                value={selectedWeight}
+                onChange={(e) => setSelectedWeight(e.target.value)}
+                style={{
+                  padding: '6px 24px 6px 10px',
+                  border: '1px solid #CCCCCC',
+                  borderRadius: '0px',
+                  fontSize: '0.88rem',
+                  color: '#333333',
+                  background: '#FFFFFF',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="">Choose An Option</option>
+                {product.weights.map((w) => (
+                  <option key={w} value={w}>{w}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Product Type Dropdown if available */}
+            {product.productTypes && product.productTypes.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '0.75rem', color: '#777777', fontWeight: 500 }}>Product Type</label>
+                <select
+                  defaultValue={product.productTypes[0]}
+                  style={{
+                    padding: '6px 24px 6px 10px',
+                    border: '1px solid #CCCCCC',
+                    borderRadius: '0px',
+                    fontSize: '0.88rem',
+                    color: '#333333',
+                    background: '#FFFFFF',
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">Choose An Option</option>
+                  {product.productTypes.map((pt) => (
+                    <option key={pt} value={pt}>{pt}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Quantity Controller Box */}
+            <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #CCCCCC', borderRadius: '0px', height: '38px', background: '#FFFFFF', marginTop: '16px' }}>
+              <button
+                onClick={() => {
+                  if (cartQty > 1 && onUpdateCartQty) {
+                    onUpdateCartQty(cartQty - 1);
+                  } else if (cartQty === 1 && onUpdateCartQty) {
+                    onUpdateCartQty(0);
+                  }
+                }}
+                style={{ width: '32px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.1rem', color: '#333' }}
+              >
+                –
+              </button>
+              <span style={{ minWidth: '36px', textAlign: 'center', fontSize: '0.9rem', color: '#333' }}>
+                {cartQty > 0 ? cartQty : 1}
+              </span>
+              <button
+                onClick={() => {
+                  if (cartQty > 0 && onUpdateCartQty) {
+                    onUpdateCartQty(cartQty + 1);
+                  } else {
+                    onAddToCart(1);
+                  }
+                }}
+                style={{ width: '32px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.1rem', color: '#333' }}
+              >
+                +
+              </button>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={() => {
+                if (cartQty === 0) onAddToCart(1);
+              }}
+              style={{
+                height: '38px',
+                padding: '0 24px',
+                background: '#007A3D',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '0px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                marginTop: '16px'
+              }}
+            >
+              Add to cart <ShoppingBag size={16} color="#FFFFFF" />
+            </button>
+
+            {/* Buy Now Button */}
+            <button
+              onClick={() => alert('Proceeding to instant checkout...')}
+              style={{
+                height: '38px',
+                padding: '0 24px',
+                background: '#007A3D',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '0px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginTop: '16px'
+              }}
+            >
+              Buy Now
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
