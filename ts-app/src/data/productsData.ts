@@ -505,6 +505,49 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 17,
+    slug: 'walnut-kernals-diamond',
+    name: 'Walnut Kernals Diamond',
+    category: 'dry-fruits',
+    categoryName: 'Walnut',
+    price: 375,
+    priceDisplay: '₹375.00',
+    originalPrice: 375,
+    badge: '',
+    rating: 4.8,
+    reviewsCount: 76,
+    image: '/walnut_diamond_front.png',
+    gallery: ['/walnut_diamond_front.png', '/walnut_diamond_back.jpg'],
+    shortDesc: 'RTC Foods Walnut Kernals Diamond – Handpicked premium walnut kernels with rich taste, crunchy texture, and locked-in freshness.',
+    description: 'RTC Foods Walnut Kernals Diamond are high quality walnut kernels known for their rich nutty taste, pale color, and crunchy texture. Packed under strict hygienic protocols.',
+    weights: ['250g', '500g', '1kg'],
+    sku: 'RTC-WAL-DMD',
+    stock: true,
+    origin: 'Chile',
+    shelfLife: '9 Months',
+    bullets: [
+      { title: 'Diamond Grade Walnut Kernels', text: 'Carefully selected 2-piece walnut kernels with rich taste.' },
+      { title: 'Omega-3 & Protein Rich', text: 'Supports brain health, heart health, and overall daily vitality.' },
+      { title: 'Freshness Locked Packaging', text: 'Hygienically packed to retain freshness and natural flavor.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'Chile' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Walnut Kernals Diamond' }
+    ],
+    paragraphs: [
+      'RTC Foods Walnut Kernals Diamond are premium wholesome walnut kernels naturally packed to preserve rich taste and nutrition.'
+    ],
+    nutrition: {
+      'Energy': '654 kcal',
+      'Protein': '15.2g'
+    },
+    features: [
+      'Diamond Quality Kernels',
+      'Rich in Omega-3'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
