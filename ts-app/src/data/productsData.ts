@@ -676,6 +676,51 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 20,
+    slug: 'dry-figs-gold',
+    name: 'Dry Figs Gold',
+    category: 'dry-fruits',
+    categoryName: 'Dry Figs',
+    price: 250,
+    priceDisplay: '₹250.00',
+    originalPrice: 250,
+    badge: '',
+    rating: 4.8,
+    reviewsCount: 92,
+    image: '/dry_figs_gold_front.png',
+    gallery: ['/dry_figs_gold_front.png', '/dry_figs_gold_back.png'],
+    shortDesc: 'Premium Quality Gold Grade Afghan Anjeer (Dried Figs) naturally sweet with rich flavor and soft texture.',
+    description: 'RTC Anjeer Gold is a premium selection of dried figs chosen for their rich taste, soft bite, and excellent quality.',
+    weights: ['250gm'],
+    productTypes: ['Gold'],
+    sku: 'RTC-FIG-GLD',
+    stock: true,
+    stockCount: 10,
+    origin: 'Afganistan',
+    shelfLife: '9 Months',
+    bullets: [
+      { title: 'Premium Gold Quality', text: 'Gold Grade Afghan Anjeer (Dried Figs)' },
+      { title: 'Naturally Sweet', text: 'Rich flavor and soft texture' },
+      { title: 'Rich in Fiber', text: 'Good source of dietary fiber and essential minerals' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'Afganistan' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Anjeer Gold' }
+    ],
+    paragraphs: [
+      'RTC Anjeer Gold is a premium selection of dried figs chosen for their rich taste, soft bite, and excellent quality.'
+    ],
+    nutrition: {
+      'Energy': '249 kcal',
+      'Dietary Fiber': '9.8g'
+    },
+    features: [
+      '100% Natural Afghan Anjeer',
+      'Rich in Iron & Calcium'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
