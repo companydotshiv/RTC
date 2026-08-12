@@ -969,5 +969,59 @@ export const products: Product[] = [
       '100% USA Imported Blueberries',
       'Freshness Locked Double Layer Pouch'
     ]
+  },
+  {
+    id: 24,
+    slug: 'prunes',
+    name: 'Prunes',
+    category: 'dehydrated-fruits',
+    categoryName: 'Dehydrated Fruits',
+    price: 238,
+    priceDisplay: '₹238.00',
+    originalPrice: 238,
+    badge: '',
+    rating: 4.8,
+    reviewsCount: 84,
+    image: '/prunes_front.jpg',
+    gallery: ['/prunes_front.jpg', '/prunes_back.png'],
+    shortDesc: '10 in stock. Premium quality dried prunes prepared from Chile plums. Rich in fiber, antioxidants, and essential minerals.',
+    description: 'RTC Prunes are premium quality dried plums prepared with potassium sorbate and imported from Chile. Carefully selected for their soft texture, rich natural sweetness, and digestive health benefits.',
+    weights: ['250g'],
+    productTypes: ['Standard'],
+    sku: 'RTC-PRU-01',
+    stock: true,
+    stockCount: 10,
+    origin: 'Chile',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: 'Chile Origin', text: 'Prepared from high-quality plums grown in Chile.' },
+      { title: 'Healthy Super Food', text: 'Rich in dietary fiber, antioxidants, and digestive health benefits.' },
+      { title: 'Freshness Locked', text: 'Double layer packaging to deliver nutrient-loaded dry fruits fresh to you.' },
+      { title: 'Heart & Bone Support', text: 'High in potassium, magnesium, and essential vitamins.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'Chile' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Prunes' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Prunes Prepared with Potassium Sorbate' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
+    ],
+    paragraphs: [
+      'RTC Prunes are a healthy superfood snack prepared from quality plums sourced directly from Chile. Their natural sweetness and tender texture make them a delicious choice for daily snacking and wellness routines.',
+      'Known for promoting digestive wellness and gut health, prunes can be enjoyed right out of the box or chopped into breakfast cereals, smoothies, fruit salads, and festive baked recipes.'
+    ],
+    nutrition: {
+      'Energy': '240 kcal',
+      'Dietary Fibre': '7.1g',
+      'Potassium': '732 mg'
+    },
+    features: [
+      '100% Chilean Imported Prunes',
+      'Rich in Fiber & Potassium'
+    ]
   }
 ];
