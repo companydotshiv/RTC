@@ -766,6 +766,51 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 22,
+    slug: 'black-raisins',
+    name: 'Black Raisins',
+    category: 'dry-fruits',
+    categoryName: 'Raisins',
+    price: 162,
+    priceDisplay: '₹162.00',
+    originalPrice: 162,
+    badge: '',
+    rating: 4.9,
+    reviewsCount: 88,
+    image: '/black_raisins_front.png',
+    gallery: ['/black_raisins_front.png', '/black_raisins_back.png'],
+    shortDesc: 'Premium sweet black raisins rich in antioxidants, iron, and dietary fiber.',
+    description: 'RTC Black Raisins (Kali Kishmish) are naturally sweet, plump, and juicy dry fruits carefully selected for daily health and energy.',
+    weights: ['250gm'],
+    productTypes: ['Standard'],
+    sku: 'RTC-RAI-BLK',
+    stock: true,
+    stockCount: 10,
+    origin: 'India',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: '100% Natural Black Raisins', text: 'Naturally sun-dried sweet kali kishmish.' },
+      { title: 'Rich in Antioxidants & Iron', text: 'Supports healthy digestion and vitality.' },
+      { title: 'Freshness Locked Pouch', text: 'Sealed in multi-layered pouch for long-lasting taste.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Black Raisins' }
+    ],
+    paragraphs: [
+      'RTC Black Raisins are a rich source of iron, natural sweetness, and antioxidants for daily snacking and baking.'
+    ],
+    nutrition: {
+      'Energy': '299 kcal',
+      'Iron': '2.3 mg'
+    },
+    features: [
+      '100% Sun-Dried Black Raisins',
+      'Rich in Iron & Antioxidants'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
