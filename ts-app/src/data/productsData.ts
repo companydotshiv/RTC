@@ -272,6 +272,52 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 16,
+    slug: 'indian-raisins',
+    name: 'Indian Raisins',
+    category: 'dry-fruits',
+    categoryName: 'Raisins',
+    price: 163,
+    priceDisplay: '₹163.00',
+    originalPrice: 210,
+    badge: 'Fresh',
+    rating: 4.9,
+    reviewsCount: 94,
+    image: '/indian_raisins_front.png',
+    gallery: ['/indian_raisins_front.png', '/indian_raisins_back.png'],
+    shortDesc: 'RTC Foods Indian Raisins (Kishmish) – Naturally sweet, golden, chewy raisins packed with iron, fiber, and quick energy.',
+    description: 'RTC Foods Indian Raisins are handpicked high-grade golden raisins sourced from India. Carefully processed and freshness-locked to maintain natural sweetness, soft texture, and wholesome nutrition.',
+    weights: ['250g', '500g', '1kg'],
+    sku: 'RTC-RAI-IND',
+    stock: true,
+    origin: 'India',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: 'Golden Quality Raisins', text: 'Naturally sweet and juicy Indian Kishmish with soft texture.' },
+      { title: 'Nutrient Rich', text: 'High in natural energy, iron, fiber, and essential minerals.' },
+      { title: 'Freshness Locked', text: 'Packed under hygienic conditions in double-layered protective pouches.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Indian Raisins' },
+      { label: 'Additive info', value: 'Refer to product packaging' }
+    ],
+    paragraphs: [
+      'RTC Foods Indian Raisins are a delicious, wholesome dry fruit naturally dried to preserve rich flavor and golden appearance.',
+      'Perfect for daily snacking, baking, desserts, rice dishes, and breakfast bowls.'
+    ],
+    nutrition: {
+      'Calories': '299 kcal',
+      'Protein': '3.1g',
+      'Iron': '1.9 mg'
+    },
+    features: [
+      '100% Natural Indian Kishmish',
+      'Naturally Sweet & Soft'
+    ]
+  },
+  {
     id: 4,
     slug: 'dry-figs-diamond',
     name: 'Dry Figs Diamond',
