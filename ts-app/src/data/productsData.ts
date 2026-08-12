@@ -750,27 +750,42 @@ export const products: Product[] = [
     reviewsCount: 74,
     image: '/dry_dates_front.jpg',
     gallery: ['/dry_dates_front.jpg', '/dry_dates_back.png'],
-    shortDesc: 'Premium quality naturally dried yellow dates rich in fiber, iron, and natural minerals.',
-    description: 'RTC Dry Dates (Chuara) are carefully selected naturally dried dates known for their sweet taste, rich nutritional profile, and daily wellness benefits.',
+    shortDesc: '10 in stock. Premium quality Jumbo size dry dates sourced directly from Iran. Attractive golden color with firm & chewy texture.',
+    description: 'RTC Dry Dates Gold are a premium dried fruit that offers a naturally pleasant taste and satisfying chewy texture. Carefully selected for quality, these dry dates are a wholesome snack that can be enjoyed by people of all ages.',
     weights: ['250gm'],
-    productTypes: ['Standard'],
-    sku: 'RTC-DAT-01',
+    productTypes: ['Gold'],
+    sku: 'RTC-DAT-GLD',
     stock: true,
     stockCount: 10,
-    origin: 'India',
+    origin: 'iran',
     shelfLife: '12 Months',
     bullets: [
-      { title: '100% Natural Dry Dates', text: 'Carefully selected premium yellow chuara.' },
-      { title: 'Rich in Iron & Fiber', text: 'Helps boost daily energy and supports digestion.' },
-      { title: 'Freshness Sealed', text: 'Hygienically packed in multi-layered pouch.' }
+      { title: '', text: 'Premium quality Jumbo size dry dates sourced directly from Iran' },
+      { title: '', text: 'Attractive golden color with firm & chewy texture' },
+      { title: '', text: 'Naturally mild sweet taste with nutty flavor' },
+      { title: '', text: 'Rich in dietary fiber, iron & potassium for daily nutrition' },
+      { title: '', text: 'Helps support digestion, energy & overall health' },
+      { title: '', text: 'Carefully cleaned and hygienically packed' },
+      { title: '', text: 'Ideal for healthy snacking, gifting & daily consumption' },
+      { title: '', text: 'Long shelf life when stored in a cool & dry place' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'India' },
+      { label: 'Country of origin', value: 'iran' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Dry Dates' }
+      { label: 'Common name', value: 'RTC Dry Dates (Gold)' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Dry Dates offer natural sweetness and rich wholesome nutrition for daily health and traditional recipes.'
+      'RTC Dry Dates Gold are a premium dried fruit that offers a naturally pleasant taste and satisfying chewy texture. Carefully selected for quality, these dry dates are a wholesome snack that can be enjoyed by people of all ages. They are easy to carry, ready to eat, and make a convenient addition to your daily routine.',
+      'Dry dates are a versatile ingredient that can be enjoyed straight from the pack or used in a variety of recipes. They can be chopped into breakfast cereals, oats, yogurt, and smoothie bowls or added to homemade energy bars, laddoos, cookies, cakes, and traditional Indian sweets. Their naturally mild sweetness also makes them a great ingredient for festive recipes and healthy snack mixes.',
+      'Whether you need a quick snack at home, during office hours, or while travelling, RTC Dry Dates Gold are a practical choice. They also fit perfectly into lunch boxes and are commonly enjoyed during fasting, festivals, and family gatherings. Their firm texture makes them easy to store and convenient to enjoy whenever you need a wholesome snack.',
+      'If you are looking to buy premium dry dates online, RTC Foods offers carefully selected dry dates that are packed with care to preserve their freshness, taste, and quality. Every pack is prepared to deliver a consistently enjoyable experience, making them suitable for everyday use as well as special occasions.',
+      'RTC Dry Dates Gold are a pantry essential for anyone who enjoys premium dried fruits. Whether you eat them as a snack or use them in your favourite recipes, they add natural goodness and delicious flavour to your daily meals.'
     ],
     nutrition: {
       'Energy': '282 kcal',
