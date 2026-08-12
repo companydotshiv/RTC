@@ -150,7 +150,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       width: '100%',
                       padding: '10px 32px 10px 14px',
                       border: '1px solid #CCCCCC',
-                      borderRadius: '4px',
+                      borderRadius: '0px',
                       fontSize: '0.92rem',
                       color: '#444444',
                       background: '#FFF',
@@ -175,7 +175,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         width: '100%',
                         padding: '10px 32px 10px 14px',
                         border: '1px solid #CCCCCC',
-                        borderRadius: '4px',
+                        borderRadius: '0px',
                         fontSize: '0.92rem',
                         color: '#444444',
                         background: '#FFF',
@@ -193,100 +193,110 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 )}
               </div>
 
-              {/* Quantity & Add to Cart Action Row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                {cartQty > 0 ? (
-                  /* Once item is in cart: show the green quantity box controller */
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', border: '2px solid #007A3D', borderRadius: '6px', overflow: 'hidden', height: '46px', background: '#FFFFFF' }}>
-                      <button
-                        onClick={() => onUpdateCartQty && onUpdateCartQty(cartQty - 1)}
-                        title="Reduce Quantity"
-                        style={{ width: '44px', height: '100%', border: 'none', background: '#EAF7F0', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 700, color: '#007A3D' }}
-                      >
-                        –
-                      </button>
-                      <span style={{ minWidth: '44px', textAlign: 'center', fontWeight: 700, fontSize: '1.1rem', color: '#007A3D' }}>
-                        {cartQty}
-                      </span>
-                      <button
-                        onClick={() => onUpdateCartQty && onUpdateCartQty(cartQty + 1)}
-                        title="Increase Quantity"
-                        style={{ width: '44px', height: '100%', border: 'none', background: '#EAF7F0', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 700, color: '#007A3D' }}
-                      >
-                        +
-                      </button>
-                    </div>
+              {/* Action Grid matching exact user screenshot */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
+                {/* Row 1: Quantity Counter Box + Add To Cart Button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                  {/* Square 0px border-radius Quantity Counter Box */}
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #D1D5DB', borderRadius: '0px', height: '44px', background: '#FFFFFF' }}>
+                    <button
+                      onClick={() => {
+                        if (cartQty > 1 && onUpdateCartQty) {
+                          onUpdateCartQty(cartQty - 1);
+                        } else if (cartQty === 1 && onUpdateCartQty) {
+                          onUpdateCartQty(0);
+                        }
+                      }}
+                      title="Reduce Quantity"
+                      style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
+                    >
+                      –
+                    </button>
+                    <span style={{ minWidth: '44px', textAlign: 'center', fontWeight: 400, fontSize: '1rem', color: '#333333' }}>
+                      {cartQty > 0 ? cartQty : 1}
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (cartQty > 0 && onUpdateCartQty) {
+                          onUpdateCartQty(cartQty + 1);
+                        } else {
+                          onAddToCart(1);
+                        }
+                      }}
+                      title="Increase Quantity"
+                      style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
+                    >
+                      +
+                    </button>
                   </div>
-                ) : (
-                  /* Initial State: Only show the solid green Add To Cart button */
+
+                  {/* Add To Cart Button with 0px sharp corners and deep green color */}
                   <button
                     onClick={() => {
                       setIsClicking(true);
-                      onAddToCart(1);
+                      if (cartQty === 0) onAddToCart(1);
                       setTimeout(() => setIsClicking(false), 200);
                     }}
                     style={{
-                      height: '46px',
-                      padding: '0 32px',
+                      height: '44px',
+                      padding: '0 28px',
                       background: '#007A3D',
                       color: '#FFF',
                       border: 'none',
-                      borderRadius: '4px',
+                      borderRadius: '0px',
                       fontSize: '0.95rem',
                       fontWeight: 600,
                       cursor: 'pointer',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '8px',
-                      transform: isClicking ? 'scale(0.95)' : 'scale(1)',
-                      transition: 'transform 0.15s ease, background 0.2s ease',
-                      boxShadow: '0 4px 12px rgba(0,122,61,0.2)'
+                      transform: isClicking ? 'scale(0.96)' : 'scale(1)',
+                      transition: 'transform 0.15s ease, background 0.2s ease'
                     }}
                   >
                     Add To Cart <ShoppingBag size={18} color="#FFFFFF" />
                   </button>
-                )}
-              </div>
+                </div>
 
-              {/* Buy Now & Wishlist Row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
-                <button
-                  onClick={() => alert('Proceeding to instant checkout...')}
-                  style={{
-                    height: '44px',
-                    padding: '0 28px',
-                    background: '#D5ECE0',
-                    color: '#007A3D',
-                    border: 'none',
-                    borderRadius: '4px',
-                    fontSize: '0.92rem',
-                    fontWeight: 600,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Buy Now
-                </button>
+                {/* Row 2: Buy Now Button + Wishlist Heart Button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <button
+                    onClick={() => alert('Proceeding to instant checkout...')}
+                    style={{
+                      height: '44px',
+                      padding: '0 36px',
+                      background: '#007A3D',
+                      color: '#FFF',
+                      border: 'none',
+                      borderRadius: '0px',
+                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Buy Now
+                  </button>
 
-                <button
-                  onClick={onToggleWishlist}
-                  title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '4px',
-                    border: '1px solid #CCCCCC',
-                    background: '#FFF',
-                    color: isWishlisted ? '#E53935' : '#555555',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  <Heart size={18} fill={isWishlisted ? '#E53935' : 'none'} color={isWishlisted ? '#E53935' : 'currentColor'} />
-                </button>
+                  <button
+                    onClick={onToggleWishlist}
+                    title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '0px',
+                      border: '1px solid #222222',
+                      background: '#FFF',
+                      color: isWishlisted ? '#E53935' : '#222222',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <Heart size={18} fill={isWishlisted ? '#E53935' : 'none'} color={isWishlisted ? '#E53935' : '#222222'} />
+                  </button>
+                </div>
               </div>
 
               {/* Share Social Icons matching exact WooCommerce layout */}
