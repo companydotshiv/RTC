@@ -37,14 +37,24 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   const [showStickyBar, setShowStickyBar] = React.useState(false);
+  const tabSectionRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleScroll = () => {
-      // Trigger sticky bar when user scrolls past 350px (down into the description/details area)
-      if (window.scrollY > 350) {
-        setShowStickyBar(true);
+      if (tabSectionRef.current) {
+        const rect = tabSectionRef.current.getBoundingClientRect();
+        // rect.top < 0 means the top of the 3 tabs section (Additional information, Description, Customer Feedback) has scrolled up past the top of the viewport
+        if (rect.top < 0) {
+          setShowStickyBar(true);
+        } else {
+          setShowStickyBar(false);
+        }
       } else {
-        setShowStickyBar(false);
+        if (window.scrollY > 600) {
+          setShowStickyBar(true);
+        } else {
+          setShowStickyBar(false);
+        }
       }
     };
 
@@ -338,7 +348,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       </section>
 
       {/* 3 Tabs Section matching exact WordPress layout */}
-      <section style={{ background: '#FFF', padding: '40px 0 80px 0', borderTop: '1px solid #EEEEEE' }}>
+      <section ref={tabSectionRef} style={{ background: '#FFF', padding: '40px 0 80px 0', borderTop: '1px solid #EEEEEE' }}>
         <div className="container">
           
           {/* Tab Headers */}
