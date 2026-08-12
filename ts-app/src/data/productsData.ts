@@ -810,27 +810,42 @@ export const products: Product[] = [
     reviewsCount: 88,
     image: '/black_raisins_front.png',
     gallery: ['/black_raisins_front.png', '/black_raisins_back.png'],
-    shortDesc: 'Premium sweet black raisins rich in antioxidants, iron, and dietary fiber.',
-    description: 'RTC Black Raisins (Kali Kishmish) are naturally sweet, plump, and juicy dry fruits carefully selected for daily health and energy.',
+    shortDesc: '10 in stock. Premium Afghanistan Origin: Sourced from high-quality Afghan farms known for rich, naturally sweet raisins.',
+    description: 'RTC Black Raisins are a premium dried fruit loved for their naturally rich sweetness, soft texture, and delicious flavour. Carefully selected from quality harvests, these raisins are an excellent choice for everyday snacking and cooking.',
     weights: ['250gm'],
-    productTypes: ['Standard'],
+    productTypes: [],
     sku: 'RTC-RAI-BLK',
     stock: true,
     stockCount: 10,
-    origin: 'India',
+    origin: 'Afganistain',
     shelfLife: '12 Months',
     bullets: [
-      { title: '100% Natural Black Raisins', text: 'Naturally sun-dried sweet kali kishmish.' },
-      { title: 'Rich in Antioxidants & Iron', text: 'Supports healthy digestion and vitality.' },
-      { title: 'Freshness Locked Pouch', text: 'Sealed in multi-layered pouch for long-lasting taste.' }
+      { title: '', text: 'Premium Afghanistan Origin: Sourced from high-quality Afghan farms known for rich, naturally sweet raisins.' },
+      { title: '', text: 'Nutrient-Rich Snack: High in iron, fiber, and antioxidants for overall health support.' },
+      { title: '', text: 'Supports Digestion: Natural fiber helps promote better gut health.' },
+      { title: '', text: 'Energy Boosting: Provides quick and sustained energy throughout the day.' },
+      { title: '', text: 'Soft & Juicy Texture: Plump, naturally sweet, and delicious in every bite.' },
+      { title: '', text: 'Versatile Usage: Ideal for snacking, desserts, sweets, cereals, and traditional recipes.' },
+      { title: '', text: '100% Natural: No added sugar, preservatives, or artificial additives.' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'India' },
+      { label: 'Country of origin', value: 'Afganistain' },
       { label: 'Brand', value: 'RTC FOODS' },
-      { label: 'Common name', value: 'RTC Black Raisins' }
+      { label: 'Common name', value: 'RTC Black Raisins' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Manufacturing Date', value: '01/06/2026' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Black Raisins are a rich source of iron, natural sweetness, and antioxidants for daily snacking and baking.'
+      'RTC Black Raisins are a premium dried fruit loved for their naturally rich sweetness, soft texture, and delicious flavour. Carefully selected from quality harvests, these raisins are an excellent choice for everyday snacking and cooking. Their naturally sweet taste makes them a wholesome alternative to sugary snacks and an ingredient that can be enjoyed by the whole family.',
+      'Black raisins are easy to include in your daily meals. Enjoy them straight from the pack or add them to breakfast cereals, oats, yogurt, smoothie bowls, and homemade granola. They are also widely used in cakes, cookies, muffins, breads, puddings, kheer, halwa, and festive sweets. Their rich flavour blends perfectly with dry fruits, nuts, and seeds, making them ideal for homemade trail mixes and healthy snack recipes.',
+      'Whether you are packing lunch boxes, travelling, or preparing snacks for the family, RTC Black Raisins are a convenient option to keep close at hand. They are also commonly enjoyed during festivals, fasting, and special occasions, making them a versatile pantry essential for every home.',
+      'If you are looking to buy premium black raisins online, RTC Foods offers carefully selected raisins that are packed with care to preserve their freshness, quality, and natural taste. Every pack is prepared to deliver a consistently enjoyable experience, whether you are snacking or creating your favourite recipes.',
+      'RTC Black Raisins are a simple way to add premium dried fruits to your everyday routine. Their naturally sweet flavour and versatility make them an excellent choice for breakfast, desserts, baking, traditional recipes, and healthy snacking.'
     ],
     nutrition: {
       'Energy': '299 kcal',
