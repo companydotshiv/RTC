@@ -915,5 +915,59 @@ export const products: Product[] = [
       'Rich in natural antioxidants & fiber',
       'No artificial colors or flavors added'
     ]
+  },
+  {
+    id: 23,
+    slug: 'exotic-dried-blueberries',
+    name: 'Exotic Dried Blueberries',
+    category: 'dehydrated-fruits',
+    categoryName: 'Dehydrated Fruits',
+    price: 405,
+    priceDisplay: '₹405.00',
+    originalPrice: 405,
+    badge: '',
+    rating: 4.9,
+    reviewsCount: 96,
+    image: '/dried_blueberries_front.png',
+    gallery: ['/dried_blueberries_front.png', '/dried_blueberries_back.png'],
+    shortDesc: 'Premium quality exotic dried blueberries sourced from USA. Rich in antioxidants, dietary fiber, and natural flavor.',
+    description: 'RTC Exotic Dried Blueberries imported from USA, carefully processed and packed in double-layer packaging to preserve natural sweetness and nutrient richness.',
+    weights: ['200g'],
+    productTypes: ['Standard'],
+    sku: 'RTC-BLU-01',
+    stock: true,
+    stockCount: 10,
+    origin: 'USA',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: 'Premium USA Origin', text: 'Sourced from high-quality farms in the USA.' },
+      { title: 'Healthy Super Food', text: 'Packed with natural antioxidants, Vitamin C, and dietary fiber.' },
+      { title: 'Double Layer Packaging', text: 'Freshness locked packaging to preserve nutrients and taste.' },
+      { title: 'Delicious & Versatile', text: 'Great for snacking, cereal toppings, smoothies, and baking.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'USA' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Exotic Dried Blueberries' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Blueberry, Sugar & Sunflower Oil' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
+    ],
+    paragraphs: [
+      'RTC Exotic Dried Blueberries are a premium superfood snack carefully selected and imported from the USA. With their rich natural sweetness and pleasant chewy bite, they are an ideal choice for healthy daily consumption.',
+      'Enjoy them straight from the pack or add them to your morning oats, cereal, yogurt, smoothie bowls, or gourmet baking recipes. Packed with antioxidants and essential nutrients for daily energy.'
+    ],
+    nutrition: {
+      'Energy': '343 kcal',
+      'Dietary Fibre': '7.2g',
+      'Protein': '1.4g'
+    },
+    features: [
+      '100% USA Imported Blueberries',
+      'Freshness Locked Double Layer Pouch'
+    ]
   }
 ];
