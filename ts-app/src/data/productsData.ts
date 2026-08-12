@@ -930,35 +930,46 @@ export const products: Product[] = [
     reviewsCount: 96,
     image: '/dried_blueberries_front.png',
     gallery: ['/dried_blueberries_front.png', '/dried_blueberries_back.png'],
-    shortDesc: 'Premium quality exotic dried blueberries sourced from USA. Rich in antioxidants, dietary fiber, and natural flavor.',
-    description: 'RTC Exotic Dried Blueberries imported from USA, carefully processed and packed in double-layer packaging to preserve natural sweetness and nutrient richness.',
-    weights: ['200g'],
-    productTypes: ['Standard'],
+    shortDesc: '10 in stock. Premium exotic dried blueberries sourced from the USA. Naturally sweet and mildly tangy fruity flavor.',
+    description: 'RTC Exotic Dried Blueberries are a delicious dried fruit that combines natural sweetness with a light fruity tang, making them a favourite for healthy snacking and everyday recipes.',
+    weights: ['250gm'],
+    productTypes: [],
     sku: 'RTC-BLU-01',
     stock: true,
     stockCount: 10,
-    origin: 'USA',
+    origin: 'Turkey',
     shelfLife: '12 Months',
     bullets: [
-      { title: 'Premium USA Origin', text: 'Sourced from high-quality farms in the USA.' },
-      { title: 'Healthy Super Food', text: 'Packed with natural antioxidants, Vitamin C, and dietary fiber.' },
-      { title: 'Double Layer Packaging', text: 'Freshness locked packaging to preserve nutrients and taste.' },
-      { title: 'Delicious & Versatile', text: 'Great for snacking, cereal toppings, smoothies, and baking.' }
+      { title: '', text: 'Premium exotic dried blueberries sourced from the USA' },
+      { title: '', text: 'Naturally sweet and mildly tangy fruity flavor' },
+      { title: '', text: 'Soft and chewy texture with rich blueberry taste' },
+      { title: '', text: 'Perfect for snacking, baking, cereals, and desserts' },
+      { title: '', text: 'Rich source of antioxidants and dietary fiber' },
+      { title: '', text: 'Ideal for smoothies, yogurt bowls, and trail mixes' },
+      { title: '', text: 'Carefully selected high-quality blueberries' },
+      { title: '', text: 'Hygienically processed and packed for freshness' },
+      { title: '', text: 'Convenient healthy snack for home, office, or travel' },
+      { title: '', text: 'Adds delicious flavor to muffins, cookies, and salads' },
+      { title: '', text: 'No artificial flavor added' },
+      { title: '', text: 'Freshness-sealed packaging for long-lasting taste and quality' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'USA' },
+      { label: 'Country of origin', value: 'Turkey' },
       { label: 'Brand', value: 'RTC FOODS' },
       { label: 'Common name', value: 'RTC Exotic Dried Blueberries' },
       { label: 'Additive info', value: 'Refer to the product' },
-      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Product Dimensions', value: '20L x 13W x 4H cm' },
       { label: 'Manufacturer or packer name', value: 'RTC Foods' },
       { label: 'Manufacturer or packer address', value: 'IN' },
-      { label: 'Ingredients', value: 'Blueberry, Sugar & Sunflower Oil' },
+      { label: 'Ingredients', value: 'Refer to the product' },
       { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Exotic Dried Blueberries are a premium superfood snack carefully selected and imported from the USA. With their rich natural sweetness and pleasant chewy bite, they are an ideal choice for healthy daily consumption.',
-      'Enjoy them straight from the pack or add them to your morning oats, cereal, yogurt, smoothie bowls, or gourmet baking recipes. Packed with antioxidants and essential nutrients for daily energy.'
+      'RTC Exotic Dried Blueberries are a delicious dried fruit that combines natural sweetness with a light fruity tang, making them a favourite for healthy snacking and everyday recipes. Their soft and chewy texture makes them enjoyable straight from the pack while also adding colour, flavour, and texture to a wide variety of dishes.',
+      'These dried blueberries are perfect for breakfast, desserts, and homemade snacks. Mix them into oats, granola, breakfast cereals, yogurt, or smoothie bowls for a naturally fruity taste. They are also a popular ingredient in cakes, muffins, cookies, pancakes, energy bars, chocolates, and other baked treats. Their sweet and tangy flavour blends beautifully with nuts, seeds, and other dried fruits to create delicious snack mixes.',
+      'Whether you are at home, in the office, or travelling, RTC Exotic Dried Blueberries are an easy snack to carry and enjoy anytime. They are also a great addition to lunch boxes and make an excellent topping for ice cream, fruit salads, and festive desserts. Their vibrant flavour makes both everyday meals and special recipes more enjoyable.',
+      'If you are looking to buy dried blueberries online, RTC Foods offers carefully selected premium blueberries that are packed to preserve their freshness, texture, and taste. Every pack is prepared with attention to quality, giving you a consistently enjoyable experience with every serving.',
+      'RTC Exotic Dried Blueberries are a wonderful pantry essential for anyone who enjoys premium dried fruits. Whether you are baking, preparing breakfast, or looking for a naturally delicious snack, these dried blueberries bring rich flavour and premium quality to every bite.'
     ],
     nutrition: {
       'Energy': '343 kcal',
@@ -984,35 +995,46 @@ export const products: Product[] = [
     reviewsCount: 84,
     image: '/prunes_front.jpg',
     gallery: ['/prunes_front.jpg', '/prunes_back.png'],
-    shortDesc: '10 in stock. Premium quality dried prunes prepared from Chile plums. Rich in fiber, antioxidants, and essential minerals.',
-    description: 'RTC Prunes are premium quality dried plums prepared with potassium sorbate and imported from Chile. Carefully selected for their soft texture, rich natural sweetness, and digestive health benefits.',
-    weights: ['250g'],
-    productTypes: ['Standard'],
+    shortDesc: '10 in stock. Premium quality dried prunes sourced from the USA. Naturally sweet flavor with soft and juicy texture.',
+    description: 'RTC Prunes are a delicious dried fruit that brings natural sweetness and a soft, enjoyable texture to your everyday diet. They are a simple and convenient snack that can be enjoyed anytime, whether you are at home, at work, or on the go.',
+    weights: ['250gm'],
+    productTypes: [],
     sku: 'RTC-PRU-01',
     stock: true,
     stockCount: 10,
-    origin: 'Chile',
+    origin: 'India',
     shelfLife: '12 Months',
     bullets: [
-      { title: 'Chile Origin', text: 'Prepared from high-quality plums grown in Chile.' },
-      { title: 'Healthy Super Food', text: 'Rich in dietary fiber, antioxidants, and digestive health benefits.' },
-      { title: 'Freshness Locked', text: 'Double layer packaging to deliver nutrient-loaded dry fruits fresh to you.' },
-      { title: 'Heart & Bone Support', text: 'High in potassium, magnesium, and essential vitamins.' }
+      { title: '', text: 'Premium quality dried prunes sourced from the USA' },
+      { title: '', text: 'Naturally sweet flavor with soft and juicy texture' },
+      { title: '', text: 'Rich source of dietary fiber and antioxidants' },
+      { title: '', text: 'Ideal healthy snack for everyday consumption' },
+      { title: '', text: 'Perfect for smoothies, desserts, baking, and breakfast bowls' },
+      { title: '', text: 'Helps add natural sweetness to recipes' },
+      { title: '', text: 'Carefully selected fruits for consistent quality and taste' },
+      { title: '', text: 'Hygienically processed and packed for freshness' },
+      { title: '', text: 'Convenient snack option for home, office, or travel' },
+      { title: '', text: 'Suitable for trail mixes, salads, and energy snacks' },
+      { title: '', text: 'No artificial flavor added' },
+      { title: '', text: 'Freshness-sealed packaging for long-lasting quality' }
     ],
     additionalInfoTable: [
-      { label: 'Country of origin', value: 'Chile' },
+      { label: 'Country of origin', value: 'India' },
       { label: 'Brand', value: 'RTC FOODS' },
       { label: 'Common name', value: 'RTC Prunes' },
       { label: 'Additive info', value: 'Refer to the product' },
-      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Product Dimensions', value: '20L x 13W x 4H cm' },
       { label: 'Manufacturer or packer name', value: 'RTC Foods' },
       { label: 'Manufacturer or packer address', value: 'IN' },
-      { label: 'Ingredients', value: 'Prunes Prepared with Potassium Sorbate' },
+      { label: 'Ingredients', value: 'Refer to the product' },
       { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
     ],
     paragraphs: [
-      'RTC Prunes are a healthy superfood snack prepared from quality plums sourced directly from Chile. Their natural sweetness and tender texture make them a delicious choice for daily snacking and wellness routines.',
-      'Known for promoting digestive wellness and gut health, prunes can be enjoyed right out of the box or chopped into breakfast cereals, smoothies, fruit salads, and festive baked recipes.'
+      'RTC Prunes are a delicious dried fruit that brings natural sweetness and a soft, enjoyable texture to your everyday diet. They are a simple and convenient snack that can be enjoyed anytime, whether you are at home, at work, or on the go. Their naturally rich flavour makes them a great alternative to sugary snacks and processed treats.',
+      'Prunes are a versatile ingredient that can be used in many recipes. Add them to oatmeal, yogurt, cereals, or homemade granola for a naturally sweet taste. They can also be chopped into cakes, cookies, muffins, and breads or blended into smoothies and shakes. Their soft texture makes them easy to mix into salads, energy bars, and trail mixes, giving your recipes extra flavour without the need for added sweeteners.',
+      'Keeping prunes in your pantry gives you an easy ingredient for both everyday meals and special recipes. They are loved by families for their convenience and can be packed into lunch boxes, carried during travel, or enjoyed as a quick snack between meals. Their natural taste pairs well with a wide range of fruits, nuts, and breakfast foods.',
+      'If you are looking to buy premium prunes online, RTC Foods offers carefully selected dried prunes that are packed with attention to quality and freshness. Every pack is prepared to deliver a consistently enjoyable taste and texture, making it easy to include this wholesome dried fruit in your daily routine.',
+      'Whether you enjoy them on their own or use them in your favourite recipes, RTC Prunes are a smart addition to every kitchen. Their natural sweetness and versatility make them a convenient choice for healthy snacking, baking, and everyday cooking.'
     ],
     nutrition: {
       'Energy': '240 kcal',
@@ -1020,8 +1042,8 @@ export const products: Product[] = [
       'Potassium': '732 mg'
     },
     features: [
-      '100% Chilean Imported Prunes',
-      'Rich in Fiber & Potassium'
+      '100% Quality Dried Prunes',
+      'Rich in Fiber & Antioxidants'
     ]
   }
 ];
