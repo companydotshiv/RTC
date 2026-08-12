@@ -26,6 +26,12 @@ export const categories: Category[] = [
     desc: 'Exotic dried kiwis, whole cranberries, and tangy dehydrated fruits.'
   },
   {
+    id: 'chemical-herbs',
+    name: 'Chemical & Herbs',
+    icon: 'Flame',
+    desc: 'Pure quality monosodium glutamate, kasuri methi and premium culinary herbs & seasonings.'
+  },
+  {
     id: 'gifting',
     name: 'Corporate & Festive Gifting',
     icon: 'Gift',
@@ -1044,6 +1050,119 @@ export const products: Product[] = [
     features: [
       '100% Quality Dried Prunes',
       'Rich in Fiber & Antioxidants'
+    ]
+  },
+  {
+    id: 25,
+    slug: 'ajino',
+    name: 'Ajino',
+    category: 'chemical-herbs',
+    categoryName: 'Chemical & Herbs',
+    price: 137,
+    priceDisplay: '₹137.00',
+    originalPrice: 137,
+    badge: '',
+    rating: 4.8,
+    reviewsCount: 64,
+    image: '/ajino_front.png',
+    gallery: ['/ajino_front.png', '/ajino_back.png'],
+    shortDesc: '10 in stock. Premium Quality Ajino – Sourced and processed in India. Enhances taste instantly.',
+    description: 'RTC Ajino is a popular cooking ingredient that helps bring out the rich and savoury taste in a wide variety of dishes. Its fine crystal texture mixes easily with ingredients, making it a convenient choice for both home kitchens and professional cooking.',
+    weights: ['500gm'],
+    productTypes: [],
+    sku: 'RTC-AJI-01',
+    stock: true,
+    stockCount: 10,
+    origin: 'India',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: '', text: 'Premium Quality Ajino – Sourced and processed in India' },
+      { title: '', text: 'Enhances Taste Instantly – Adds rich umami flavor to dishes' },
+      { title: '', text: 'Perfect for Cooking – Ideal for Chinese, snacks & fast food' },
+      { title: '', text: 'Fine Crystal Texture – Easy to mix and dissolve' },
+      { title: '', text: 'Multipurpose Use – Suitable for soups, noodles, fried rice & more' },
+      { title: '', text: 'Hygienically Packed – Ensures freshness and purity' },
+      { title: '', text: 'Strong Flavor Booster – Elevates taste with small quantity' },
+      { title: '', text: 'Consistent Quality – Trusted for everyday cooking' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Ajino' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 15W x 3.5H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Refer to the product' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
+    ],
+    paragraphs: [
+      'RTC Ajino is a popular cooking ingredient that helps bring out the rich and savoury taste in a wide variety of dishes. Its fine crystal texture mixes easily with ingredients, making it a convenient choice for both home kitchens and professional cooking. A small amount is enough to enhance the flavour of your favourite recipes.',
+      'Ajino is widely used in Indo Chinese cooking and can be added to noodles, fried rice, soups, stir fried vegetables, pasta, momos, spring rolls, Manchurian, chilli paneer, chilli chicken, and many other dishes. It blends smoothly with seasonings and sauces to create a well balanced and delicious taste that people enjoy.',
+      'Whether you are preparing a quick meal for your family or cooking for guests, RTC Ajino helps deliver consistent flavour in every recipe. It is suitable for everyday cooking and can be used in both vegetarian and non vegetarian dishes. Its easy to use nature makes it a useful ingredient for beginners as well as experienced cooks.',
+      'If you are looking to buy Ajino online, RTC Foods offers a premium quality product that is carefully packed to maintain freshness and quality. Every pack is prepared with attention to high standards, giving you a reliable cooking ingredient for your kitchen.',
+      'Keep RTC Ajino in your spice collection and enjoy preparing restaurant style dishes at home with ease. It is a simple way to enhance the flavour of your favourite recipes and create delicious meals for family and friends.'
+    ],
+    nutrition: {
+      'Sodium': '12.2g',
+      'Glutamate': '78%'
+    },
+    features: [
+      'Pure Monosodium Glutamate',
+      'Freshness Locked Multi-Layer Pouch'
+    ]
+  },
+  {
+    id: 26,
+    slug: 'kasuri-methi',
+    name: 'Kasuri Methi',
+    category: 'chemical-herbs',
+    categoryName: 'Chemical & Herbs',
+    price: 300,
+    priceDisplay: '₹300.00',
+    originalPrice: 300,
+    badge: '',
+    rating: 4.9,
+    reviewsCount: 78,
+    image: '/kasuri_methi_front.jpg',
+    gallery: ['/kasuri_methi_front.jpg'],
+    shortDesc: '10 in stock. Premium sun-dried Kasuri Methi (Fenugreek Leaves) with rich aroma and authentic flavor.',
+    description: 'RTC Kasuri Methi is prepared from high-grade dried fenugreek leaves, offering a distinctive aroma and rich herb flavor for Indian curries, dal, and breads.',
+    weights: ['250gm'],
+    productTypes: [],
+    sku: 'RTC-KAS-01',
+    stock: true,
+    stockCount: 10,
+    origin: 'India',
+    shelfLife: '12 Months',
+    bullets: [
+      { title: '', text: 'Sun-dried premium quality Kasuri Methi' },
+      { title: '', text: 'Delivers authentic aroma and rich herbal taste' },
+      { title: '', text: 'Perfect for parathas, paneer dishes, and curries' },
+      { title: '', text: 'Hygienically packed to retain essential oils and aroma' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Kasuri Methi' },
+      { label: 'Additive info', value: 'Refer to the product' },
+      { label: 'Product Dimensions', value: '20L x 13W x 4H cm' },
+      { label: 'Manufacturer or packer name', value: 'RTC Foods' },
+      { label: 'Manufacturer or packer address', value: 'IN' },
+      { label: 'Ingredients', value: 'Dried Fenugreek Leaves' },
+      { label: 'contact details consumer care', value: 'RTC Foods, info@rtcfoods.in' }
+    ],
+    paragraphs: [
+      'RTC Kasuri Methi brings traditional Indian flavors to life. Carefully harvested and dried under hygienic conditions to preserve rich green color and aroma.',
+      'Crush gently between palms before sprinkling over curries, lentils, paneer gravies, or kneading into paratha dough for unmatched flavor.'
+    ],
+    nutrition: {
+      'Protein': '4.4g',
+      'Dietary Fibre': '24.6g'
+    },
+    features: [
+      '100% Pure Dried Fenugreek Leaves',
+      'Hygienically Packed for Freshness'
     ]
   }
 ];

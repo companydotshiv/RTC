@@ -301,10 +301,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '6px' }}>
                     {/* Chemical & Herbs */}
                     {(() => {
-                      const isSel = selectedSubCategories.includes('Chemical');
+                      const isSel = selectedCategories.includes('chemical-herbs');
                       return (
                         <div
-                          onClick={() => toggleCategorySelection('spices', 'Chemical')}
+                          onClick={() => toggleCategorySelection('chemical-herbs')}
                           style={{
                             cursor: 'pointer',
                             fontSize: '0.88rem',
