@@ -619,6 +619,49 @@ export const products: Product[] = [
     ]
   },
   {
+    id: 19,
+    slug: 'walnut-kernals-silver',
+    name: 'Walnut Kernals Silver',
+    category: 'dry-fruits',
+    categoryName: 'Walnut',
+    price: 312,
+    priceDisplay: '₹312.00',
+    originalPrice: 312,
+    badge: '',
+    rating: 4.6,
+    reviewsCount: 58,
+    image: '/walnut_silver_front.png',
+    gallery: ['/walnut_silver_front.png', '/walnut_silver_back.png'],
+    shortDesc: 'RTC Foods Walnut Kernals Silver – Value grade 2-piece walnut kernels ideal for cooking, baking, and daily family consumption.',
+    description: 'RTC Foods Walnut Kernals Silver are high-quality 2-piece walnut kernels selected for everyday cooking, baking, and family snacking.',
+    weights: ['250g', '500g', '1kg'],
+    sku: 'RTC-WAL-SLV',
+    stock: true,
+    origin: 'India',
+    shelfLife: '9 Months',
+    bullets: [
+      { title: 'Silver Grade Walnut Kernels', text: 'Wholesome 2-piece walnut kernels at an economical value.' },
+      { title: 'Nutrient Rich', text: 'Good source of Omega-3, fiber, and essential minerals.' },
+      { title: 'Freshness Sealed', text: 'Hygienically packed to retain freshness and natural taste.' }
+    ],
+    additionalInfoTable: [
+      { label: 'Country of origin', value: 'India' },
+      { label: 'Brand', value: 'RTC FOODS' },
+      { label: 'Common name', value: 'RTC Walnut Kernals Silver' }
+    ],
+    paragraphs: [
+      'RTC Foods Walnut Kernals Silver offer great taste and quality for everyday cooking, baking, and daily snacking.'
+    ],
+    nutrition: {
+      'Energy': '654 kcal',
+      'Protein': '15.2g'
+    },
+    features: [
+      '100% Pure Walnut Kernels',
+      'Economical & Wholesome'
+    ]
+  },
+  {
     id: 7,
     slug: 'whole-cranberries-dried-gold',
     name: 'Whole Cranberries Dried (Gold)',
