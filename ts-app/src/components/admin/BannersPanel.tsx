@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { adminStore } from '../../data/adminStore';
-import type { AdminBanner } from '../../data/adminStore';
+import type { AdminBanner, BannerLayer } from '../../data/adminStore';
 import {
   Plus,
   Trash2,
@@ -10,12 +10,14 @@ import {
   Monitor,
   Maximize2,
   Minimize2,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   Sparkles,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Upload,
+  Type,
+  Image as ImageIcon,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 export const BannersPanel: React.FC = () => {
@@ -23,12 +25,19 @@ export const BannersPanel: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Partial<AdminBanner> | null>(null);
 
+  // Selected layer for moving/editing in the canvas
+  const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
+
   // Layout View Modes: Split-Screen or Fullscreen Preview Mode
   const [viewMode, setViewMode] = useState<'split' | 'fullscreen'>('split');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   // Save Toast Notification State
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // Hidden File Input Ref for Local Disk Uploads
+  const bgFileInputRef = useRef<HTMLInputElement>(null);
+  const layerFileInputRef = useRef<HTMLInputElement>(null);
 
   const banners = adminStore.banners;
   const filteredBanners = banners.filter((b) => selectedPageFilter === 'all' || b.page === selectedPageFilter || (b.page as string) === `${selectedPageFilter}_slider` || (b.page as string) === `${selectedPageFilter}_page`);
@@ -44,9 +53,26 @@ export const BannersPanel: React.FC = () => {
       linkUrl: '/products',
       buttonText: 'Shop All Products',
       buttonStyle: 'solid_green',
+      buttonBgColor: '#007A3D',
+      buttonTextColor: '#ffffff',
       textAlign: 'left',
       bgColor: '#043927',
       overlayOpacity: 0.35,
+      vignetteColor: '#000000',
+      vignetteIntensity: 0.5,
+      layers: [
+        {
+          id: 'layer-text-1',
+          type: 'text',
+          content: '✨ RTC FOODS EXCLUSIVE SELECTION',
+          x: 10,
+          y: 15,
+          fontSize: 12,
+          fontWeight: '700',
+          color: '#FFD700',
+          zIndex: 2
+        }
+      ],
       isActive: true,
       order: banners.length + 1
     });
@@ -54,7 +80,14 @@ export const BannersPanel: React.FC = () => {
   };
 
   const handleOpenEditModal = (b: AdminBanner) => {
-    setEditingBanner({ ...b });
+    setEditingBanner({
+      ...b,
+      vignetteColor: b.vignetteColor || '#000000',
+      vignetteIntensity: b.vignetteIntensity ?? 0.5,
+      buttonBgColor: b.buttonBgColor || '#007A3D',
+      buttonTextColor: b.buttonTextColor || '#ffffff',
+      layers: b.layers || []
+    });
     setIsModalOpen(true);
   };
 
@@ -75,6 +108,71 @@ export const BannersPanel: React.FC = () => {
     if (window.confirm(`Are you sure you want to delete banner "${title}"?`)) {
       adminStore.deleteBanner(id);
     }
+  };
+
+  // Helper for adding new extra sticker/image layers
+  const handleAddImageSticker = (urlOrBase64: string) => {
+    if (!editingBanner) return;
+    const newLayers = [...(editingBanner.layers || [])];
+    const newLayer: BannerLayer = {
+      id: `layer-img-${Date.now()}`,
+      type: 'image',
+      content: urlOrBase64,
+      x: 70,
+      y: 30,
+      width: 120,
+      height: 120,
+      zIndex: newLayers.length + 2
+    };
+    setEditingBanner({ ...editingBanner, layers: [...newLayers, newLayer] });
+  };
+
+  // Helper for adding extra custom text layers
+  const handleAddTextLayer = () => {
+    if (!editingBanner) return;
+    const newLayers = [...(editingBanner.layers || [])];
+    const newLayer: BannerLayer = {
+      id: `layer-txt-${Date.now()}`,
+      type: 'text',
+      content: 'New Custom Badge Text',
+      x: 10,
+      y: 80,
+      fontSize: 13,
+      fontWeight: '600',
+      color: '#ffffff',
+      bgColor: 'rgba(0,0,0,0.5)',
+      borderRadius: 4,
+      zIndex: newLayers.length + 2
+    };
+    setEditingBanner({ ...editingBanner, layers: [...newLayers, newLayer] });
+  };
+
+  // Layer order management (move up / down)
+  const handleMoveLayerOrder = (layerId: string, direction: 'up' | 'down') => {
+    if (!editingBanner || !editingBanner.layers) return;
+    const layers = [...editingBanner.layers];
+    const idx = layers.findIndex(l => l.id === layerId);
+    if (idx === -1) return;
+
+    if (direction === 'up' && idx > 0) {
+      const temp = layers[idx];
+      layers[idx] = layers[idx - 1];
+      layers[idx - 1] = temp;
+    } else if (direction === 'down' && idx < layers.length - 1) {
+      const temp = layers[idx];
+      layers[idx] = layers[idx + 1];
+      layers[idx + 1] = temp;
+    }
+    // Reassign zIndex values cleanly
+    const reindexed = layers.map((l, i) => ({ ...l, zIndex: i + 2 }));
+    setEditingBanner({ ...editingBanner, layers: reindexed });
+  };
+
+  const handleDeleteLayer = (layerId: string) => {
+    if (!editingBanner || !editingBanner.layers) return;
+    const filtered = editingBanner.layers.filter(l => l.id !== layerId);
+    setEditingBanner({ ...editingBanner, layers: filtered });
+    if (selectedLayerId === layerId) setSelectedLayerId(null);
   };
 
   const pageLabels: Record<string, string> = {
@@ -131,7 +229,7 @@ export const BannersPanel: React.FC = () => {
             <Sparkles size={20} color="#2271b1" /> Page Banner & Visual Customizer
           </h2>
           <p style={{ margin: '4px 0 0 0', color: '#646970', fontSize: '0.85rem' }}>
-            Canva/MS Word-style visual canvas for hero sliders, section banners & mobile responsive graphics
+            Canva/Photoshop-style visual canvas with layers, vignette effects, sticker graphics & mobile responsive assets
           </p>
         </div>
 
@@ -177,9 +275,28 @@ export const BannersPanel: React.FC = () => {
                 overflow: 'hidden'
               }}
             >
-              {/* Background Image & Overlay */}
-              <img src={b.imageUrl} alt={b.title} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 1 - (b.overlayOpacity ?? 0.3) }} />
+              {/* Background Image */}
+              <img src={b.imageUrl} alt={b.title} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              
+              {/* Color Overlay */}
               <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: b.bgColor || '#000000', opacity: b.overlayOpacity ?? 0.35, zIndex: 1 }} />
+
+              {/* Built-in Vignette Gradient Effect */}
+              {b.vignetteIntensity ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: `radial-gradient(circle, transparent 40%, ${b.vignetteColor || '#000000'} 100%)`,
+                    opacity: b.vignetteIntensity,
+                    zIndex: 1,
+                    pointerEvents: 'none'
+                  }}
+                />
+              ) : null}
 
               {/* Text Layer */}
               <div style={{ position: 'relative', zIndex: 2, color: '#ffffff', maxWidth: '85%', textAlign: b.textAlign || 'left' }}>
@@ -239,16 +356,52 @@ export const BannersPanel: React.FC = () => {
         ))}
       </div>
 
-      {/* Visual Canva/MS Word-Style Editor Modal */}
+      {/* Hidden File Input Elements for Local File Import */}
+      <input
+        type="file"
+        ref={bgFileInputRef}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0] && editingBanner) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              const base64 = evt.target?.result as string;
+              setEditingBanner({ ...editingBanner, imageUrl: base64 });
+            };
+            reader.readAsDataURL(file);
+          }
+        }}
+      />
+      <input
+        type="file"
+        ref={layerFileInputRef}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0] && editingBanner) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+              const base64 = evt.target?.result as string;
+              handleAddImageSticker(base64);
+            };
+            reader.readAsDataURL(file);
+          }
+        }}
+      />
+
+      {/* Visual Canva/Photoshop-Style Editor Modal */}
       {isModalOpen && editingBanner && (
         <div className="admin-modal-overlay" style={{ zIndex: 999999 }}>
           <div
             className="admin-modal"
             style={{
-              maxWidth: viewMode === 'fullscreen' ? '96vw' : '1100px',
+              maxWidth: viewMode === 'fullscreen' ? '98vw' : '1180px',
               width: '95vw',
-              height: viewMode === 'fullscreen' ? '92vh' : 'auto',
-              maxHeight: '90vh',
+              height: viewMode === 'fullscreen' ? '94vh' : 'auto',
+              maxHeight: '92vh',
               display: 'flex',
               flexDirection: 'column',
               padding: 0,
@@ -261,11 +414,11 @@ export const BannersPanel: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Layers size={18} color="#2271b1" />
                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
-                  {editingBanner.id ? `Visual Customizer: "${editingBanner.title}"` : 'Create New Visual Page Banner'}
+                  {editingBanner.id ? `Canva/Photoshop Visual Editor: "${editingBanner.title}"` : 'Create New Visual Page Banner'}
                 </h3>
               </div>
 
-              {/* View Switchers: Split Screen vs Fullscreen & Device Toggle */}
+              {/* View Switchers & Controls */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{ background: '#2c3338', padding: '3px', borderRadius: '4px', display: 'flex', gap: '4px' }}>
                   <button
@@ -302,10 +455,10 @@ export const BannersPanel: React.FC = () => {
               </div>
             </div>
 
-            {/* Split Screen Container (Left Controls, Right Live Canva Preview) */}
+            {/* Split Screen Container (Left Controls & Layer Manager, Right Live Canvas) */}
             <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
               
-              {/* LEFT 50% COLUMN: Canva / MS Word Controls */}
+              {/* LEFT 50% COLUMN: Controls & Layer Manager */}
               <form onSubmit={handleSaveBanner} style={{ width: '50%', minWidth: '450px', padding: '20px', overflowY: 'auto', background: '#f6f7f7', borderRight: '1px solid #c3c4c7' }}>
                 
                 {/* 1. Page Location & Position */}
@@ -345,89 +498,205 @@ export const BannersPanel: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 2. MS Word Headline & Subtitle Styling */}
+                {/* 2. Unified Background Image Container + Import Button */}
+                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>2. Background Image Asset</h4>
+                  
+                  <div style={{ marginBottom: '10px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>
+                      Unified Image Container (Paste URL, Drag File, or Ctrl+V)
+                    </label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="text"
+                        placeholder="Paste image URL (https://...) or press Ctrl+V directly!"
+                        style={{ flexGrow: 1, padding: '7px 10px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
+                        value={editingBanner.imageUrl || ''}
+                        onChange={(e) => setEditingBanner({ ...editingBanner, imageUrl: e.target.value })}
+                        onPaste={(e) => {
+                          const items = e.clipboardData.items;
+                          for (let i = 0; i < items.length; i++) {
+                            if (items[i].type.indexOf('image') !== -1) {
+                              const blob = items[i].getAsFile();
+                              if (blob) {
+                                const reader = new FileReader();
+                                reader.onload = (evt) => {
+                                  setEditingBanner({ ...editingBanner, imageUrl: evt.target?.result as string });
+                                };
+                                reader.readAsDataURL(blob);
+                              }
+                            }
+                          }
+                        }}
+                      />
+                      <button
+                        type="button"
+                        style={{ background: '#2271b1', color: '#fff', border: 'none', padding: '0 14px', borderRadius: '4px', fontWeight: 600, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}
+                        onClick={() => bgFileInputRef.current?.click()}
+                      >
+                        <Upload size={14} /> + Import File
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. Vignette Effect & Dual-Mode Color Pickers */}
+                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>3. Vignette Effect & Color Palette</h4>
+
+                  {/* Dual Mode Background Color */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Canvas Background Color</label>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <input
+                          type="color"
+                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          value={editingBanner.bgColor || '#043927'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, bgColor: e.target.value })}
+                        />
+                        <input
+                          type="text"
+                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          value={editingBanner.bgColor || '#043927'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, bgColor: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Vignette Shadow Color</label>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <input
+                          type="color"
+                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          value={editingBanner.vignetteColor || '#000000'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, vignetteColor: e.target.value })}
+                        />
+                        <input
+                          type="text"
+                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          value={editingBanner.vignetteColor || '#000000'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, vignetteColor: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Vignette Intensity ({Math.round((editingBanner.vignetteIntensity ?? 0.5) * 100)}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.05"
+                        style={{ width: '100%', marginTop: '6px' }}
+                        value={editingBanner.vignetteIntensity ?? 0.5}
+                        onChange={(e) => setEditingBanner({ ...editingBanner, vignetteIntensity: parseFloat(e.target.value) })}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Dark Overlay Opacity ({Math.round((editingBanner.overlayOpacity ?? 0.35) * 100)}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="0.8"
+                        step="0.05"
+                        style={{ width: '100%', marginTop: '6px' }}
+                        value={editingBanner.overlayOpacity ?? 0.35}
+                        onChange={(e) => setEditingBanner({ ...editingBanner, overlayOpacity: parseFloat(e.target.value) })}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Photoshop/Canva Full Layer Manager Sidebar */}
                 <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h4 style={{ margin: 0, fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>2. Headline & Text Formatting</h4>
+                    <h4 style={{ margin: 0, fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Layers size={16} color="#2271b1" /> 4. Layer Manager & Extra Components
+                    </h4>
                     
-                    {/* MS Word Alignment Controls */}
-                    <div style={{ display: 'flex', gap: '4px', background: '#f0f0f1', padding: '2px', borderRadius: '4px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
                       <button
                         type="button"
-                        style={{ padding: '4px 8px', background: editingBanner.textAlign === 'left' ? '#ffffff' : 'transparent', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                        onClick={() => setEditingBanner({ ...editingBanner, textAlign: 'left' })}
+                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => layerFileInputRef.current?.click()}
                       >
-                        <AlignLeft size={14} />
+                        <ImageIcon size={12} /> + Sticker Image
                       </button>
                       <button
                         type="button"
-                        style={{ padding: '4px 8px', background: editingBanner.textAlign === 'center' ? '#ffffff' : 'transparent', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                        onClick={() => setEditingBanner({ ...editingBanner, textAlign: 'center' })}
+                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={handleAddTextLayer}
                       >
-                        <AlignCenter size={14} />
-                      </button>
-                      <button
-                        type="button"
-                        style={{ padding: '4px 8px', background: editingBanner.textAlign === 'right' ? '#ffffff' : 'transparent', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                        onClick={() => setEditingBanner({ ...editingBanner, textAlign: 'right' })}
-                      >
-                        <AlignRight size={14} />
+                        <Type size={12} /> + Text Box
                       </button>
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Headline Title</label>
-                    <input
-                      type="text"
-                      required
-                      style={{ width: '100%', padding: '8px', fontSize: '13px', border: '1px solid #8c8f94', borderRadius: '4px' }}
-                      value={editingBanner.title || ''}
-                      onChange={(e) => setEditingBanner({ ...editingBanner, title: e.target.value })}
-                    />
-                  </div>
+                  {/* Layers List (Drag-to-Reorder / Up-Down) */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {(editingBanner.layers || []).map((layer, idx) => (
+                      <div
+                        key={layer.id}
+                        style={{
+                          background: selectedLayerId === layer.id ? '#f0f6fc' : '#f8fafc',
+                          border: `1px solid ${selectedLayerId === layer.id ? '#0969da' : '#cbd5e1'}`,
+                          borderRadius: '6px',
+                          padding: '10px 12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between'
+                        }}
+                        onClick={() => setSelectedLayerId(layer.id)}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', background: '#e2e8f0', padding: '2px 6px', borderRadius: '3px' }}>
+                            #{idx + 1}
+                          </span>
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>
+                              {layer.type === 'image' ? '🖼️ Image Sticker' : '🔤 Text Box Layer'}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {layer.content}
+                            </div>
+                          </div>
+                        </div>
 
-                  <div>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Subtitle / Subtext</label>
-                    <textarea
-                      rows={2}
-                      style={{ width: '100%', padding: '8px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', resize: 'vertical' }}
-                      value={editingBanner.subtitle || ''}
-                      onChange={(e) => setEditingBanner({ ...editingBanner, subtitle: e.target.value })}
-                    />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <button
+                            type="button"
+                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer' }}
+                            onClick={(evt) => { evt.stopPropagation(); handleMoveLayerOrder(layer.id, 'up'); }}
+                          >
+                            <ArrowUp size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer' }}
+                            onClick={(evt) => { evt.stopPropagation(); handleMoveLayerOrder(layer.id, 'down'); }}
+                          >
+                            <ArrowDown size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            style={{ background: '#fff0f0', border: '1px solid #d63638', color: '#d63638', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer', marginLeft: '4px' }}
+                            onClick={(evt) => { evt.stopPropagation(); handleDeleteLayer(layer.id); }}
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* 3. Desktop & Mobile Image Assets */}
+                {/* 5. Button CTA & Color Palette with Dual Hex Code Pickers */}
                 <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>3. Graphics & Responsive Images</h4>
-                  
-                  <div style={{ marginBottom: '12px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>🖥️ Desktop Banner Image URL (1200x500px)</label>
-                    <input
-                      type="text"
-                      required
-                      style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
-                      value={editingBanner.imageUrl || ''}
-                      onChange={(e) => setEditingBanner({ ...editingBanner, imageUrl: e.target.value })}
-                    />
-                  </div>
-
-                  <div>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>📱 Mobile Banner Image URL (600x600px - Phone Optimized)</label>
-                    <input
-                      type="text"
-                      placeholder="Optional mobile optimized image..."
-                      style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
-                      value={editingBanner.mobileImageUrl || ''}
-                      onChange={(e) => setEditingBanner({ ...editingBanner, mobileImageUrl: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* 4. Button & Color Styling */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>4. Button CTA & Color Palette</h4>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>5. CTA Button Customizer</h4>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                     <div>
@@ -451,28 +720,42 @@ export const BannersPanel: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Dual Mode Button Color Pickers */}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Background Color</label>
-                      <input
-                        type="color"
-                        style={{ width: '100%', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
-                        value={editingBanner.bgColor || '#043927'}
-                        onChange={(e) => setEditingBanner({ ...editingBanner, bgColor: e.target.value })}
-                      />
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Button Background Color</label>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <input
+                          type="color"
+                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          value={editingBanner.buttonBgColor || '#007A3D'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonBgColor: e.target.value })}
+                        />
+                        <input
+                          type="text"
+                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          value={editingBanner.buttonBgColor || '#007A3D'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonBgColor: e.target.value })}
+                        />
+                      </div>
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Overlay Darkness ({Math.round((editingBanner.overlayOpacity ?? 0.35) * 100)}%)</label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="0.8"
-                        step="0.05"
-                        style={{ width: '100%', marginTop: '6px' }}
-                        value={editingBanner.overlayOpacity ?? 0.35}
-                        onChange={(e) => setEditingBanner({ ...editingBanner, overlayOpacity: parseFloat(e.target.value) })}
-                      />
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Button Text Color</label>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <input
+                          type="color"
+                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          value={editingBanner.buttonTextColor || '#ffffff'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonTextColor: e.target.value })}
+                        />
+                        <input
+                          type="text"
+                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          value={editingBanner.buttonTextColor || '#ffffff'}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonTextColor: e.target.value })}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,18 +771,18 @@ export const BannersPanel: React.FC = () => {
 
               </form>
 
-              {/* RIGHT 50% COLUMN: Live Interactive Canva Preview */}
+              {/* RIGHT 50% COLUMN: Live Interactive Canva Preview with Layer Ordering & Vignette */}
               <div style={{ width: '50%', padding: '20px', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
                 <div style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>
-                  LIVE REAL-TIME PREVIEW ({previewDevice === 'mobile' ? 'Mobile View' : 'Desktop View'})
+                  LIVE INTERACTIVE CANVA PREVIEW ({previewDevice === 'mobile' ? 'Mobile View' : 'Desktop View'})
                 </div>
 
-                {/* Outer Phone/Desktop Frame */}
+                {/* Canvas Box */}
                 <div
                   style={{
                     width: previewDevice === 'mobile' ? '360px' : '100%',
                     maxWidth: '680px',
-                    height: previewDevice === 'mobile' ? '540px' : '320px',
+                    height: previewDevice === 'mobile' ? '540px' : '340px',
                     background: '#ffffff',
                     borderRadius: '12px',
                     boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
@@ -532,12 +815,51 @@ export const BannersPanel: React.FC = () => {
                     {/* Dark Overlay */}
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: editingBanner.bgColor || '#000000', opacity: editingBanner.overlayOpacity ?? 0.35, zIndex: 1 }} />
 
-                    {/* Content Box */}
-                    <div style={{ position: 'relative', zIndex: 2, color: '#ffffff', maxWidth: '80%', textAlign: editingBanner.textAlign || 'left' }}>
-                      <span style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', background: '#007A3D', color: '#fff', padding: '3px 10px', borderRadius: '4px', fontWeight: 700, display: 'inline-block', marginBottom: '10px' }}>
-                        RTC FOODS EXCLUSIVE
-                      </span>
+                    {/* Built-in Vignette Gradient Shadow */}
+                    {editingBanner.vignetteIntensity ? (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          background: `radial-gradient(circle, transparent 40%, ${editingBanner.vignetteColor || '#000000'} 100%)`,
+                          opacity: editingBanner.vignetteIntensity,
+                          zIndex: 1,
+                          pointerEvents: 'none'
+                        }}
+                      />
+                    ) : null}
 
+                    {/* Dynamic Rendered Layers (Stickers, Text boxes) */}
+                    {(editingBanner.layers || []).map((layer) => (
+                      <div
+                        key={layer.id}
+                        style={{
+                          position: 'absolute',
+                          left: `${layer.x}%`,
+                          top: `${layer.y}%`,
+                          zIndex: layer.zIndex || 2,
+                          cursor: 'move',
+                          border: selectedLayerId === layer.id ? '2px dashed #0969da' : 'none',
+                          padding: '4px',
+                          borderRadius: '4px'
+                        }}
+                        onClick={() => setSelectedLayerId(layer.id)}
+                      >
+                        {layer.type === 'image' ? (
+                          <img src={layer.content} alt="Sticker Layer" style={{ width: layer.width || 100, height: layer.height || 100, objectFit: 'contain' }} />
+                        ) : (
+                          <div style={{ fontSize: layer.fontSize || 13, fontWeight: layer.fontWeight || '600', color: layer.color || '#fff', background: layer.bgColor || 'transparent', padding: layer.bgColor ? '4px 10px' : 0, borderRadius: layer.borderRadius || 0 }}>
+                            {layer.content}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Main Headline & CTA Text Layer */}
+                    <div style={{ position: 'relative', zIndex: 2, color: '#ffffff', maxWidth: '80%', textAlign: editingBanner.textAlign || 'left' }}>
                       <h2 style={{ margin: '0 0 10px 0', fontSize: previewDevice === 'mobile' ? '1.3rem' : '1.8rem', fontWeight: 700, lineHeight: 1.2, color: '#ffffff' }}>
                         {editingBanner.title || 'Your Banner Title'}
                       </h2>
@@ -552,16 +874,15 @@ export const BannersPanel: React.FC = () => {
                         <button
                           type="button"
                           style={{
-                            background: editingBanner.buttonStyle === 'glass' ? 'rgba(255,255,255,0.25)' : '#007A3D',
-                            color: '#ffffff',
+                            background: editingBanner.buttonBgColor || '#007A3D',
+                            color: editingBanner.buttonTextColor || '#ffffff',
                             border: editingBanner.buttonStyle === 'outline' ? '2px solid #ffffff' : 'none',
                             padding: '10px 22px',
                             borderRadius: editingBanner.buttonStyle === 'dark_pill' ? '24px' : '4px',
                             fontWeight: 700,
                             fontSize: '0.9rem',
                             cursor: 'pointer',
-                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                            backdropFilter: editingBanner.buttonStyle === 'glass' ? 'blur(8px)' : 'none'
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                           }}
                         >
                           {editingBanner.buttonText}

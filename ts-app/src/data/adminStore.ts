@@ -25,6 +25,22 @@ export interface AdminCoupon {
   expiryDate: string;
 }
 
+export interface BannerLayer {
+  id: string;
+  type: 'text' | 'image' | 'shape';
+  content: string; // Text content, Image URL/Base64, or Shape type
+  x: number; // Percentage offset from left (0-100)
+  y: number; // Percentage offset from top (0-100)
+  width?: number; // width in px or %
+  height?: number; // height in px or %
+  fontSize?: number;
+  fontWeight?: string;
+  color?: string;
+  bgColor?: string;
+  borderRadius?: number;
+  zIndex: number;
+}
+
 export interface AdminBanner {
   id: string;
   page: 'home' | 'products' | 'checkout' | 'category' | 'home_slider' | 'products_page' | 'checkout_page' | 'category_header';
@@ -36,9 +52,14 @@ export interface AdminBanner {
   linkUrl: string;
   buttonText: string;
   buttonStyle?: 'solid_green' | 'dark_pill' | 'glass' | 'outline';
+  buttonBgColor?: string;
+  buttonTextColor?: string;
   textAlign?: 'left' | 'center' | 'right';
   bgColor?: string;
   overlayOpacity?: number;
+  vignetteColor?: string;
+  vignetteIntensity?: number;
+  layers?: BannerLayer[];
   isActive: boolean;
   order: number;
 }
