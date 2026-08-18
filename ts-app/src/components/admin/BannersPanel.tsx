@@ -8,8 +8,6 @@ import {
   Check,
   Smartphone,
   Monitor,
-  Maximize2,
-  Minimize2,
   Sparkles,
   Layers,
   ArrowRight,
@@ -17,7 +15,11 @@ import {
   Type,
   Image as ImageIcon,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  ZoomIn,
+  Move,
+  Crop,
+  X
 } from 'lucide-react';
 
 export const BannersPanel: React.FC = () => {
@@ -25,11 +27,15 @@ export const BannersPanel: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Partial<AdminBanner> | null>(null);
 
+  // Crop & Zoom Double-Click Tool State
+  const [isCropMode, setIsCropMode] = useState<boolean>(false);
+  const [isDraggingPan, setIsDraggingPan] = useState<boolean>(false);
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
   // Selected layer for moving/editing in the canvas
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
 
   // Layout View Modes: Split-Screen or Fullscreen Preview Mode
-  const [viewMode, setViewMode] = useState<'split' | 'fullscreen'>('split');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
 
   // Save Toast Notification State
@@ -46,6 +52,10 @@ export const BannersPanel: React.FC = () => {
     setEditingBanner({
       page: 'home',
       position: 'hero',
+      aspectRatio: '16:9',
+      imageZoom: 1,
+      imagePanX: 0,
+      imagePanY: 0,
       title: '100% Pure Premium Dry Fruits & Spices',
       subtitle: 'Triple-sorted jumbo almonds, cashews, Kashmir saffron & gourmet seeds',
       imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200',
@@ -76,18 +86,24 @@ export const BannersPanel: React.FC = () => {
       isActive: true,
       order: banners.length + 1
     });
+    setIsCropMode(false);
     setIsModalOpen(true);
   };
 
   const handleOpenEditModal = (b: AdminBanner) => {
     setEditingBanner({
       ...b,
+      aspectRatio: b.aspectRatio || '16:9',
+      imageZoom: b.imageZoom ?? 1,
+      imagePanX: b.imagePanX ?? 0,
+      imagePanY: b.imagePanY ?? 0,
       vignetteColor: b.vignetteColor || '#000000',
       vignetteIntensity: b.vignetteIntensity ?? 0.5,
       buttonBgColor: b.buttonBgColor || '#007A3D',
       buttonTextColor: b.buttonTextColor || '#ffffff',
       layers: b.layers || []
     });
+    setIsCropMode(false);
     setIsModalOpen(true);
   };
 
@@ -163,7 +179,6 @@ export const BannersPanel: React.FC = () => {
       layers[idx] = layers[idx + 1];
       layers[idx + 1] = temp;
     }
-    // Reassign zIndex values cleanly
     const reindexed = layers.map((l, i) => ({ ...l, zIndex: i + 2 }));
     setEditingBanner({ ...editingBanner, layers: reindexed });
   };
@@ -193,6 +208,15 @@ export const BannersPanel: React.FC = () => {
     bottom: 'Bottom Footer Banner'
   };
 
+  // Aspect Ratios with visual shape depictions
+  const aspectRatios = [
+    { key: '16:9', label: '16:9 Widescreen Desktop', icon: '🖥️ [ ▭ ]' },
+    { key: '4:3', label: '4:3 Standard Display', icon: '💻 [ ▢ ]' },
+    { key: '1:1', label: '1:1 Square Card', icon: '🔳 [ ⬛ ]' },
+    { key: '9:16', label: '9:16 Vertical Mobile', icon: '📱 [ ▯ ]' },
+    { key: '21:9', label: '21:9 Ultrawide Hero', icon: '🎞️ [ ▬ ]' }
+  ];
+
   return (
     <div className="banners-panel" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
       {/* Toast Save Banner Notification */}
@@ -207,7 +231,7 @@ export const BannersPanel: React.FC = () => {
             padding: '12px 24px',
             borderRadius: '6px',
             boxShadow: '0 6px 20px rgba(0,0,0,0.18)',
-            zIndex: 99999,
+            zIndex: 9999999,
             fontWeight: 700,
             fontSize: '0.95rem',
             display: 'inline-flex',
@@ -229,7 +253,7 @@ export const BannersPanel: React.FC = () => {
             <Sparkles size={20} color="#2271b1" /> Page Banner & Visual Customizer
           </h2>
           <p style={{ margin: '4px 0 0 0', color: '#646970', fontSize: '0.85rem' }}>
-            Canva/Photoshop-style visual canvas with layers, vignette effects, sticker graphics & mobile responsive assets
+            Canva-style interactive canvas with double-click zoom & crop, visual aspect ratios, layers & vignette effects
           </p>
         </div>
 
@@ -276,7 +300,19 @@ export const BannersPanel: React.FC = () => {
               }}
             >
               {/* Background Image */}
-              <img src={b.imageUrl} alt={b.title} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img
+                src={b.imageUrl}
+                alt={b.title}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  transform: `scale(${b.imageZoom || 1}) translate(${b.imagePanX || 0}px, ${b.imagePanY || 0}px)`
+                }}
+              />
               
               {/* Color Overlay */}
               <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: b.bgColor || '#000000', opacity: b.overlayOpacity ?? 0.35, zIndex: 1 }} />
@@ -392,85 +428,88 @@ export const BannersPanel: React.FC = () => {
         }}
       />
 
-      {/* Visual Canva/Photoshop-Style Editor Modal */}
+      {/* FULL-VIEWPORT CLEAN LIGHT CANVA WORKSPACE MODAL */}
       {isModalOpen && editingBanner && (
-        <div className="admin-modal-overlay" style={{ zIndex: 999999 }}>
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(15, 23, 42, 0.85)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 999999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
           <div
-            className="admin-modal"
             style={{
-              maxWidth: viewMode === 'fullscreen' ? '98vw' : '1180px',
-              width: '95vw',
-              height: viewMode === 'fullscreen' ? '94vh' : 'auto',
-              maxHeight: '92vh',
+              width: '98vw',
+              height: '96vh',
+              background: '#ffffff',
+              borderRadius: '12px',
+              boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
               display: 'flex',
               flexDirection: 'column',
-              padding: 0,
-              overflow: 'hidden',
-              borderRadius: '8px'
+              overflow: 'hidden'
             }}
           >
-            {/* Modal Header */}
-            <div style={{ background: '#1d2327', color: '#ffffff', padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Layers size={18} color="#2271b1" />
-                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>
-                  {editingBanner.id ? `Canva/Photoshop Visual Editor: "${editingBanner.title}"` : 'Create New Visual Page Banner'}
+            {/* Top Light High-Contrast Toolbar */}
+            <div style={{ background: '#1d2327', color: '#ffffff', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #2c3338' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Sparkles size={20} color="#38bdf8" />
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' }}>
+                  {editingBanner.id ? `Canva Visual Customizer — "${editingBanner.title}"` : 'Create New Visual Page Banner'}
                 </h3>
               </div>
 
-              {/* View Switchers & Controls */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ background: '#2c3338', padding: '3px', borderRadius: '4px', display: 'flex', gap: '4px' }}>
+              {/* Device Toggle & Close */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ background: '#2c3338', padding: '3px', borderRadius: '6px', display: 'flex', gap: '4px' }}>
                   <button
                     type="button"
-                    style={{ background: previewDevice === 'desktop' ? '#2271b1' : 'transparent', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    style={{ background: previewDevice === 'desktop' ? '#2271b1' : 'transparent', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                     onClick={() => setPreviewDevice('desktop')}
                   >
-                    <Monitor size={14} /> Desktop
+                    <Monitor size={15} /> Desktop
                   </button>
                   <button
                     type="button"
-                    style={{ background: previewDevice === 'mobile' ? '#2271b1' : 'transparent', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '3px', fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    style={{ background: previewDevice === 'mobile' ? '#2271b1' : 'transparent', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                     onClick={() => setPreviewDevice('mobile')}
                   >
-                    <Smartphone size={14} /> Mobile
+                    <Smartphone size={15} /> Mobile
                   </button>
                 </div>
 
                 <button
                   type="button"
-                  style={{ background: 'none', border: 'none', color: '#c3c4c7', cursor: 'pointer' }}
-                  onClick={() => setViewMode(viewMode === 'split' ? 'fullscreen' : 'split')}
-                >
-                  {viewMode === 'split' ? <Maximize2 size={18} /> : <Minimize2 size={18} />}
-                </button>
-
-                <button
-                  type="button"
-                  style={{ background: 'none', border: 'none', color: '#fff', fontSize: '20px', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: '#ffffff', fontSize: '24px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                   onClick={() => setIsModalOpen(false)}
                 >
-                  ✕
+                  <X size={24} />
                 </button>
               </div>
             </div>
 
-            {/* Split Screen Container (Left Controls & Layer Manager, Right Live Canvas) */}
+            {/* Split Screen Container (Left Form Controls, Right Canva Interactive Workspace) */}
             <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
               
-              {/* LEFT 50% COLUMN: Controls & Layer Manager */}
-              <form onSubmit={handleSaveBanner} style={{ width: '50%', minWidth: '450px', padding: '20px', overflowY: 'auto', background: '#f6f7f7', borderRight: '1px solid #c3c4c7' }}>
+              {/* LEFT 45% COLUMN: Form Controls */}
+              <form onSubmit={handleSaveBanner} style={{ width: '45%', minWidth: '450px', padding: '24px', overflowY: 'auto', background: '#f8fafc', borderRight: '1px solid #e2e8f0' }}>
                 
                 {/* 1. Page Location & Position */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>1. Page Location & Placement</h4>
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h4 style={{ margin: '0 0 14px 0', fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700 }}>1. Location & Placement</h4>
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Target Storefront Page</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Storefront Page</label>
                       <select
-                        className="admin-form-control"
-                        style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
+                        style={{ width: '100%', padding: '8px', fontSize: '13px', border: '1px solid #94a3b8', borderRadius: '6px' }}
                         value={editingBanner.page || 'home'}
                         onChange={(e) => setEditingBanner({ ...editingBanner, page: e.target.value as AdminBanner['page'] })}
                       >
@@ -482,10 +521,9 @@ export const BannersPanel: React.FC = () => {
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Placement Position</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Placement Position</label>
                       <select
-                        className="admin-form-control"
-                        style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
+                        style={{ width: '100%', padding: '8px', fontSize: '13px', border: '1px solid #94a3b8', borderRadius: '6px' }}
                         value={editingBanner.position || 'hero'}
                         onChange={(e) => setEditingBanner({ ...editingBanner, position: e.target.value as AdminBanner['position'] })}
                       >
@@ -498,19 +536,39 @@ export const BannersPanel: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 2. Unified Background Image Container + Import Button */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>2. Background Image Asset</h4>
+                {/* 2. Aspect Ratio Selector with Visual Helper Icons */}
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h4 style={{ margin: '0 0 14px 0', fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700 }}>2. Device Aspect Ratio & Canvas Shape</h4>
                   
-                  <div style={{ marginBottom: '10px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '6px' }}>Select Device Display Ratio</label>
+                    <select
+                      style={{ width: '100%', padding: '9px', fontSize: '13px', border: '1px solid #0284c7', borderRadius: '6px', fontWeight: 600, color: '#0369a1', background: '#f0f9ff' }}
+                      value={editingBanner.aspectRatio || '16:9'}
+                      onChange={(e) => setEditingBanner({ ...editingBanner, aspectRatio: e.target.value as AdminBanner['aspectRatio'] })}
+                    >
+                      {aspectRatios.map((ar) => (
+                        <option key={ar.key} value={ar.key}>
+                          {ar.icon} {ar.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* 3. Unified Image Box + Local Import */}
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h4 style={{ margin: '0 0 14px 0', fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700 }}>3. Background Image Asset</h4>
+                  
+                  <div style={{ marginBottom: '12px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '6px' }}>
                       Unified Image Container (Paste URL, Drag File, or Ctrl+V)
                     </label>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input
                         type="text"
                         placeholder="Paste image URL (https://...) or press Ctrl+V directly!"
-                        style={{ flexGrow: 1, padding: '7px 10px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
+                        style={{ flexGrow: 1, padding: '8px 12px', fontSize: '13px', border: '1px solid #94a3b8', borderRadius: '6px' }}
                         value={editingBanner.imageUrl || ''}
                         onChange={(e) => setEditingBanner({ ...editingBanner, imageUrl: e.target.value })}
                         onPaste={(e) => {
@@ -531,33 +589,58 @@ export const BannersPanel: React.FC = () => {
                       />
                       <button
                         type="button"
-                        style={{ background: '#2271b1', color: '#fff', border: 'none', padding: '0 14px', borderRadius: '4px', fontWeight: 600, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}
+                        style={{ background: '#2271b1', color: '#fff', border: 'none', padding: '0 16px', borderRadius: '6px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                         onClick={() => bgFileInputRef.current?.click()}
                       >
-                        <Upload size={14} /> + Import File
+                        <Upload size={15} /> + Import File
                       </button>
                     </div>
                   </div>
                 </div>
 
-                {/* 3. Vignette Effect & Dual-Mode Color Pickers */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>3. Vignette Effect & Color Palette</h4>
+                {/* 4. Text & Headline Controls */}
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h4 style={{ margin: '0 0 14px 0', fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700 }}>4. Headline & Subtitle</h4>
 
-                  {/* Dual Mode Background Color */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Headline Title</label>
+                    <input
+                      type="text"
+                      required
+                      style={{ width: '100%', padding: '9px', fontSize: '13px', border: '1px solid #94a3b8', borderRadius: '6px' }}
+                      value={editingBanner.title || ''}
+                      onChange={(e) => setEditingBanner({ ...editingBanner, title: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Subtitle / Subtext</label>
+                    <textarea
+                      rows={2}
+                      style={{ width: '100%', padding: '9px', fontSize: '13px', border: '1px solid #94a3b8', borderRadius: '6px', resize: 'vertical' }}
+                      value={editingBanner.subtitle || ''}
+                      onChange={(e) => setEditingBanner({ ...editingBanner, subtitle: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                {/* 5. Vignette & Dual Hex Code Color Pickers */}
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h4 style={{ margin: '0 0 14px 0', fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700 }}>5. Vignette Shadow & Color Palette</h4>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px' }}>
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Canvas Background Color</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Background Color</label>
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         <input
                           type="color"
-                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          style={{ width: '38px', height: '34px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
                           value={editingBanner.bgColor || '#043927'}
                           onChange={(e) => setEditingBanner({ ...editingBanner, bgColor: e.target.value })}
                         />
                         <input
                           type="text"
-                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          style={{ flexGrow: 1, padding: '7px', fontSize: '12px', border: '1px solid #94a3b8', borderRadius: '4px', fontFamily: 'monospace' }}
                           value={editingBanner.bgColor || '#043927'}
                           onChange={(e) => setEditingBanner({ ...editingBanner, bgColor: e.target.value })}
                         />
@@ -565,17 +648,17 @@ export const BannersPanel: React.FC = () => {
                     </div>
 
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Vignette Shadow Color</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Vignette Shadow Color</label>
                       <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         <input
                           type="color"
-                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                          style={{ width: '38px', height: '34px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
                           value={editingBanner.vignetteColor || '#000000'}
                           onChange={(e) => setEditingBanner({ ...editingBanner, vignetteColor: e.target.value })}
                         />
                         <input
                           type="text"
-                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
+                          style={{ flexGrow: 1, padding: '7px', fontSize: '12px', border: '1px solid #94a3b8', borderRadius: '4px', fontFamily: 'monospace' }}
                           value={editingBanner.vignetteColor || '#000000'}
                           onChange={(e) => setEditingBanner({ ...editingBanner, vignetteColor: e.target.value })}
                         />
@@ -583,9 +666,9 @@ export const BannersPanel: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Vignette Intensity ({Math.round((editingBanner.vignetteIntensity ?? 0.5) * 100)}%)</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Vignette Intensity ({Math.round((editingBanner.vignetteIntensity ?? 0.5) * 100)}%)</label>
                       <input
                         type="range"
                         min="0"
@@ -597,7 +680,7 @@ export const BannersPanel: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Dark Overlay Opacity ({Math.round((editingBanner.overlayOpacity ?? 0.35) * 100)}%)</label>
+                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '4px' }}>Overlay Opacity ({Math.round((editingBanner.overlayOpacity ?? 0.35) * 100)}%)</label>
                       <input
                         type="range"
                         min="0"
@@ -611,39 +694,38 @@ export const BannersPanel: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 4. Photoshop/Canva Full Layer Manager Sidebar */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
+                {/* 6. Layer Manager */}
+                <div style={{ background: '#fff', padding: '18px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                    <h4 style={{ margin: 0, fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Layers size={16} color="#2271b1" /> 4. Layer Manager & Extra Components
+                    <h4 style={{ margin: 0, fontSize: '13px', textTransform: 'uppercase', color: '#0f172a', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Layers size={16} color="#0284c7" /> 6. Layer Manager & Extra Stickers
                     </h4>
                     
                     <div style={{ display: 'flex', gap: '6px' }}>
                       <button
                         type="button"
-                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '5px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                         onClick={() => layerFileInputRef.current?.click()}
                       >
-                        <ImageIcon size={12} /> + Sticker Image
+                        <ImageIcon size={13} /> + Sticker Image
                       </button>
                       <button
                         type="button"
-                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        style={{ background: '#f0f6fc', border: '1px solid #0969da', color: '#0969da', padding: '5px 10px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                         onClick={handleAddTextLayer}
                       >
-                        <Type size={12} /> + Text Box
+                        <Type size={13} /> + Text Box
                       </button>
                     </div>
                   </div>
 
-                  {/* Layers List (Drag-to-Reorder / Up-Down) */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {(editingBanner.layers || []).map((layer, idx) => (
                       <div
                         key={layer.id}
                         style={{
-                          background: selectedLayerId === layer.id ? '#f0f6fc' : '#f8fafc',
-                          border: `1px solid ${selectedLayerId === layer.id ? '#0969da' : '#cbd5e1'}`,
+                          background: selectedLayerId === layer.id ? '#f0f9ff' : '#f8fafc',
+                          border: `1px solid ${selectedLayerId === layer.id ? '#0284c7' : '#cbd5e1'}`,
                           borderRadius: '6px',
                           padding: '10px 12px',
                           display: 'flex',
@@ -653,7 +735,7 @@ export const BannersPanel: React.FC = () => {
                         onClick={() => setSelectedLayerId(layer.id)}
                       >
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', background: '#e2e8f0', padding: '2px 6px', borderRadius: '3px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#475569', background: '#e2e8f0', padding: '2px 6px', borderRadius: '3px' }}>
                             #{idx + 1}
                           </span>
                           <div>
@@ -669,21 +751,21 @@ export const BannersPanel: React.FC = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                           <button
                             type="button"
-                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer' }}
+                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '3px 6px', cursor: 'pointer' }}
                             onClick={(evt) => { evt.stopPropagation(); handleMoveLayerOrder(layer.id, 'up'); }}
                           >
                             <ArrowUp size={12} />
                           </button>
                           <button
                             type="button"
-                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer' }}
+                            style={{ background: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '3px', padding: '3px 6px', cursor: 'pointer' }}
                             onClick={(evt) => { evt.stopPropagation(); handleMoveLayerOrder(layer.id, 'down'); }}
                           >
                             <ArrowDown size={12} />
                           </button>
                           <button
                             type="button"
-                            style={{ background: '#fff0f0', border: '1px solid #d63638', color: '#d63638', borderRadius: '3px', padding: '2px 6px', cursor: 'pointer', marginLeft: '4px' }}
+                            style={{ background: '#fff0f0', border: '1px solid #d63638', color: '#d63638', borderRadius: '3px', padding: '3px 6px', cursor: 'pointer', marginLeft: '4px' }}
                             onClick={(evt) => { evt.stopPropagation(); handleDeleteLayer(layer.id); }}
                           >
                             <Trash2 size={12} />
@@ -694,105 +776,106 @@ export const BannersPanel: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 5. Button CTA & Color Palette with Dual Hex Code Pickers */}
-                <div style={{ background: '#fff', padding: '16px', borderRadius: '6px', border: '1px solid #dcdcde', marginBottom: '16px' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '13px', textTransform: 'uppercase', color: '#1d2327', fontWeight: 700 }}>5. CTA Button Customizer</h4>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Button Text</label>
-                      <input
-                        type="text"
-                        style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
-                        value={editingBanner.buttonText || ''}
-                        onChange={(e) => setEditingBanner({ ...editingBanner, buttonText: e.target.value })}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Target Link</label>
-                      <input
-                        type="text"
-                        style={{ width: '100%', padding: '6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px' }}
-                        value={editingBanner.linkUrl || ''}
-                        onChange={(e) => setEditingBanner({ ...editingBanner, linkUrl: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Dual Mode Button Color Pickers */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Button Background Color</label>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <input
-                          type="color"
-                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
-                          value={editingBanner.buttonBgColor || '#007A3D'}
-                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonBgColor: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
-                          value={editingBanner.buttonBgColor || '#007A3D'}
-                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonBgColor: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label style={{ fontSize: '12px', fontWeight: 600, color: '#2c3338', display: 'block', marginBottom: '4px' }}>Button Text Color</label>
-                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                        <input
-                          type="color"
-                          style={{ width: '36px', height: '32px', padding: 0, border: 'none', cursor: 'pointer', borderRadius: '4px' }}
-                          value={editingBanner.buttonTextColor || '#ffffff'}
-                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonTextColor: e.target.value })}
-                        />
-                        <input
-                          type="text"
-                          style={{ flexGrow: 1, padding: '5px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', fontFamily: 'monospace' }}
-                          value={editingBanner.buttonTextColor || '#ffffff'}
-                          onChange={(e) => setEditingBanner({ ...editingBanner, buttonTextColor: e.target.value })}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                  <button type="button" style={{ background: '#f6f7f7', border: '1px solid #2271b1', color: '#2271b1', padding: '8px 16px', borderRadius: '4px', fontWeight: 600, cursor: 'pointer' }} onClick={() => setIsModalOpen(false)}>
+                {/* Save Buttons */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '20px' }}>
+                  <button type="button" style={{ background: '#ffffff', border: '1px solid #94a3b8', color: '#334155', padding: '10px 20px', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }} onClick={() => setIsModalOpen(false)}>
                     Cancel
                   </button>
-                  <button type="submit" style={{ background: '#2271b1', color: '#fff', border: 'none', padding: '8px 20px', borderRadius: '4px', fontWeight: 700, cursor: 'pointer' }}>
+                  <button type="submit" style={{ background: '#2271b1', color: '#fff', border: 'none', padding: '10px 24px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(34, 113, 177, 0.25)' }}>
                     Save Banner
                   </button>
                 </div>
 
               </form>
 
-              {/* RIGHT 50% COLUMN: Live Interactive Canva Preview with Layer Ordering & Vignette */}
-              <div style={{ width: '50%', padding: '20px', background: '#e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px' }}>
-                  LIVE INTERACTIVE CANVA PREVIEW ({previewDevice === 'mobile' ? 'Mobile View' : 'Desktop View'})
+              {/* RIGHT 55% COLUMN: Live Interactive Canva Canvas */}
+              <div style={{ width: '55%', padding: '24px', background: '#f1f5f9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
+                
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>CANVA INTERACTIVE CANVAS ({previewDevice === 'mobile' ? 'Mobile View' : 'Desktop View'})</span>
+                  <span style={{ fontSize: '11px', background: '#0284c7', color: '#fff', padding: '2px 8px', borderRadius: '4px' }}>
+                    Double-click image to Zoom/Crop
+                  </span>
                 </div>
 
-                {/* Canvas Box */}
+                {/* Outer Frame with Selected Aspect Ratio */}
                 <div
                   style={{
                     width: previewDevice === 'mobile' ? '360px' : '100%',
-                    maxWidth: '680px',
-                    height: previewDevice === 'mobile' ? '540px' : '340px',
+                    maxWidth: editingBanner.aspectRatio === '21:9' ? '760px' : editingBanner.aspectRatio === '1:1' ? '420px' : '680px',
+                    height: editingBanner.aspectRatio === '1:1' ? '420px' : editingBanner.aspectRatio === '9:16' ? '540px' : '360px',
                     background: '#ffffff',
                     borderRadius: '12px',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.15)',
                     overflow: 'hidden',
                     position: 'relative',
-                    border: '4px solid #1e293b',
+                    border: '4px solid #0f172a',
                     transition: 'all 0.3s ease'
                   }}
+                  onMouseMove={(e) => {
+                    if (isDraggingPan && editingBanner) {
+                      const deltaX = e.clientX - dragStartRef.current.x;
+                      const deltaY = e.clientY - dragStartRef.current.y;
+                      setEditingBanner({
+                        ...editingBanner,
+                        imagePanX: (editingBanner.imagePanX || 0) + deltaX,
+                        imagePanY: (editingBanner.imagePanY || 0) + deltaY
+                      });
+                      dragStartRef.current = { x: e.clientX, y: e.clientY };
+                    }
+                  }}
+                  onMouseUp={() => setIsDraggingPan(false)}
                 >
-                  {/* Banner Canvas */}
+                  {/* Floating Double-Click Zoom & Pan Toolbar */}
+                  {isCropMode && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '14px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: 'rgba(15, 23, 42, 0.9)',
+                        backdropFilter: 'blur(8px)',
+                        color: '#ffffff',
+                        padding: '8px 16px',
+                        borderRadius: '30px',
+                        zIndex: 9999,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '14px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+                        border: '1px solid rgba(255,255,255,0.2)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600 }}>
+                        <ZoomIn size={15} color="#38bdf8" /> Zoom:
+                        <input
+                          type="range"
+                          min="1"
+                          max="3"
+                          step="0.05"
+                          style={{ width: '100px' }}
+                          value={editingBanner.imageZoom || 1}
+                          onChange={(e) => setEditingBanner({ ...editingBanner, imageZoom: parseFloat(e.target.value) })}
+                        />
+                        <span>{Math.round((editingBanner.imageZoom || 1) * 100)}%</span>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: '#94a3b8' }}>
+                        <Move size={14} /> Drag image to Pan
+                      </div>
+
+                      <button
+                        type="button"
+                        style={{ background: '#0284c7', color: '#fff', border: 'none', padding: '4px 12px', borderRadius: '14px', fontSize: '11px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => setIsCropMode(false)}
+                      >
+                        <Crop size={13} /> Lock Crop
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Banner Canvas Surface */}
                   <div
                     style={{
                       width: '100%',
@@ -802,20 +885,37 @@ export const BannersPanel: React.FC = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: editingBanner.textAlign === 'center' ? 'center' : editingBanner.textAlign === 'right' ? 'flex-end' : 'flex-start',
-                      padding: previewDevice === 'mobile' ? '24px' : '40px'
+                      padding: previewDevice === 'mobile' ? '24px' : '40px',
+                      cursor: isCropMode ? 'grab' : 'default'
+                    }}
+                    onDoubleClick={() => setIsCropMode(true)}
+                    onMouseDown={(e) => {
+                      if (isCropMode) {
+                        setIsDraggingPan(true);
+                        dragStartRef.current = { x: e.clientX, y: e.clientY };
+                      }
                     }}
                   >
-                    {/* Background Image */}
+                    {/* Background Image with Zoom & Pan */}
                     <img
                       src={(previewDevice === 'mobile' && editingBanner.mobileImageUrl) ? editingBanner.mobileImageUrl : editingBanner.imageUrl}
                       alt={editingBanner.title}
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        transform: `scale(${editingBanner.imageZoom || 1}) translate(${editingBanner.imagePanX || 0}px, ${editingBanner.imagePanY || 0}px)`,
+                        transition: isDraggingPan ? 'none' : 'transform 0.15s ease'
+                      }}
                     />
 
-                    {/* Dark Overlay */}
+                    {/* Dark Color Overlay */}
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: editingBanner.bgColor || '#000000', opacity: editingBanner.overlayOpacity ?? 0.35, zIndex: 1 }} />
 
-                    {/* Built-in Vignette Gradient Shadow */}
+                    {/* Built-in Vignette Radial Overlay */}
                     {editingBanner.vignetteIntensity ? (
                       <div
                         style={{
@@ -832,7 +932,7 @@ export const BannersPanel: React.FC = () => {
                       />
                     ) : null}
 
-                    {/* Dynamic Rendered Layers (Stickers, Text boxes) */}
+                    {/* Dynamic Rendered Sticker & Text Layers */}
                     {(editingBanner.layers || []).map((layer) => (
                       <div
                         key={layer.id}
@@ -842,7 +942,7 @@ export const BannersPanel: React.FC = () => {
                           top: `${layer.y}%`,
                           zIndex: layer.zIndex || 2,
                           cursor: 'move',
-                          border: selectedLayerId === layer.id ? '2px dashed #0969da' : 'none',
+                          border: selectedLayerId === layer.id ? '2px dashed #0284c7' : 'none',
                           padding: '4px',
                           borderRadius: '4px'
                         }}
