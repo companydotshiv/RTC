@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Search, Heart, User, Truck, X, ChevronDown } from 'lucide-react';
-import { products } from '../data/productsData';
+import { adminStore } from '../data/adminStore';
 import type { Product } from '../types/product';
 
 interface HeaderProps {
@@ -31,6 +31,17 @@ export const Header: React.FC<HeaderProps> = ({
   setIsCartOpen: externalSetIsCartOpen,
   onOpenCheckoutModal
 }) => {
+  const [, setRenderTick] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = adminStore.subscribe(() => {
+      setRenderTick((prev) => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const announcement = adminStore.announcement;
+  const products = adminStore.products;
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [internalIsCartOpen, setInternalIsCartOpen] = useState<boolean>(false);
 
@@ -138,22 +149,22 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       {/* Top Announcement Bar */}
-      <div className="top-bar">
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <span><Truck size={14} style={{ display: 'inline', marginRight: '6px' }} /> Free shipping over ₹500</span>
-          </div>
-          <div className="top-bar-info" style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-            <span>20 % off on all products | Buy Now</span>
-          </div>
-          <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Facebook</a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Twitter</a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Instagram</a>
-            <a href="https://pinterest.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Pinterest</a>
+      {announcement.isActive && (
+        <div className="top-bar" style={{ backgroundColor: announcement.bgColor, color: announcement.textColor }}>
+          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <span><Truck size={14} style={{ display: 'inline', marginRight: '6px' }} /> Free shipping on orders over ₹{adminStore.shippingRule.minOrderForFreeShipping}</span>
+            </div>
+            <div className="top-bar-info" style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+              <span>{announcement.text}</span>
+            </div>
+            <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Facebook</a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Instagram</a>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Header */}
       <header className="main-header">

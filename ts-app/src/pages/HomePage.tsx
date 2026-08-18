@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Product } from '../types/product';
-import { products } from '../data/productsData';
+import { adminStore } from '../data/adminStore';
 import { ShoppingBag, Star, CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart, Minus, Plus } from 'lucide-react';
 
 interface HomePageProps {
@@ -22,6 +22,16 @@ export const HomePage: React.FC<HomePageProps> = ({
   onAddToCart,
   onUpdateCartQty
 }) => {
+  const [, setRenderTick] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = adminStore.subscribe(() => {
+      setRenderTick((prev) => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const products = adminStore.products;
   const renderCartButton = (productId: number) => {
     const qty = cartQuantities[productId] || 0;
     if (qty > 0) {
@@ -164,126 +174,164 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* 4 Bestseller Cards Matching Exact WordPress Screenshot Layout */}
             <div className="bestsellers-grid">
               {/* Card 1: California Almonds (ID: 1) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 1) || products[0])}>
-                <div className="bestseller-img-container">
-                  <img src="/california_almonds_pouch.png" alt="California Almonds" className="main-img" />
-                  <img src="/california_almonds_back.png" alt="California Almonds Back" className="hover-img" />
+              {(() => {
+                const p = products.find((prod) => prod.id === 1) || products[0];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
 
-                  {/* Hover Quick-Actions Overlay matching screenshot */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(1)}
+                      {/* Hover Quick-Actions Overlay matching screenshot */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(1)}
 
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 1) || products[0]); }}>
-                        <Eye size={20} />
-                      </button>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(1); }}>
+                            <Heart size={20} fill={wishlistIds.includes(1) ? "#E53935" : "none"} color={wishlistIds.includes(1) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
+                      {!p.stock && (
+                        <span style={{ position: 'absolute', top: '12px', right: '12px', background: '#d63638', color: '#FFF', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '3px', zIndex: 5, textTransform: 'uppercase' }}>
+                          Out of Stock
+                        </span>
+                      )}
                     </div>
-
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(1); }}>
-                        <Heart size={20} fill={wishlistIds.includes(1) ? "#E53935" : "none"} color={wishlistIds.includes(1) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Almonds</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">
+                        ₹274.00 – ₹1,082.00
+                        {!p.stock && (
+                          <span style={{ color: '#d63638', fontSize: '0.8rem', marginLeft: '8px', fontWeight: 600 }}>(Out of Stock)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Almonds</span>
-                  <h3 className="bestseller-title">California Almonds</h3>
-                  <div className="bestseller-price">₹274.00 – ₹1,082.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 2: Chia Seeds (ID: 2) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 2) || products[1])}>
-                <div className="bestseller-img-container">
-                  <img src="/chia_seeds_front.jpg" alt="Chia Seeds" className="main-img" />
-                  <img src="/chia_seeds_back.jpg" alt="Chia Seeds Back" className="hover-img" />
+              {(() => {
+                const p = products.find((prod) => prod.id === 2) || products[1];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
 
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(2)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
-                        <Eye size={20} />
-                      </button>
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(2)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
+                            <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
-                        <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Seeds</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹27.00 – ₹108.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Seeds</span>
-                  <h3 className="bestseller-title">Chia Seeds</h3>
-                  <div className="bestseller-price">₹27.00 – ₹108.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 3: Cashew (ID: 3) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 3) || products[2])}>
-                <div className="bestseller-img-container">
-                  <img src="/cashew_front.png" alt="Cashew" className="main-img" />
-                  <img src="/cashew_back.png" alt="Cashew Back" className="hover-img" />
+              {(() => {
+                const p = products.find((prod) => prod.id === 3) || products[2];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
 
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(3)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 3) || products[2]); }}>
-                        <Eye size={20} />
-                      </button>
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(3)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(3); }}>
+                            <Heart size={20} fill={wishlistIds.includes(3) ? "#E53935" : "none"} color={wishlistIds.includes(3) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(3); }}>
-                        <Heart size={20} fill={wishlistIds.includes(3) ? "#E53935" : "none"} color={wishlistIds.includes(3) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Cashew</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹301.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Cashew</span>
-                  <h3 className="bestseller-title">Cashew</h3>
-                  <div className="bestseller-price">₹301.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 4: Dry Figs Diamond (ID: 4) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 4) || products[3])}>
-                <div className="bestseller-img-container">
-                  <img src="/dry_figs_front.png" alt="Dry Figs Diamond" className="main-img" />
-                  <img src="/dry_figs_back.jpg" alt="Dry Figs Diamond Back" className="hover-img" />
+              {(() => {
+                const p = products.find((prod) => prod.id === 4) || products[3];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
 
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(4)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 4) || products[3]); }}>
-                        <Eye size={20} />
-                      </button>
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(4)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(4); }}>
+                            <Heart size={20} fill={wishlistIds.includes(4) ? "#E53935" : "none"} color={wishlistIds.includes(4) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(4); }}>
-                        <Heart size={20} fill={wishlistIds.includes(4) ? "#E53935" : "none"} color={wishlistIds.includes(4) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Dry Figs</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹265.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Dry Figs</span>
-                  <h3 className="bestseller-title">Dry Figs Diamond</h3>
-                  <div className="bestseller-price">₹265.00</div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
 
             {/* Right Carousel Nav Button */}
@@ -397,126 +445,154 @@ export const HomePage: React.FC<HomePageProps> = ({
 
             <div className="bestsellers-grid">
               {/* Card 1: Exotic Dried Kiwi (ID: 5) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 5) || products[4])}>
-                <div className="bestseller-img-container">
-                  <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
-                  <img src="/exotic_kiwi_front.png" alt="Exotic Dried Kiwi" className="main-img" />
-                  <img src="/exotic_kiwi_back.jpg" alt="Exotic Dried Kiwi Back" className="hover-img" />
+              {(() => {
+                const p = products.find((prod) => prod.id === 5) || products[4];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
 
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(5)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 5) || products[4]); }}>
-                        <Eye size={20} />
-                      </button>
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(5)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(5); }}>
+                            <Heart size={20} fill={wishlistIds.includes(5) ? "#E53935" : "none"} color={wishlistIds.includes(5) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(5); }}>
-                        <Heart size={20} fill={wishlistIds.includes(5) ? "#E53935" : "none"} color={wishlistIds.includes(5) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Dehydrated Fruits</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹171.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Dehydrated Fruits</span>
-                  <h3 className="bestseller-title">Exotic Dried Kiwi</h3>
-                  <div className="bestseller-price">₹171.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 2: Chia Seeds (ID: 2) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 2) || products[1])}>
-                <div className="bestseller-img-container">
-                  <img src="/chia_seeds_front.jpg" alt="Chia Seeds" className="main-img" />
-                  <img src="/chia_seeds_back.jpg" alt="Chia Seeds Back" className="hover-img" />
-                  
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(2)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 2) || products[1]); }}>
-                        <Eye size={20} />
-                      </button>
+              {(() => {
+                const p = products.find((prod) => prod.id === 2) || products[1];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
+                      
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(2)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
+                            <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
-                        <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Seeds</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹27.00 – ₹108.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Seeds</span>
-                  <h3 className="bestseller-title">Chia Seeds</h3>
-                  <div className="bestseller-price">₹27.00 – ₹108.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 3: Walnut Kernels Platinum (ID: 6) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 6) || products[5])}>
-                <div className="bestseller-img-container">
-                  <img src="/walnut_platinum_front.jpg" alt="Walnut Kernels Platinum" className="main-img" />
-                  <img src="/walnut_platinum_back.png" alt="Walnut Kernels Platinum Back" className="hover-img" />
-                  
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(6)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 6) || products[5]); }}>
-                        <Eye size={20} />
-                      </button>
+              {(() => {
+                const p = products.find((prod) => prod.id === 6) || products[5];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
+                      
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(6)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(6); }}>
+                            <Heart size={20} fill={wishlistIds.includes(6) ? "#E53935" : "none"} color={wishlistIds.includes(6) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(6); }}>
-                        <Heart size={20} fill={wishlistIds.includes(6) ? "#E53935" : "none"} color={wishlistIds.includes(6) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Dry fruits</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹420.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Dry fruits</span>
-                  <h3 className="bestseller-title">Walnut Kernels Platinum</h3>
-                  <div className="bestseller-price">₹420.00</div>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Card 4: Whole Cranberries Dried Gold (ID: 7) */}
-              <div className="bestseller-card" onClick={() => onSelectProduct(products.find(p => p.id === 7) || products[6])}>
-                <div className="bestseller-img-container">
-                  <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
-                  <img src="/cranberries_gold_front.jpg" alt="Whole Cranberries Dried (Gold)" className="main-img" />
-                  <img src="/cranberries_gold_back.png" alt="Whole Cranberries Dried (Gold) Back" className="hover-img" />
-                  
-                  {/* Hover Quick-Actions Overlay */}
-                  <div className="card-hover-actions">
-                    {renderCartButton(7)}
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Quick View</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(products.find(p => p.id === 7) || products[6]); }}>
-                        <Eye size={20} />
-                      </button>
+              {(() => {
+                const p = products.find((prod) => prod.id === 7) || products[6];
+                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
+                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
+                return (
+                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
+                    <div className="bestseller-img-container">
+                      <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
+                      <img src={firstImg} alt={p.name} className="main-img" />
+                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
+                      
+                      {/* Hover Quick-Actions Overlay */}
+                      <div className="card-hover-actions">
+                        {renderCartButton(7)}
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Quick View</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
+                            <Eye size={20} />
+                          </button>
+                        </div>
+                        <div className="hover-action-item">
+                          <span className="tooltip-label">Wishlist</span>
+                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(7); }}>
+                            <Heart size={20} fill={wishlistIds.includes(7) ? "#E53935" : "none"} color={wishlistIds.includes(7) ? "#E53935" : "#222222"} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="hover-action-item">
-                      <span className="tooltip-label">Wishlist</span>
-                      <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(7); }}>
-                        <Heart size={20} fill={wishlistIds.includes(7) ? "#E53935" : "none"} color={wishlistIds.includes(7) ? "#E53935" : "#222222"} />
-                      </button>
+                    <div className="bestseller-green-footer">
+                      <span className="bestseller-cat">Dehydrated Fruits</span>
+                      <h3 className="bestseller-title">{p.name}</h3>
+                      <div className="bestseller-price">₹310.00</div>
                     </div>
                   </div>
-                </div>
-                <div className="bestseller-green-footer">
-                  <span className="bestseller-cat">Dehydrated Fruits</span>
-                  <h3 className="bestseller-title">Whole Cranberries Dried (Gold)</h3>
-                  <div className="bestseller-price">₹310.00</div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
 
             <button className="carousel-nav-btn right-nav" title="Next Products">

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Product } from '../types/product';
+import { adminStore } from '../data/adminStore';
 import { Heart, ShoppingBag, Star } from 'lucide-react';
 
 interface ProductDetailPageProps {
@@ -13,7 +14,7 @@ interface ProductDetailPageProps {
 }
 
 export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
-  product,
+  product: propProduct,
   setCurrentView,
   onAddToCart,
   cartQty = 0,
@@ -21,8 +22,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   onToggleWishlist,
   isWishlisted = false
 }) => {
-  const [selectedImg, setSelectedImg] = React.useState(product.image);
-  const [selectedWeight, setSelectedWeight] = React.useState(product.weights[0]);
+  const [, setRenderTick] = React.useState(0);
+
+  React.useEffect(() => {
+    const unsubscribe = adminStore.subscribe(() => {
+      setRenderTick((prev) => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch freshest product from central store
+  const product = adminStore.products.find((p) => p.id === propProduct.id) || propProduct;
+
+  const initialImg = product.gallery && product.gallery[0] ? product.gallery[0] : product.image;
+  const [selectedImg, setSelectedImg] = React.useState(initialImg);
+
+  React.useEffect(() => {
+    const latest = product.gallery && product.gallery[0] ? product.gallery[0] : product.image;
+    setSelectedImg(latest);
+  }, [product.image, JSON.stringify(product.gallery)]);
+  const [selectedWeight, setSelectedWeight] = React.useState(product.weights[0] || '');
   const [isClicking, setIsClicking] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState<'additional' | 'description' | 'feedback'>('additional');
 
@@ -38,6 +57,20 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const [showStickyBar, setShowStickyBar] = React.useState(false);
   const tabSectionRef = React.useRef<HTMLDivElement>(null);
+
+  // Toast notification for Out of Stock alert
+  const [toastMessage, setToastMessage] = React.useState<string | null>(null);
+
+  const showOutofStockToast = () => {
+    setToastMessage('This item is out of stock');
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
+
+  // Evaluate if current product/selected variant size is in stock
+  const currentWeightStockData = selectedWeight && product.weightStock ? product.weightStock[selectedWeight] : undefined;
+  const isSelectedVariantInStock = currentWeightStockData ? currentWeightStockData.stock : product.stock;
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -72,6 +105,31 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   return (
     <div>
+      {/* Toast Notification Popup */}
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            background: '#d63638',
+            color: '#FFFFFF',
+            padding: '12px 20px',
+            borderRadius: '4px',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
+            zIndex: 99999,
+            fontWeight: 600,
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            animation: 'fadeIn 0.3s ease'
+          }}
+        >
+          <span>⚠️</span> {toastMessage}
+        </div>
+      )}
+
       {/* Breadcrumbs matching exact WooCommerce style */}
       <div style={{ background: '#FFF', padding: '24px 0 10px 0' }}>
         <div className="container" style={{ fontSize: '0.88rem', color: '#888888', fontFamily: "'Jost', sans-serif" }}>
@@ -143,10 +201,18 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 {product.priceDisplay || `₹${product.price}.00`}
               </div>
 
-              {/* Stock text for Cashew & Dry Figs Diamond */}
-              {(product.id === 3 || product.id === 4) && (
+              {/* Dynamic stock text: Show quantity when in stock, hide numbers when marked out of stock */}
+              {isSelectedVariantInStock ? (
                 <div style={{ fontSize: '0.92rem', color: '#007A3D', fontWeight: 600, marginBottom: '20px' }}>
-                  9 in stock
+                  {currentWeightStockData && currentWeightStockData.stockCount
+                    ? `${currentWeightStockData.stockCount} in stock`
+                    : product.stockCount
+                    ? `${product.stockCount} in stock`
+                    : 'In Stock'}
+                </div>
+              ) : (
+                <div style={{ fontSize: '0.92rem', color: '#d63638', fontWeight: 600, marginBottom: '20px' }}>
+                  Out of stock
                 </div>
               )}
 
@@ -221,44 +287,49 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
               {/* Action Grid matching exact user screenshot */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '28px' }}>
-                {/* Row 1: Quantity Counter Box + Add To Cart Button */}
+                {/* Row 1: Quantity Counter Box (hidden if out of stock) + Add To Cart / Out of Stock Button */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                  {/* Square 0px border-radius Quantity Counter Box */}
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #D1D5DB', borderRadius: '0px', height: '44px', background: '#FFFFFF' }}>
-                    <button
-                      onClick={() => {
-                        if (cartQty > 1 && onUpdateCartQty) {
-                          onUpdateCartQty(cartQty - 1);
-                        } else if (cartQty === 1 && onUpdateCartQty) {
-                          onUpdateCartQty(0);
-                        }
-                      }}
-                      title="Reduce Quantity"
-                      style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
-                    >
-                      –
-                    </button>
-                    <span style={{ minWidth: '44px', textAlign: 'center', fontWeight: 400, fontSize: '1rem', color: '#333333' }}>
-                      {cartQty > 0 ? cartQty : 1}
-                    </span>
-                    <button
-                      onClick={() => {
-                        if (cartQty > 0 && onUpdateCartQty) {
-                          onUpdateCartQty(cartQty + 1);
-                        } else {
-                          onAddToCart(1);
-                        }
-                      }}
-                      title="Increase Quantity"
-                      style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
-                    >
-                      +
-                    </button>
-                  </div>
+                  {isSelectedVariantInStock && (
+                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #D1D5DB', borderRadius: '0px', height: '44px', background: '#FFFFFF' }}>
+                      <button
+                        onClick={() => {
+                          if (cartQty > 1 && onUpdateCartQty) {
+                            onUpdateCartQty(cartQty - 1);
+                          } else if (cartQty === 1 && onUpdateCartQty) {
+                            onUpdateCartQty(0);
+                          }
+                        }}
+                        title="Reduce Quantity"
+                        style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
+                      >
+                        –
+                      </button>
+                      <span style={{ minWidth: '44px', textAlign: 'center', fontWeight: 400, fontSize: '1rem', color: '#333333' }}>
+                        {cartQty > 0 ? cartQty : 1}
+                      </span>
+                      <button
+                        onClick={() => {
+                          if (cartQty > 0 && onUpdateCartQty) {
+                            onUpdateCartQty(cartQty + 1);
+                          } else {
+                            onAddToCart(1);
+                          }
+                        }}
+                        title="Increase Quantity"
+                        style={{ width: '40px', height: '100%', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '1.2rem', fontWeight: 400, color: '#333333' }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
 
-                  {/* Add To Cart Button with 0px sharp corners and deep green color */}
+                  {/* Add To Cart / Out of Stock Button */}
                   <button
                     onClick={() => {
+                      if (!isSelectedVariantInStock) {
+                        showOutofStockToast();
+                        return;
+                      }
                       setIsClicking(true);
                       if (cartQty === 0) onAddToCart(1);
                       setTimeout(() => setIsClicking(false), 200);
@@ -266,38 +337,49 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     style={{
                       height: '44px',
                       padding: '0 28px',
-                      background: '#007A3D',
+                      background: isSelectedVariantInStock ? '#007A3D' : '#d63638',
                       color: '#FFF',
                       border: 'none',
                       borderRadius: '0px',
                       fontSize: '0.95rem',
                       fontWeight: 600,
-                      cursor: 'pointer',
+                      cursor: isSelectedVariantInStock ? 'pointer' : 'not-allowed',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '8px',
                       transform: isClicking ? 'scale(0.96)' : 'scale(1)',
-                      transition: 'transform 0.15s ease, background 0.2s ease'
+                      transition: 'transform 0.15s ease, background 0.2s ease',
+                      opacity: isSelectedVariantInStock ? 1 : 0.8
                     }}
                   >
-                    Add To Cart <ShoppingBag size={18} color="#FFFFFF" />
+                    <ShoppingBag size={18} />
+                    {isSelectedVariantInStock ? (cartQty > 0 ? 'Update Cart' : 'Add To Cart') : 'Out of Stock'}
                   </button>
                 </div>
 
-                {/* Row 2: Buy Now Button + Wishlist Heart Button */}
+                {/* Row 2: Buy Now Button (Faded & Triggers toast if Out of Stock) + Wishlist Heart Button (Always active) */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <button
-                    onClick={() => alert('Proceeding to instant checkout...')}
+                    onClick={() => {
+                      if (!isSelectedVariantInStock) {
+                        showOutofStockToast();
+                        return;
+                      }
+                      alert('Proceeding to instant checkout...');
+                    }}
                     style={{
                       height: '44px',
                       padding: '0 36px',
-                      background: '#007A3D',
+                      background: isSelectedVariantInStock ? '#007A3D' : '#007A3D',
                       color: '#FFF',
                       border: 'none',
                       borderRadius: '0px',
                       fontSize: '0.95rem',
                       fontWeight: 600,
-                      cursor: 'pointer'
+                      cursor: isSelectedVariantInStock ? 'pointer' : 'not-allowed',
+                      opacity: isSelectedVariantInStock ? 1 : 0.35,
+                      filter: isSelectedVariantInStock ? 'none' : 'grayscale(60%)',
+                      transition: 'all 0.2s ease'
                     }}
                   >
                     Buy Now

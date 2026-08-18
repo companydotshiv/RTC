@@ -540,30 +540,37 @@ img {
   overflow: hidden;
 }
 
-.bestseller-img-container img {
-  max-height: 100%;
-  max-width: 100%;
+.bestseller-img-container img.main-img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   transition: opacity 0.35s ease, transform 0.35s ease;
+  display: block;
+  opacity: 1;
+  visibility: visible;
 }
 
 .bestseller-img-container img.hover-img {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  margin: auto;
-  opacity: 0;
+  top: 10px;
+  left: 10px;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  object-fit: contain;
+  opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
 }
 
 .bestseller-card:hover .bestseller-img-container img.main-img {
-  opacity: 0;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
 
 .bestseller-card:hover .bestseller-img-container img.hover-img {
-  opacity: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 /* Hover Quick Actions Overlay matching screenshot 1:1 */

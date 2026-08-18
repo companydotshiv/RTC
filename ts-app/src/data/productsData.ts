@@ -5,7 +5,8 @@ export const categories: Category[] = [
     id: 'dry-fruits',
     name: 'Dry Fruits & Nuts',
     icon: 'Apple',
-    desc: 'Handpicked jumbo cashews, almonds, walnuts & pistachios sourced directly from premium growers.'
+    desc: 'Handpicked jumbo cashews, almonds, walnuts & pistachios sourced directly from premium growers.',
+    subcategories: ['Almonds', 'Cashew', 'Dried Apricot', 'Raisins', 'Walnut']
   },
   {
     id: 'spices',
@@ -46,6 +47,7 @@ export const products: Product[] = [
     name: 'California Almonds',
     category: 'dry-fruits',
     categoryName: 'Dry Fruits & Nuts',
+    subCategory: 'Almonds',
     price: 274,
     priceDisplay: '₹274.00',
     originalPrice: 274,
@@ -53,7 +55,12 @@ export const products: Product[] = [
     rating: 4.9,
     reviewsCount: 128,
     image: '/california_almonds_pouch.png',
-    gallery: ['/california_almonds_pouch.png', '/california_almonds_back.png'],
+    gallery: [
+      '/california_almonds_pouch.png',
+      '/california_almonds_back.png',
+      'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=600',
+      'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=600'
+    ],
     shortDesc: 'Sweet, crunchy, and packed with Vitamin E and Fiber. Handpicked jumbo almonds imported straight from California.',
     description: 'Our Premium California Almonds are renowned for their golden color, consistent kernel size, and crisp snap. Naturally low in carbohydrates and loaded with antioxidant Vitamin E, these almonds make the ideal daily energy snack or breakfast addition.',
     weights: ['250g', '500g', '1kg'],
@@ -158,7 +165,8 @@ export const products: Product[] = [
     slug: 'cashew',
     name: 'Cashew',
     category: 'dry-fruits',
-    categoryName: 'Cashew',
+    categoryName: 'Dry Fruits & Nuts',
+    subCategory: 'Cashew',
     price: 300,
     priceDisplay: '₹300.00',
     originalPrice: 300,
@@ -214,7 +222,8 @@ export const products: Product[] = [
     slug: 'dried-apricot',
     name: 'Dried Apricot',
     category: 'dry-fruits',
-    categoryName: 'Dried Apricot',
+    categoryName: 'Dry Fruits & Nuts',
+    subCategory: 'Dried Apricot',
     price: 123,
     priceDisplay: '₹123.00',
     originalPrice: 123,

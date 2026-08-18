@@ -13,11 +13,16 @@ import './App.css';
 
 import { Check, X } from 'lucide-react';
 
+import { AdminPage } from './pages/AdminPage';
+
 // Helper to derive view state from window.location.pathname
 const parseLocation = (): { view: string; product: Product | null } => {
   const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
   if (!path || path === '') {
     return { view: 'home', product: null };
+  }
+  if (path === '/admin') {
+    return { view: 'admin', product: null };
   }
   if (path === '/products' || path === '/shop') {
     return { view: 'products', product: null };
@@ -56,6 +61,7 @@ export function App() {
       if (view === 'products') path = '/products';
       else if (view === 'wishlist') path = '/wishlist';
       else if (view === 'checkout') path = '/checkout';
+      else if (view === 'admin') path = '/admin';
       else if (view === 'detail' && selectedProduct) path = `/product/${selectedProduct.slug}`;
 
       if (window.location.pathname !== path) {
@@ -131,6 +137,10 @@ export function App() {
   const handleClearCart = () => {
     setCartQuantities({});
   };
+
+  if (currentView === 'admin') {
+    return <AdminPage setCurrentView={setCurrentView} />;
+  }
 
   return (
     <div className="app-root">
@@ -258,7 +268,7 @@ export function App() {
 
       <Footer setCurrentView={setCurrentView} />
 
-      {/* Floating Toast Notification matching Aqualogica style */}
+      {/* Floating Toast Notification matching RTC Foods style */}
       {showToast && (
         <div
           className={`toast-notification ${toastType === 'wishlist' ? 'toast-wishlist' : ''} ${toastHiding ? 'hide' : ''}`}
@@ -290,7 +300,7 @@ export function App() {
         </div>
       )}
 
-      {/* Aqualogica Style Floating Checkout Popover Modal */}
+      {/* RTC Foods Floating Checkout Popover Modal */}
       <CheckoutModal
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}

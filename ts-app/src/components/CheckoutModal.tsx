@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, CheckCircle2, Truck, CreditCard, X, ChevronDown, Lock, Calendar } from 'lucide-react';
-import { products } from '../data/productsData';
+import { adminStore } from '../data/adminStore';
+import type { OrderItem } from '../data/adminStore';
 import type { Product } from '../types/product';
 
 const INDIAN_STATES = [
@@ -119,6 +120,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   if (!isOpen) return null;
 
+  const products = adminStore.products;
+
   // Calculate cart items
   const cartItems = Object.entries(cartQuantities)
     .map(([idStr, qty]) => {
@@ -131,10 +134,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const originalSubtotal = cartItems.reduce((sum, item) => sum + item.product.originalPrice * item.qty, 0);
   const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.qty, 0);
   
-  // Shipping rule: Free for orders above 599, else 50
-  const shippingFee = subtotal >= 599 || subtotal === 0 ? 0 : 50;
-  // COD Charge: ₹10 for COD orders, 0 for Prepaid (UPI/Card)
-  const codFee = paymentMethod === 'cod' ? 10 : 0;
+  // Dynamic Shipping rule from adminStore
+  const minFreeShip = adminStore.shippingRule.minOrderForFreeShipping;
+  const shippingFee = subtotal >= minFreeShip || subtotal === 0 ? 0 : adminStore.shippingRule.standardFee;
+  const codFee = paymentMethod === 'cod' ? adminStore.shippingRule.codCharge : 0;
   
   const totalSavings = (originalSubtotal - subtotal) + discountAmount;
   const grandTotal = Math.max(0, subtotal + shippingFee + codFee - discountAmount);
@@ -144,10 +147,28 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     const cleanCode = codeToApply.trim().toUpperCase();
     if (!cleanCode) return;
 
-    if (cleanCode === 'RTC20') {
-      const disc = Math.round(subtotal * 0.20);
+    const foundCoupon = adminStore.coupons.find((c) => c.code.toUpperCase() === cleanCode && c.isActive);
+
+    if (foundCoupon) {
+      if (subtotal < foundCoupon.minOrderValue) {
+        setCouponError(`Min order ₹${foundCoupon.minOrderValue} required`);
+        return;
+      }
+
+      let disc = 0;
+      if (foundCoupon.type === 'flat_pct') {
+        disc = Math.round((subtotal * foundCoupon.value) / 100);
+      } else if (foundCoupon.type === 'pct_capped') {
+        const raw = Math.round((subtotal * foundCoupon.value) / 100);
+        disc = foundCoupon.capAmount ? Math.min(raw, foundCoupon.capAmount) : raw;
+      } else if (foundCoupon.type === 'flat_amount') {
+        disc = foundCoupon.value;
+      } else {
+        disc = 100;
+      }
+
       setDiscountAmount(disc);
-      setAppliedCoupon('RTC20');
+      setAppliedCoupon(cleanCode);
       setInputCouponCode('');
     } else {
       setCouponError('Invalid Code');
@@ -167,8 +188,30 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setIsEditingAddress(true);
       return;
     }
-    const generatedId = 'RTC-' + Math.floor(100000 + Math.random() * 900000);
-    setOrderId(generatedId);
+
+    const orderItems: OrderItem[] = cartItems.map((item) => ({
+      productId: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.qty,
+      image: item.product.image,
+      weight: item.product.weights ? item.product.weights[0] : '500 g'
+    }));
+
+    const placedOrder = adminStore.placeCustomerOrder({
+      customerName: userData.fullName || 'Valued Customer',
+      email: userData.email || 'customer@example.com',
+      phone: userData.phone || '+91 98765 43210',
+      shippingAddress: userData.addressLine || 'Street Address',
+      city: userData.city || 'Bengaluru',
+      state: userData.state || 'Karnataka',
+      pincode: userData.pincode || '560038',
+      items: orderItems,
+      couponCodeApplied: appliedCoupon || undefined,
+      paymentMethod: paymentMethod === 'cod' ? 'COD' : paymentMethod === 'card' ? 'Card' : 'UPI'
+    });
+
+    setOrderId(placedOrder.id);
     setIsOrderPlaced(true);
     if (onClearCart) onClearCart();
   };
@@ -638,7 +681,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   }}
                 >
                   <option value="" style={{ fontWeight: 400 }}>Select Available Coupon</option>
-                  <option value="RTC20" style={{ fontWeight: 400 }}>RTC20 — Get 20% OFF on all orders</option>
+                  {adminStore.coupons.filter(c => c.isActive).map(c => (
+                    <option key={c.id} value={c.code} style={{ fontWeight: 400 }}>
+                      {c.code} — {c.description}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

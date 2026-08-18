@@ -4,6 +4,7 @@ export interface Product {
   name: string;
   category: string;
   categoryName: string;
+  subCategory?: string;
   price: number;
   priceDisplay?: string;
   originalPrice: number;
@@ -26,6 +27,8 @@ export interface Product {
   paragraphs?: string[];
   productTypes?: string[];
   stockCount?: number;
+  weightStock?: Record<string, { stock: boolean; stockCount: number; price?: number }>;
+  customDescriptionRows?: { size?: string; productType?: string; [key: string]: string | undefined }[];
 }
 
 export interface Category {
@@ -33,4 +36,5 @@ export interface Category {
   name: string;
   icon: string;
   desc: string;
+  subcategories?: string[];
 }

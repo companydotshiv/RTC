@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { products } from '../data/productsData';
+import React, { useState, useEffect } from 'react';
+import { adminStore } from '../data/adminStore';
 import type { Product } from '../types/product';
 import { Star, ShoppingBag, X, Heart, ChevronDown, Eye, Minus, Plus, Check } from 'lucide-react';
 
@@ -24,6 +24,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onToggleWishlist,
   wishlistIds = []
 }) => {
+  const [, setRenderTick] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = adminStore.subscribe(() => {
+      setRenderTick((prev) => prev + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const products = adminStore.products;
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -821,18 +831,32 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
             {filteredProducts.map((p) => {
               const qty = cartQuantities[p.id] || 0;
               const isWishlisted = wishlistIds.includes(p.id);
-              const hoverImgSrc = (p.gallery && p.gallery.length > 1) ? p.gallery[1] : p.image;
 
               return (
                 <div key={p.id} className="bestseller-card" onClick={() => onSelectProduct(p)}>
                   <div className="bestseller-img-container">
+                    {!p.stock && (
+                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: '#d63638', color: '#FFF', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '4px', zIndex: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        Out of Stock
+                      </span>
+                    )}
                     {p.badge && (
                       <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#007A3D', color: '#FFF', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '4px', zIndex: 3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                         {p.badge}
                       </span>
                     )}
-                    <img src={p.image} alt={p.name} className="main-img" />
-                    <img src={hoverImgSrc} alt={`${p.name} Back`} className="hover-img" />
+                    {(() => {
+                      const firstImg = p.gallery && p.gallery.length > 0 && p.gallery[0] ? p.gallery[0] : p.image;
+                      const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : null;
+                      return (
+                        <>
+                          <img src={firstImg} alt={p.name} className="main-img" style={{ opacity: p.stock ? 1 : 0.6 }} />
+                          {secondImg && (
+                            <img src={secondImg} alt={`${p.name} Back`} className="hover-img" style={{ opacity: p.stock ? 1 : 0.6 }} />
+                          )}
+                        </>
+                      );
+                    })()}
 
                     {/* Hover Quick-Actions Overlay */}
                     <div
@@ -994,6 +1018,16 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                         </span>
                       )}
                     </div>
+                    {/* Stock quantity display on card */}
+                    {p.stock ? (
+                      <div style={{ fontSize: '0.8rem', color: '#007A3D', fontWeight: 600, marginTop: '4px' }}>
+                        {p.stockCount ? `${p.stockCount} in stock` : 'In Stock'}
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: '0.8rem', color: '#d63638', fontWeight: 600, marginTop: '4px' }}>
+                        Out of stock
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -1066,7 +1100,11 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
 
             {/* Product Image */}
             <div style={{ width: '100%', height: '240px', background: '#FAF8F5', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src={modalProduct.image} alt={modalProduct.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <img
+                src={modalProduct.gallery && modalProduct.gallery.length > 0 && modalProduct.gallery[0] ? modalProduct.gallery[0] : modalProduct.image}
+                alt={modalProduct.name}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </div>
 
             {/* Category */}
