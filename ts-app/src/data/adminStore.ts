@@ -27,17 +27,26 @@ export interface AdminCoupon {
 
 export interface BannerLayer {
   id: string;
-  type: 'text' | 'image' | 'shape';
-  content: string; // Text content, Image URL/Base64, or Shape type
+  type: 'text' | 'image' | 'shape' | 'badge' | 'button' | 'stats';
+  content: string; // Text content, Image URL, or JSON data
   x: number; // Percentage offset from left (0-100)
   y: number; // Percentage offset from top (0-100)
-  width?: number; // width in px or %
-  height?: number; // height in px or %
+  width?: number;
+  height?: number;
   fontSize?: number;
   fontWeight?: string;
+  fontStyle?: string;
+  textDecoration?: string;
   color?: string;
+  gradientStart?: string;
+  gradientEnd?: string;
+  useGradient?: boolean;
+  hyperlink?: string;
   bgColor?: string;
+  borderColor?: string;
+  borderWidth?: number;
   borderRadius?: number;
+  opacity?: number;
   zIndex: number;
 }
 
@@ -50,6 +59,9 @@ export interface AdminBanner {
   imagePanX?: number;
   imagePanY?: number;
   title: string;
+  titleGradientStart?: string;
+  titleGradientEnd?: string;
+  useTitleGradient?: boolean;
   subtitle?: string;
   imageUrl: string;
   mobileImageUrl?: string;
@@ -58,11 +70,18 @@ export interface AdminBanner {
   buttonStyle?: 'solid_green' | 'dark_pill' | 'glass' | 'outline';
   buttonBgColor?: string;
   buttonTextColor?: string;
+  buttonBorderColor?: string;
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
   textAlign?: 'left' | 'center' | 'right';
   bgColor?: string;
   overlayOpacity?: number;
   vignetteColor?: string;
   vignetteIntensity?: number;
+  badgeText?: string;
+  badgeBgColor?: string;
+  badgeTextColor?: string;
+  statsItems?: { value: string; label: string }[];
   layers?: BannerLayer[];
   isActive: boolean;
   order: number;
