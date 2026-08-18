@@ -167,13 +167,44 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
     return a.id - b.id;
   });
 
+  // Fetch active Products Page banner from adminStore
+  const productsBanner = adminStore.banners.find(b => (b.page === 'products' || (b.page as string) === 'products_page') && b.isActive);
+
   return (
     <div>
-      <section style={{ background: 'var(--bg-dark)', color: '#FFF', padding: '60px 0', borderBottom: '2px solid var(--primary-gold)' }}>
-        <div className="container" style={{ textAlign: 'center' }}>
-          <h1 style={{ fontSize: '2.8rem', color: '#FFF', marginBottom: '12px' }}>Our Complete Product Range</h1>
-          <p style={{ color: 'rgba(255,255,255,0.75)', maxWidth: '600px', margin: '0 auto' }}>
-            Explore our 100% natural, triple-sorted dry fruits, gourmet nuts, authentic Kashmiri saffron, and culinary seeds.
+      <section
+        style={{
+          background: productsBanner?.bgColor || 'var(--bg-dark)',
+          backgroundImage: productsBanner?.imageUrl ? `url(${productsBanner.imageUrl})` : undefined,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          color: '#FFF',
+          padding: '65px 0',
+          borderBottom: '2px solid var(--primary-gold)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {productsBanner?.imageUrl && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              background: productsBanner.bgColor || '#000000',
+              opacity: productsBanner.overlayOpacity ?? 0.35,
+              zIndex: 1
+            }}
+          />
+        )}
+        <div className="container" style={{ textAlign: productsBanner?.textAlign || 'center', position: 'relative', zIndex: 2 }}>
+          <h1 style={{ fontSize: '2.8rem', color: '#FFF', marginBottom: '12px', fontWeight: 700 }}>
+            {productsBanner?.title || 'Our Complete Product Range'}
+          </h1>
+          <p style={{ color: 'rgba(255,255,255,0.9)', maxWidth: '650px', margin: productsBanner?.textAlign === 'left' ? '0' : productsBanner?.textAlign === 'right' ? '0 0 0 auto' : '0 auto', fontSize: '1.05rem' }}>
+            {productsBanner?.subtitle || 'Explore our 100% natural, triple-sorted dry fruits, gourmet nuts, authentic Kashmiri saffron, and culinary seeds.'}
           </p>
         </div>
       </section>

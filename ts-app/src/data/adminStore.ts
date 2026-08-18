@@ -27,12 +27,18 @@ export interface AdminCoupon {
 
 export interface AdminBanner {
   id: string;
-  page: 'home_slider' | 'products_page' | 'checkout_page' | 'category_header';
+  page: 'home' | 'products' | 'checkout' | 'category' | 'home_slider' | 'products_page' | 'checkout_page' | 'category_header';
+  position?: 'hero' | 'top' | 'middle' | 'bottom';
   title: string;
   subtitle?: string;
   imageUrl: string;
+  mobileImageUrl?: string;
   linkUrl: string;
   buttonText: string;
+  buttonStyle?: 'solid_green' | 'dark_pill' | 'glass' | 'outline';
+  textAlign?: 'left' | 'center' | 'right';
+  bgColor?: string;
+  overlayOpacity?: number;
   isActive: boolean;
   order: number;
 }
@@ -202,12 +208,35 @@ const defaultCoupons: AdminCoupon[] = [
 const defaultBanners: AdminBanner[] = [
   {
     id: 'b1',
-    page: 'home_slider',
-    title: '100% Organic Cold-Pressed Juices',
-    subtitle: 'Farm fresh goodness delivered to your doorstep',
-    imageUrl: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=1200',
+    page: 'home',
+    position: 'hero',
+    title: '100% Pure Premium Dry Fruits & Spices',
+    subtitle: 'Triple-sorted, handpicked jumbo almonds, cashews, Kashmir saffron & gourmet seeds',
+    imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200',
+    mobileImageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=600',
     linkUrl: '/products',
-    buttonText: 'Shop Now',
+    buttonText: 'Shop All Products',
+    buttonStyle: 'solid_green',
+    textAlign: 'left',
+    bgColor: '#043927',
+    overlayOpacity: 0.35,
+    isActive: true,
+    order: 1,
+  },
+  {
+    id: 'b2',
+    page: 'products',
+    position: 'top',
+    title: 'Explore Our Complete Wholesome Range',
+    subtitle: '100% natural, hygienic food-grade pouches preserved for peak crunch and freshness',
+    imageUrl: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=1200',
+    mobileImageUrl: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=600',
+    linkUrl: '/products',
+    buttonText: 'Browse Catalog',
+    buttonStyle: 'glass',
+    textAlign: 'center',
+    bgColor: '#007A3D',
+    overlayOpacity: 0.25,
     isActive: true,
     order: 1,
   }
