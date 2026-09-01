@@ -1,4 +1,4 @@
-name: Deploy RTC Website to cPanel
+name: Build and Deploy RTC Website
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    name: Build React App and Deploy to cPanel
+    name: Build React App
     runs-on: windows-latest
 
     steps:
@@ -28,8 +28,10 @@ jobs:
         working-directory: ./ts-app
         run: npm run build
 
-      - name: 🚀 Deploy to cPanel via FTP (When Secrets Are Configured)
-        if: "${{ secrets.CPANEL_FTP_SERVER != '' }}"
+      - name: 🚀 Deploy to cPanel via FTP
+        env:
+          FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
+        if: env.FTP_SERVER != ''
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
@@ -39,9 +41,11 @@ jobs:
           server-dir: ./public_html/
           dangerous-clean-slate: false
 
-      - name: ℹ️ Deployment Status Notice
-        if: "${{ secrets.CPANEL_FTP_SERVER == '' }}"
+      - name: ℹ️ Deployment Ready
+        env:
+          FTP_SERVER: ${{ secrets.CPANEL_FTP_SERVER }}
+        if: env.FTP_SERVER == ''
+        shell: bash
         run: |
-          echo "Build completed successfully!"
-          echo "To deploy directly from cPanel, go to Git™ Version Control in cPanel and click 'Update from Remote' -> 'Deploy HEAD Commit'."
-          echo "Or to enable automatic GitHub FTP deployment, add CPANEL_FTP_SERVER, CPANEL_FTP_USERNAME, and CPANEL_FTP_PASSWORD in GitHub Repository Secrets."
+          echo "Build completed successfully with zero errors."
+          echo "Deployable directly via cPanel Git™ Version Control."
