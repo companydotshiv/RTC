@@ -1,6 +1,8 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/$USER/public_html
+    - export DEPLOYPATH=/home/$USER/ranchiwebsite.com/projects/rtc
+    - /bin/mkdir -p $DEPLOYPATH
     - /bin/cp -R ts-app/dist/* $DEPLOYPATH/
     - /bin/cp ts-app/public/.htaccess $DEPLOYPATH/.htaccess
+
