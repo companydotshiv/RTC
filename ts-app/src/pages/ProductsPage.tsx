@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { adminStore } from '../data/adminStore';
 import type { Product } from '../types/product';
-import { Star, ShoppingBag, X, Heart, ChevronDown, Eye, Minus, Plus, Check } from 'lucide-react';
+import { Star, X, ChevronDown, Check, SlidersHorizontal } from 'lucide-react';
+import { ProductCard } from '../components/ProductCard';
 
 interface ProductsPageProps {
   onSelectProduct: (product: Product) => void;
@@ -12,6 +13,9 @@ interface ProductsPageProps {
   onUpdateCartQty?: (productId: number, qty: number) => void;
   onToggleWishlist?: (productId: number) => void;
   wishlistIds?: number[];
+  initialCategory?: string;
+  initialSubCategory?: string;
+  setCurrentView?: (view: string) => void;
 }
 
 export const ProductsPage: React.FC<ProductsPageProps> = ({
@@ -22,7 +26,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   onAddToCart,
   onUpdateCartQty,
   onToggleWishlist,
-  wishlistIds = []
+  wishlistIds = [],
+  initialCategory = 'all',
+  initialSubCategory = '',
+  setCurrentView
 }) => {
   const [, setRenderTick] = useState(0);
 
@@ -34,11 +41,32 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   }, []);
 
   const products = adminStore.products;
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    if (initialCategory && initialCategory !== 'all') return [initialCategory];
+    return [];
+  });
+  const [selectedSubCategories, setSelectedSubCategories] = useState<string[]>(() => {
+    if (initialSubCategory) return [initialSubCategory];
+    return [];
+  });
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedSize, setSelectedSize] = useState<string>('all');
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+
+  // Synchronize when initialCategory or initialSubCategory change from navigation
+  useEffect(() => {
+    if (initialCategory && initialCategory !== 'all') {
+      setSelectedCategories([initialCategory]);
+    } else {
+      setSelectedCategories([]);
+    }
+
+    if (initialSubCategory) {
+      setSelectedSubCategories([initialSubCategory]);
+    } else {
+      setSelectedSubCategories([]);
+    }
+  }, [initialCategory, initialSubCategory]);
 
   const toggleCategorySelection = (catKey: string, subKey?: string | null) => {
     if (subKey) {
@@ -80,6 +108,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
   const [sortOption, setSortOption] = useState<string>('default');
   const [isSortOpen, setIsSortOpen] = useState<boolean>(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState<boolean>(false);
 
   const activeSearchQuery = propSearchQuery !== undefined ? propSearchQuery : localSearchQuery;
   const updateSearchQuery = (val: string) => {
@@ -167,114 +196,173 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
     return a.id - b.id;
   });
 
+  const hasActiveFilters =
+    selectedCategories.length > 0 ||
+    selectedSubCategories.length > 0 ||
+    selectedTypes.length > 0 ||
+    selectedSize !== 'all' ||
+    selectedPrices.length > 0 ||
+    activeSearchQuery.trim() !== '';
+
+  const resetAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedSubCategories([]);
+    setSelectedTypes([]);
+    setSelectedSize('all');
+    setSelectedPrices([]);
+    updateSearchQuery('');
+  };
+
   // Fetch active Products Page banner from adminStore
   const productsBanner = adminStore.banners.find(b => (b.page === 'products' || (b.page as string) === 'products_page') && b.isActive);
 
   return (
     <div>
+      {/* Premium Hero Banner */}
       <section
         style={{
-          background: productsBanner?.bgColor || 'var(--bg-dark)',
-          backgroundImage: productsBanner?.imageUrl ? `url(${productsBanner.imageUrl})` : undefined,
+          background: 'linear-gradient(135deg, #042616 0%, #0A3D24 50%, #15803D 100%)',
+          backgroundImage: `linear-gradient(rgba(4, 38, 22, 0.72), rgba(4, 38, 22, 0.85)), url(${productsBanner?.imageUrl || 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=1600'})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           color: '#FFF',
-          padding: '65px 0',
-          borderBottom: '2px solid var(--primary-gold)',
+          padding: '56px 0 60px 0',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          boxShadow: 'inset 0 -1px 0 rgba(255, 255, 255, 0.1)'
         }}
       >
-        {productsBanner?.imageUrl && (
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: productsBanner.bgColor || '#000000',
-              opacity: productsBanner.overlayOpacity ?? 0.35,
-              zIndex: 1
-            }}
-          />
-        )}
-        <div className="container" style={{ textAlign: productsBanner?.textAlign || 'center', position: 'relative', zIndex: 2 }}>
-          <h1 style={{ fontSize: '2.8rem', color: '#FFF', marginBottom: '12px', fontWeight: 700 }}>
-            {productsBanner?.title || 'Our Complete Product Range'}
+        <div className="container" style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
+          {/* Breadcrumb */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem', color: 'rgba(255, 255, 255, 0.75)', marginBottom: '14px' }}>
+            <span>Home</span> &gt; <span style={{ color: '#FCD34D', fontWeight: 600 }}>Shop</span>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '12px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: 'rgba(255, 255, 255, 0.12)',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                backdropFilter: 'blur(8px)',
+                color: '#FEF3C7',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                padding: '4px 14px',
+                borderRadius: '20px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}
+            >
+              🌿 100% Pure Natural Harvest
+            </span>
+          </div>
+
+          <h1 style={{ fontSize: '2.8rem', color: '#FFFFFF', marginBottom: '12px', fontWeight: 800, letterSpacing: '-0.5px' }}>
+            {productsBanner?.title || 'Explore Our Complete Wholesome Range'}
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.9)', maxWidth: '650px', margin: productsBanner?.textAlign === 'left' ? '0' : productsBanner?.textAlign === 'right' ? '0 0 0 auto' : '0 auto', fontSize: '1.05rem' }}>
-            {productsBanner?.subtitle || 'Explore our 100% natural, triple-sorted dry fruits, gourmet nuts, authentic Kashmiri saffron, and culinary seeds.'}
+          <p style={{ color: 'rgba(255,255,255,0.9)', maxWidth: '680px', margin: '0 auto', fontSize: '1.05rem', lineHeight: 1.6 }}>
+            {productsBanner?.subtitle || '100% natural, triple-sorted dry fruits, gourmet nuts, authentic Kashmiri saffron, and culinary seeds delivered fresh to your doorstep.'}
           </p>
         </div>
       </section>
 
-      <section className="section" style={{ padding: '40px 0 20px 0' }}>
+      {/* Top Controls Toolbar: Items Count on Left, Sort Dropdown on Right */}
+      <section style={{ padding: '20px 0 16px 0', borderBottom: '1px solid #E5E7EB', background: '#FAFAF9' }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '20px' }}>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button className={`btn ${selectedCategories.length === 0 || selectedCategories.includes('all') ? 'btn-primary' : 'btn-outline'}`} onClick={() => { setSelectedCategories([]); setSelectedSubCategories([]); }} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>All Categories</button>
-              <button className={`btn ${selectedCategories.includes('dry-fruits') ? 'btn-primary' : 'btn-outline'}`} onClick={() => toggleCategorySelection('dry-fruits')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Dry Fruits & Nuts</button>
-              <button className={`btn ${selectedCategories.includes('seeds-berries') ? 'btn-primary' : 'btn-outline'}`} onClick={() => toggleCategorySelection('seeds-berries')} style={{ padding: '8px 20px', fontSize: '0.9rem' }}>Seeds & Berries</button>
+          <div className="shop-toolbar-flex">
+            
+            {/* Left: Products Count Badge & Mobile Filter Button */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <button
+                className="shop-mobile-filter-btn"
+                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+                style={{
+                  display: 'none',
+                  alignItems: 'center',
+                  gap: '8px',
+                  background: isMobileFilterOpen ? '#007A3D' : '#FFFFFF',
+                  color: isMobileFilterOpen ? '#FFFFFF' : '#111827',
+                  border: '1px solid #D1D5DB',
+                  borderRadius: '8px',
+                  padding: '8px 16px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}
+              >
+                <SlidersHorizontal size={16} />
+                <span>{isMobileFilterOpen ? 'Hide Filters' : 'Filters'}</span>
+                {hasActiveFilters && (
+                  <span style={{ background: isMobileFilterOpen ? '#FFF' : '#007A3D', color: isMobileFilterOpen ? '#007A3D' : '#FFF', fontSize: '0.75rem', borderRadius: '50%', width: '18px', height: '18px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {selectedCategories.length + selectedSubCategories.length + selectedPrices.length}
+                  </span>
+                )}
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111827' }}>
+                  All Products
+                </span>
+                <span
+                  style={{
+                    background: '#E5E7EB',
+                    color: '#374151',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    padding: '3px 10px',
+                    borderRadius: '12px'
+                  }}
+                >
+                  Showing {filteredProducts.length} items
+                </span>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-              <input
-                type="text"
-                placeholder="Search catalog..."
-                value={activeSearchQuery}
-                onChange={(e) => updateSearchQuery(e.target.value)}
-                style={{
-                  padding: '9px 16px',
-                  borderRadius: '6px',
-                  border: '1px solid #D8D8D8',
-                  fontSize: '0.9rem',
-                  fontWeight: 400,
-                  color: '#222222',
-                  background: '#FFFFFF',
-                  boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
-                  outline: 'none'
-                }}
-              />
-              
-              {/* Custom Sort Dropdown matching Razzi Shop screenshot */}
+            {/* Right: Sort Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <label style={{ fontSize: '0.88rem', color: '#6B7280', fontWeight: 500 }}>
+                Sort by:
+              </label>
               <div style={{ position: 'relative', width: '220px' }}>
                 <button
                   onClick={() => setIsSortOpen(!isSortOpen)}
                   style={{
                     width: '100%',
-                    padding: '10px 16px',
+                    padding: '9px 14px',
                     background: '#FFFFFF',
-                    border: '1px solid #707070',
-                    borderRadius: '0px',
+                    border: '1px solid #D1D5DB',
+                    borderRadius: '8px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     cursor: 'pointer',
-                    fontSize: '0.92rem',
-                    color: '#444444',
+                    fontSize: '0.9rem',
+                    color: '#374151',
                     fontFamily: "'Jost', sans-serif",
-                    fontWeight: 400
+                    fontWeight: 500,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
                   }}
                 >
                   <span>{sortOptionsMap[sortOption]}</span>
-                  <ChevronDown size={18} color="#666666" style={{ transition: 'transform 0.2s ease', transform: isSortOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+                  <ChevronDown size={16} color="#666666" style={{ transition: 'transform 0.2s ease', transform: isSortOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                 </button>
 
                 {isSortOpen && (
                   <div
                     style={{
                       position: 'absolute',
-                      top: '100%',
+                      top: 'calc(100% + 4px)',
                       left: 0,
                       right: 0,
                       background: '#FFFFFF',
-                      border: '1px solid #707070',
-                      borderTop: 'none',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
                       zIndex: 100,
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-                      display: 'flex',
-                      flexDirection: 'column'
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+                      overflow: 'hidden'
                     }}
                   >
                     {Object.keys(sortOptionsMap).map((key) => (
@@ -285,26 +373,24 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                           setIsSortOpen(false);
                         }}
                         style={{
-                          padding: '10px 16px',
-                          fontSize: '0.9rem',
+                          padding: '10px 14px',
+                          fontSize: '0.88rem',
                           fontFamily: "'Jost', sans-serif",
-                          fontWeight: 400,
+                          fontWeight: sortOption === key ? 600 : 400,
                           cursor: 'pointer',
-                          background: sortOption === key ? '#707070' : '#FFFFFF',
-                          color: sortOption === key ? '#FFFFFF' : '#666666',
+                          background: sortOption === key ? '#F0FDF4' : '#FFFFFF',
+                          color: sortOption === key ? '#15803D' : '#374151',
                           transition: 'background 0.15s ease, color 0.15s ease',
                           textAlign: 'left'
                         }}
                         onMouseEnter={(e) => {
                           if (sortOption !== key) {
-                            e.currentTarget.style.background = '#F5F5F5';
-                            e.currentTarget.style.color = '#222222';
+                            e.currentTarget.style.background = '#F9FAFB';
                           }
                         }}
                         onMouseLeave={(e) => {
                           if (sortOption !== key) {
                             e.currentTarget.style.background = '#FFFFFF';
-                            e.currentTarget.style.color = '#666666';
                           }
                         }}
                       >
@@ -314,20 +400,84 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
                   </div>
                 )}
               </div>
-
-              <span style={{ color: '#555555', fontSize: '0.9rem', fontWeight: 400 }}>
-                Showing <span style={{ fontWeight: 400 }}>{filteredProducts.length}</span> items
-              </span>
             </div>
+
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ paddingTop: '16px' }}>
+      <section className="section" style={{ paddingTop: '24px' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '30px', alignItems: 'start' }}>
-            {/* Left Sidebar Filter Section matching User Screenshots */}
-            <aside style={{ fontFamily: "'Jost', sans-serif", color: '#222222' }}>
+          <div className="shop-main-layout">
+            {/* Left Sidebar Filter Section */}
+            <aside
+              className={`shop-sidebar ${isMobileFilterOpen ? 'mobile-open' : ''}`}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid #E2E8F0' }}>
+                <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', margin: 0 }}>Filters</h2>
+                {hasActiveFilters && (
+                  <button
+                    onClick={resetAllFilters}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#DC2626',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textDecoration: 'underline'
+                    }}
+                  >
+                    Reset All
+                  </button>
+                )}
+              </div>
+
+              {/* Search Box in Filter Sidebar */}
+              <div style={{ marginBottom: '18px', paddingBottom: '16px', borderBottom: '1px solid #E2E8F0' }}>
+                <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 600, color: '#374151', marginBottom: '8px' }}>
+                  Search Products
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={activeSearchQuery}
+                    onChange={(e) => updateSearchQuery(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '9px 32px 9px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #D1D5DB',
+                      fontSize: '0.88rem',
+                      color: '#111827',
+                      background: '#F9FAFB',
+                      outline: 'none',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                  {activeSearchQuery && (
+                    <button
+                      onClick={() => updateSearchQuery('')}
+                      style={{
+                        position: 'absolute',
+                        right: '8px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#9CA3AF',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* 1. Category Section */}
               <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '16px', marginBottom: '18px' }}>
                 <div
@@ -800,7 +950,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               </div>
 
               {/* 4. Price Section */}
-              <div style={{ paddingBottom: '16px', marginBottom: '18px' }}>
+              <div style={{ paddingBottom: '16px' }}>
                 <div
                   onClick={() => toggleSection('price')}
                   style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', paddingBottom: '8px' }}
@@ -856,215 +1006,178 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({
               </div>
             </aside>
 
-            {/* Right Product Grid */}
+            {/* Right Product Grid Area */}
             <div>
-              <div className="bestsellers-grid">
-            {filteredProducts.map((p) => {
-              const qty = cartQuantities[p.id] || 0;
-              const isWishlisted = wishlistIds.includes(p.id);
-
-              return (
-                <div key={p.id} className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                  <div className="bestseller-img-container">
-                    {!p.stock && (
-                      <span style={{ position: 'absolute', top: '12px', right: '12px', background: '#d63638', color: '#FFF', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '4px', zIndex: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Out of Stock
-                      </span>
-                    )}
-                    {p.badge && (
-                      <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#007A3D', color: '#FFF', padding: '3px 10px', fontSize: '0.75rem', fontWeight: 600, borderRadius: '4px', zIndex: 3, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {p.badge}
-                      </span>
-                    )}
-                    {(() => {
-                      const firstImg = p.gallery && p.gallery.length > 0 && p.gallery[0] ? p.gallery[0] : p.image;
-                      const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : null;
-                      return (
-                        <>
-                          <img src={firstImg} alt={p.name} className="main-img" style={{ opacity: p.stock ? 1 : 0.6 }} />
-                          {secondImg && (
-                            <img src={secondImg} alt={`${p.name} Back`} className="hover-img" style={{ opacity: p.stock ? 1 : 0.6 }} />
-                          )}
-                        </>
-                      );
-                    })()}
-
-                    {/* Hover Quick-Actions Overlay */}
-                    <div
-                      className="card-hover-actions"
+              {/* Active Filter Chips */}
+              {hasActiveFilters && (
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
+                  <span style={{ fontSize: '0.82rem', color: '#6B7280', fontWeight: 600 }}>Active Filters:</span>
+                  {selectedCategories.map((c) => (
+                    <span
+                      key={c}
+                      onClick={() => toggleCategorySelection(c)}
                       style={{
-                        flexDirection: 'column',
-                        gap: '12px',
-                        bottom: '16px'
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#F0FDF4',
+                        border: '1px solid #BBF7D0',
+                        color: '#15803D',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
                       }}
                     >
-                      {/* View Details Option above the 3 circle icons */}
-                      <button
-                        className="btn btn-gold"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setModalProduct(p);
-                        }}
-                        style={{
-                          background: '#007A3D',
-                          borderColor: '#007A3D',
-                          color: '#FFFFFF',
-                          padding: '8px 18px',
-                          borderRadius: '20px',
-                          fontSize: '0.82rem',
-                          fontWeight: 500,
-                          boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
-                          cursor: 'pointer',
-                          letterSpacing: '0.3px',
-                          transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = '#F8B84E';
-                          e.currentTarget.style.borderColor = '#F8B84E';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = '#007A3D';
-                          e.currentTarget.style.borderColor = '#007A3D';
-                        }}
-                      >
-                        View Details
-                      </button>
-
-                      {/* 3 Circle Quick Action Buttons */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        {/* 1. Add to Cart / Quantity Pill Controller */}
-                        {qty > 0 ? (
-                          <div className="hover-action-item">
-                            <span className="tooltip-label">Quantity in cart</span>
-                            <div
-                              style={{
-                                height: '48px',
-                                borderRadius: '24px',
-                                background: '#ffffff',
-                                border: '1px solid #e2e8f0',
-                                color: '#222222',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '10px',
-                                padding: '0 14px',
-                                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)'
-                              }}
-                            >
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (onUpdateCartQty) onUpdateCartQty(p.id, qty - 1);
-                                }}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  color: '#222222',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  padding: '2px'
-                                }}
-                                title="Decrease quantity"
-                              >
-                                <Minus size={16} />
-                              </button>
-                              <span style={{ fontSize: '0.9rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
-                                {qty}
-                              </span>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (onAddToCart) onAddToCart(p.id, 1);
-                                }}
-                                style={{
-                                  background: 'none',
-                                  border: 'none',
-                                  color: '#222222',
-                                  cursor: 'pointer',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  padding: '2px'
-                                }}
-                                title="Increase quantity"
-                              >
-                                <Plus size={16} />
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="hover-action-item">
-                            <span className="tooltip-label">Add to cart</span>
-                            <button
-                              className="action-circle-btn"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (onAddToCart) onAddToCart(p.id, 1);
-                              }}
-                            >
-                              <ShoppingBag size={20} />
-                            </button>
-                          </div>
-                        )}
-
-                        {/* 2. Quick View Icon */}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button
-                            className="action-circle-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setModalProduct(p);
-                            }}
-                          >
-                            <Eye size={20} />
-                          </button>
-                        </div>
-
-                        {/* 3. Wishlist Heart Icon */}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button
-                            className="action-circle-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (onToggleWishlist) onToggleWishlist(p.id);
-                            }}
-                          >
-                            <Heart size={20} fill={isWishlisted ? "#E53935" : "none"} color={isWishlisted ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Green Bestseller Footer Card matching image 2 */}
-                  <div className="bestseller-green-footer">
-                    <span className="bestseller-cat">{p.categoryName}</span>
-                    <h3 className="bestseller-title">{p.name}</h3>
-                    <div className="bestseller-price">
-                      ₹{p.price.toFixed(2)}
-                      {p.originalPrice > p.price && (
-                        <span style={{ fontSize: '0.85rem', textDecoration: 'line-through', opacity: 0.75, marginLeft: '8px', fontWeight: 400 }}>
-                          ₹{p.originalPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                    {/* Stock quantity display on card */}
-                    {p.stock ? (
-                      <div style={{ fontSize: '0.8rem', color: '#007A3D', fontWeight: 600, marginTop: '4px' }}>
-                        {p.stockCount ? `${p.stockCount} in stock` : 'In Stock'}
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: '0.8rem', color: '#d63638', fontWeight: 600, marginTop: '4px' }}>
-                        Out of stock
-                      </div>
-                    )}
-                  </div>
+                      {c} <X size={12} />
+                    </span>
+                  ))}
+                  {selectedSubCategories.map((s) => (
+                    <span
+                      key={s}
+                      onClick={() => toggleCategorySelection('', s)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#F0FDF4',
+                        border: '1px solid #BBF7D0',
+                        color: '#15803D',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {s} <X size={12} />
+                    </span>
+                  ))}
+                  {selectedTypes.map((t) => (
+                    <span
+                      key={t}
+                      onClick={() => toggleType(t)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#EFF6FF',
+                        border: '1px solid #BFDBFE',
+                        color: '#1D4ED8',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Type: {t} <X size={12} />
+                    </span>
+                  ))}
+                  {selectedSize !== 'all' && (
+                    <span
+                      onClick={() => setSelectedSize('all')}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#FEF3C7',
+                        border: '1px solid #FDE68A',
+                        color: '#B45309',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Size: {selectedSize} <X size={12} />
+                    </span>
+                  )}
+                  {selectedPrices.map((p) => (
+                    <span
+                      key={p}
+                      onClick={() => togglePrice(p)}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        background: '#F3E8FF',
+                        border: '1px solid #E9D5FF',
+                        color: '#7E22CE',
+                        padding: '4px 10px',
+                        borderRadius: '20px',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      ₹{p} <X size={12} />
+                    </span>
+                  ))}
+                  <button
+                    onClick={resetAllFilters}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#6B7280',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textDecoration: 'underline',
+                      marginLeft: '4px'
+                    }}
+                  >
+                    Clear All
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              )}
+
+              {/* 3-Column Product Grid */}
+              {filteredProducts.length > 0 ? (
+                <div className="shop-products-grid">
+                  {filteredProducts.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      onSelectProduct={onSelectProduct}
+                      onAddToCart={onAddToCart}
+                      onUpdateCartQty={onUpdateCartQty}
+                      cartQty={cartQuantities[p.id] || 0}
+                      isWishlisted={wishlistIds.includes(p.id)}
+                      onToggleWishlist={onToggleWishlist}
+                      onQuickView={(prod) => setModalProduct(prod)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div
+                  style={{
+                    background: '#FAF8F5',
+                    border: '1px dashed #D1D5DB',
+                    borderRadius: '16px',
+                    padding: '60px 20px',
+                    textAlign: 'center'
+                  }}
+                >
+                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🍃</div>
+                  <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: '#111827', marginBottom: '8px' }}>
+                    No Products Found
+                  </h3>
+                  <p style={{ color: '#6B7280', fontSize: '0.95rem', maxWidth: '420px', margin: '0 auto 20px auto' }}>
+                    We couldn't find any products matching your selected filters or search terms.
+                  </p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={resetAllFilters}
+                    style={{ padding: '10px 24px', fontSize: '0.92rem' }}
+                  >
+                    Reset All Filters
+                  </button>
+                </div>
+              )}
+            </div>
       </div>
     </div>
   </section>

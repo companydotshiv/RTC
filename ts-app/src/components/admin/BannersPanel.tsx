@@ -341,10 +341,10 @@ export const BannersPanel: React.FC = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem', background: '#ffffff', padding: '16px 20px', borderRadius: '8px', border: '1px solid #c3c4c7', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <div>
           <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#1d2327', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={20} color="#2271b1" /> Page Banner & Elementor Block Customizer
+            <Sparkles size={20} color="#2271b1" /> Hero Sliders & Page Banners
           </h2>
           <p style={{ margin: '4px 0 0 0', color: '#646970', fontSize: '0.85rem' }}>
-            WordPress Gutenberg / Elementor 3-column builder with 9-dot drag layers, gradient headlines & hyperlink popover
+            Visual banner designer, carousel slides, background overlays, action buttons & mobile responsive scaling
           </p>
         </div>
 
@@ -467,7 +467,7 @@ export const BannersPanel: React.FC = () => {
                     style={{ background: '#f6f7f7', border: '1px solid #2271b1', color: '#2271b1', padding: '5px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
                     onClick={() => handleOpenEditModal(b)}
                   >
-                    <Edit3 size={13} /> Edit Elementor Builder
+                    <Edit3 size={13} /> Edit Banner Design
                   </button>
                   <button
                     style={{ background: '#fff0f0', border: '1px solid #d63638', color: '#d63638', padding: '5px 10px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer' }}
@@ -519,7 +519,7 @@ export const BannersPanel: React.FC = () => {
         }}
       />
 
-      {/* WORDPRESS GUTENBERG / ELEMENTOR 3-COLUMN BUILDER MODAL */}
+      {/* VISUAL BANNER BUILDER MODAL */}
       {isModalOpen && editingBanner && (
         <div
           style={{
@@ -555,7 +555,7 @@ export const BannersPanel: React.FC = () => {
                   RTC BUILDER
                 </span>
                 <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>
-                  {editingBanner.id ? `Elementor / Gutenberg Page Builder: "${editingBanner.title}"` : 'Create New Banner Block'}
+                  {editingBanner.id ? `Banner Customizer: "${editingBanner.title}"` : 'Create New Hero Banner'}
                 </h3>
               </div>
 
@@ -596,7 +596,7 @@ export const BannersPanel: React.FC = () => {
               </div>
             </div>
 
-            {/* 3-COLUMN WORDPRESS / ELEMENTOR WORKSPACE */}
+            {/* 3-COLUMN VISUAL BANNER BUILDER WORKSPACE */}
             <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
               
               {/* COLUMN 1 (LEFT 22%): Gutenberg Block Palette & 9-Dot Drag Layer Manager */}

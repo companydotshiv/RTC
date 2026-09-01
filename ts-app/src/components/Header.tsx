@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Search, Heart, User, Truck, X, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Search, Heart, User, Truck, X, ChevronDown, Menu } from 'lucide-react';
 import { adminStore } from '../data/adminStore';
 import type { Product } from '../types/product';
 
@@ -10,12 +10,14 @@ interface HeaderProps {
   wishlistCount?: number;
   cartQuantities?: { [id: number]: number };
   onUpdateCartQty?: (productId: number, newQty: number) => void;
+  onRemoveCartItem?: (productId: number) => void;
   searchQuery?: string;
   setSearchQuery?: (query: string) => void;
   onSelectProduct?: (product: Product) => void;
   isCartOpen?: boolean;
   setIsCartOpen?: (open: boolean) => void;
   onOpenCheckoutModal?: () => void;
+  onNavigateToCategory?: (category: string, subCategory?: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,12 +26,14 @@ export const Header: React.FC<HeaderProps> = ({
   wishlistCount = 0,
   cartQuantities: externalCartQuantities,
   onUpdateCartQty,
+  onRemoveCartItem,
   searchQuery = '',
   setSearchQuery,
   onSelectProduct,
   isCartOpen: externalIsCartOpen,
   setIsCartOpen: externalSetIsCartOpen,
-  onOpenCheckoutModal
+  onOpenCheckoutModal,
+  onNavigateToCategory
 }) => {
   const [, setRenderTick] = useState(0);
 
@@ -96,9 +100,13 @@ export const Header: React.FC<HeaderProps> = ({
     setIsCartOpen(true);
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [isMobileCatOpen, setIsMobileCatOpen] = useState<boolean>(false);
+
   const handleClose = () => {
     setIsSearchOpen(false);
     setIsCartOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
   const categoryOptions = [
@@ -148,19 +156,21 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* Top Announcement Bar */}
+      {/* Top Announcement Bar - Sleek & Modern */}
       {announcement.isActive && (
-        <div className="top-bar" style={{ backgroundColor: announcement.bgColor, color: announcement.textColor }}>
-          <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-              <span><Truck size={14} style={{ display: 'inline', marginRight: '6px' }} /> Free shipping on orders over ₹{adminStore.shippingRule.minOrderForFreeShipping}</span>
+        <div className="top-bar" style={{ backgroundColor: announcement.bgColor || '#15803D', color: announcement.textColor || '#ffffff' }}>
+          <div className="container">
+            <div className="top-bar-left">
+              <Truck size={13} strokeWidth={1.75} style={{ display: 'inline-block', opacity: 0.9 }} />
+              <span>Free shipping on orders over ₹{adminStore.shippingRule.minOrderForFreeShipping}</span>
             </div>
-            <div className="top-bar-info" style={{ fontSize: '0.95rem', fontWeight: 600 }}>
+            <div className="top-bar-center">
               <span>{announcement.text}</span>
             </div>
-            <div className="top-bar-info" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Facebook</a>
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color: 'inherit' }}>Instagram</a>
+            <div className="top-bar-right">
+              <a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a>
+              <span className="top-bar-social-divider" />
+              <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
             </div>
           </div>
         </div>
@@ -168,83 +178,181 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Main Header */}
       <header className="main-header">
-        <div style={{ width: '100%', padding: '0 24px' }}>
-          <div className="navbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '84px', width: '100%' }}>
+        <div className="container">
+          <div className="navbar">
+            {/* Mobile Hamburger Button */}
+            <button
+              className="mobile-hamburger-btn"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={24} color="#15803D" />
+            </button>
+
             <div className="brand-logo" onClick={() => setCurrentView('home')} style={{ cursor: 'pointer', flexShrink: 0 }}>
-              <img src="/rtc-logo.png" alt="RTC Foods" style={{ height: '58px', width: 'auto', objectFit: 'contain' }} />
+              <img src="/rtc-logo.png" alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
             </div>
 
             {/* Desktop Navigation Menu matching exact Wordpress Razzi colors & dropdown */}
-            <ul className="nav-menu" style={{ margin: '0 auto' }}>
+            <ul className="nav-menu">
               <li>
                 <button className={`nav-link ${currentView === 'home' ? 'active' : ''}`} onClick={() => setCurrentView('home')}>Home</button>
               </li>
               <li className="dropdown-parent" style={{ position: 'relative' }}>
-                <button className={`nav-link ${currentView === 'products' ? 'active' : ''}`} onClick={() => setCurrentView('products')}>
+                <button
+                  className={`nav-link ${currentView === 'products' ? 'active' : ''}`}
+                  onClick={() => {
+                    if (onNavigateToCategory) onNavigateToCategory('all', '');
+                    else setCurrentView('products');
+                  }}
+                >
                   Products
                 </button>
                 <div className="dropdown-menu">
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>All Product Range</a>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (onNavigateToCategory) onNavigateToCategory('all', '');
+                      else setCurrentView('products');
+                    }}
+                  >
+                    All Product Range
+                  </a>
+
                   <div className="sub-dropdown-parent" style={{ position: 'relative' }}>
-                    <a href="#" className="has-sub-menu" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>
+                    <a
+                      href="#"
+                      className="has-sub-menu"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (onNavigateToCategory) onNavigateToCategory('dry-fruits', '');
+                        else setCurrentView('products');
+                      }}
+                    >
                       Dry fruits <span className="sub-arrow">›</span>
                     </a>
                     <div className="sub-dropdown-menu">
-                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Cashew</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Walnut</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Almonds</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Raisins</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Dried Apricot</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dry-fruits', 'cashew'); else setCurrentView('products'); }}>Cashew</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dry-fruits', 'walnut'); else setCurrentView('products'); }}>Walnut</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dry-fruits', 'almond'); else setCurrentView('products'); }}>Almonds</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dry-fruits', 'raisin'); else setCurrentView('products'); }}>Raisins</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dry-fruits', 'apricot'); else setCurrentView('products'); }}>Dried Apricot</a>
                     </div>
                   </div>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Seeds</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Fusions</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Dehydrated Fruits</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Snacking</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Spices</a>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setCurrentView('products'); }}>Chemical & Herbs</a>
+
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('seeds-berries', ''); else setCurrentView('products'); }}>Seeds</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('fusions', ''); else setCurrentView('products'); }}>Fusions</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('dehydrated-fruits', ''); else setCurrentView('products'); }}>Dehydrated Fruits</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('snacking', ''); else setCurrentView('products'); }}>Snacking</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('spices', ''); else setCurrentView('products'); }}>Spices</a>
+                  <a href="#" onClick={(e) => { e.preventDefault(); if (onNavigateToCategory) onNavigateToCategory('chemical-herbs', ''); else setCurrentView('products'); }}>Chemical & Herbs</a>
                 </div>
               </li>
               <li>
-                <button className="nav-link" onClick={() => setCurrentView('products')}>Gifting</button>
+                <button
+                  className="nav-link"
+                  onClick={() => {
+                    if (onNavigateToCategory) onNavigateToCategory('gifting', '');
+                    else setCurrentView('products');
+                  }}
+                >
+                  Gifting
+                </button>
               </li>
               <li>
-                <button className="nav-link" onClick={() => { setCurrentView('home'); setTimeout(() => document.getElementById('wholesale')?.scrollIntoView({ behavior: 'smooth' }), 100); }}>Bulk Order</button>
+                <button
+                  className="nav-link"
+                  onClick={() => {
+                    setCurrentView('home');
+                    setTimeout(() => {
+                      const el = document.getElementById('wholesale') || document.querySelector('.partners-enterprise-section') || document.getElementById('footer-contact');
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }, 120);
+                  }}
+                >
+                  Bulk Order
+                </button>
               </li>
               <li>
-                <button className="nav-link" onClick={() => { setCurrentView('home'); setTimeout(() => document.getElementById('wholesale')?.scrollIntoView({ behavior: 'smooth' }), 100); }}>Private Labelling</button>
+                <button
+                  className="nav-link"
+                  onClick={() => {
+                    setCurrentView('home');
+                    setTimeout(() => {
+                      const el = document.getElementById('wholesale') || document.querySelector('.partners-enterprise-section') || document.getElementById('footer-contact');
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }, 120);
+                  }}
+                >
+                  Private Labelling
+                </button>
               </li>
               <li>
-                <button className="nav-link" onClick={() => { setCurrentView('home'); setTimeout(() => document.getElementById('footer-contact')?.scrollIntoView({ behavior: 'smooth' }), 100); }}>Contact Us</button>
+                <button className="nav-link" onClick={() => setCurrentView('contact-us')}>Contact Us</button>
               </li>
             </ul>
 
-            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '18px', flexShrink: 0 }}>
-              <button className="icon-btn" onClick={handleSearchClick} title="Search Catalog" style={{ border: isSearchOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
-                <Search size={20} />
+            <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              {/* 1. Search Icon Button */}
+              <button
+                className="header-action-pill-btn"
+                onClick={handleSearchClick}
+                title="Search Catalog"
+                style={{ border: isSearchOpen ? '1px solid #15803D' : undefined }}
+              >
+                <Search size={18} className="header-pill-icon" />
+                <span className="header-pill-text">Search</span>
               </button>
-              <button className="icon-btn" title="My Account">
-                <User size={20} />
+
+              {/* 2. Account / Customer Profile Button */}
+              <button
+                className="header-action-pill-btn"
+                onClick={() => setCurrentView('account')}
+                title="My Account"
+              >
+                <User size={18} className="header-pill-icon" />
+                <span className="header-pill-text">Account</span>
               </button>
-              <button className="icon-btn" onClick={() => setCurrentView('wishlist')} title="Wishlist">
+
+              {/* 3. Wishlist Button */}
+              <button
+                className="header-action-pill-btn"
+                onClick={() => setCurrentView('wishlist')}
+                title="Wishlist"
+              >
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Heart size={20} color={wishlistCount > 0 ? '#E23744' : 'currentColor'} fill={wishlistCount > 0 ? '#E23744' : 'none'} />
+                  <Heart
+                    size={18}
+                    className="header-pill-icon"
+                    color={wishlistCount > 0 ? '#E23744' : 'currentColor'}
+                    fill={wishlistCount > 0 ? '#E23744' : 'none'}
+                  />
                   {wishlistCount > 0 && <span className="badge-dot badge-red-dot" title={`${wishlistCount} in Wishlist`} />}
                 </span>
+                <span className="header-pill-text">Wishlist{wishlistCount > 0 ? ` (${wishlistCount})` : ''}</span>
               </button>
-              <button className="icon-btn" onClick={handleCartClick} title="Shopping Cart" style={{ border: isCartOpen ? '2px solid var(--primary-gold)' : 'none', padding: '6px', borderRadius: '50%' }}>
+
+              {/* 4. Cart Button */}
+              <button
+                className="header-action-pill-btn"
+                onClick={handleCartClick}
+                title="Shopping Cart"
+                style={{ border: isCartOpen ? '1px solid #15803D' : undefined }}
+              >
                 <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ShoppingBag size={20} />
+                  <ShoppingBag size={18} className="header-pill-icon" />
                   {totalCartCount > 0 && <span className="badge-dot badge-yellow-dot" title={`${totalCartCount} in Cart`} />}
                 </span>
+                <span className="header-pill-text">Cart{totalCartCount > 0 ? ` (${totalCartCount})` : ''}</span>
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Backdrop Overlay when Search or Cart Drawer is open */}
-      {(isSearchOpen || isCartOpen) && (
+      {/* Backdrop Overlay when Search, Cart, or Mobile Menu Drawer is open */}
+      {(isSearchOpen || isCartOpen || isMobileMenuOpen) && (
         <div
           onClick={handleClose}
           style={{
@@ -253,13 +361,139 @@ export const Header: React.FC<HeaderProps> = ({
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: 'rgba(0,0,0,0.4)',
+            background: 'rgba(0,0,0,0.5)',
             zIndex: 2000,
-            backdropFilter: 'blur(2px)',
+            backdropFilter: 'blur(3px)',
             transition: 'opacity 0.3s ease'
           }}
         />
       )}
+
+      {/* Mobile Slide-in Navigation Drawer */}
+      <aside
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '320px',
+          maxWidth: '85vw',
+          height: '100vh',
+          background: '#FFFFFF',
+          zIndex: 2001,
+          boxShadow: '8px 0 30px rgba(0,0,0,0.18)',
+          display: 'flex',
+          flexDirection: 'column',
+          transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+          fontFamily: "'Jost', sans-serif"
+        }}
+      >
+        {/* Mobile Drawer Header */}
+        <div style={{ padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EFEFEF', background: '#FBF9F4' }}>
+          <img src="/rtc-logo.png" alt="RTC Foods" style={{ height: '42px', width: 'auto' }} />
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#666', padding: '4px' }}
+            aria-label="Close Navigation"
+          >
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* Mobile Drawer Body Navigation Links */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <button
+              onClick={() => { setCurrentView('home'); setIsMobileMenuOpen(false); }}
+              style={{ textAlign: 'left', background: 'none', border: 'none', padding: '12px 10px', fontSize: '1.05rem', fontWeight: currentView === 'home' ? 700 : 500, color: currentView === 'home' ? '#007A3D' : '#222', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Home
+            </button>
+
+            {/* Products Accordion */}
+            <div>
+              <div
+                onClick={() => setIsMobileCatOpen(!isMobileCatOpen)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 10px', fontSize: '1.05rem', fontWeight: currentView === 'products' ? 700 : 500, color: currentView === 'products' ? '#007A3D' : '#222', cursor: 'pointer', borderRadius: '8px' }}
+              >
+                <span onClick={(e) => { e.stopPropagation(); setCurrentView('products'); setIsMobileMenuOpen(false); }}>Products</span>
+                <ChevronDown size={18} style={{ transform: isMobileCatOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', color: '#666' }} />
+              </div>
+
+              {isMobileCatOpen && (
+                <div style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '2px', borderLeft: '2px solid #E5E7EB', marginLeft: '12px', marginTop: '4px' }}>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('all', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#15803D', fontWeight: 600, cursor: 'pointer' }}>All Product Range</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('dry-fruits', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Dry Fruits (Cashews, Almonds, Walnuts)</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('seeds-berries', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Seeds & Berries</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('fusions', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Fusion Mixes</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('dehydrated-fruits', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Dehydrated Fruits</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('spices', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Whole Spices</button>
+                  <button onClick={() => { if (onNavigateToCategory) onNavigateToCategory('chemical-herbs', ''); else setCurrentView('products'); setIsMobileMenuOpen(false); }} style={{ textAlign: 'left', background: 'none', border: 'none', padding: '8px 10px', fontSize: '0.92rem', color: '#444', cursor: 'pointer' }}>Chemical & Herbs</button>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => {
+                if (onNavigateToCategory) onNavigateToCategory('gifting', '');
+                else setCurrentView('products');
+                setIsMobileMenuOpen(false);
+              }}
+              style={{ textAlign: 'left', background: 'none', border: 'none', padding: '12px 10px', fontSize: '1.05rem', fontWeight: 500, color: '#222', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Gifting & Hampers
+            </button>
+
+            <button
+              onClick={() => {
+                setCurrentView('home');
+                setIsMobileMenuOpen(false);
+                setTimeout(() => document.getElementById('wholesale')?.scrollIntoView({ behavior: 'smooth' }), 150);
+              }}
+              style={{ textAlign: 'left', background: 'none', border: 'none', padding: '12px 10px', fontSize: '1.05rem', fontWeight: 500, color: '#222', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Bulk Orders & Wholesale
+            </button>
+
+            <button
+              onClick={() => {
+                setCurrentView('home');
+                setIsMobileMenuOpen(false);
+                setTimeout(() => document.getElementById('wholesale')?.scrollIntoView({ behavior: 'smooth' }), 150);
+              }}
+              style={{ textAlign: 'left', background: 'none', border: 'none', padding: '12px 10px', fontSize: '1.05rem', fontWeight: 500, color: '#222', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Private Labelling
+            </button>
+
+            <button
+              onClick={() => {
+                setCurrentView('contact-us');
+                setIsMobileMenuOpen(false);
+              }}
+              style={{ textAlign: 'left', background: 'none', border: 'none', padding: '12px 10px', fontSize: '1.05rem', fontWeight: 500, color: '#222', borderRadius: '8px', cursor: 'pointer' }}
+            >
+              Contact Us
+            </button>
+          </nav>
+        </div>
+
+        {/* Mobile Drawer Footer Actions */}
+        <div style={{ padding: '18px 20px', borderTop: '1px solid #EFEFEF', background: '#FAFAFA', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <button
+            onClick={() => { setCurrentView('wishlist'); setIsMobileMenuOpen(false); }}
+            style={{ width: '100%', padding: '10px', background: '#FFF', border: '1px solid #DDD', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.92rem', fontWeight: 600, color: '#333', cursor: 'pointer' }}
+          >
+            <Heart size={16} color="#E23744" fill={wishlistCount > 0 ? '#E23744' : 'none'} /> Wishlist ({wishlistCount})
+          </button>
+          <button
+            onClick={() => { setCurrentView('admin'); setIsMobileMenuOpen(false); }}
+            style={{ width: '100%', padding: '10px', background: '#15803D', border: 'none', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.92rem', fontWeight: 600, color: '#FFF', cursor: 'pointer' }}
+          >
+            <User size={16} /> Admin / My Account
+          </button>
+        </div>
+      </aside>
 
       {/* Slide-in Right Shopping Bag Drawer 1:1 matching search box style */}
       <aside

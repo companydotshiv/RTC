@@ -103,6 +103,56 @@ export const products: Product[] = [
     features: [
       'Non-GMO & 100% Pure Raw Kernels',
       'Ideal for soaking overnight & daily brain health'
+    ],
+    reviews: [
+      {
+        name: 'Priya Sharma',
+        rating: 5,
+        date: '2025-08-12',
+        title: 'Best almonds I have ever tasted!',
+        text: 'These California almonds are absolutely premium. The crunch is perfect, and they taste so fresh. I soak them overnight for my kids every morning — they love it. Will definitely reorder the 1kg pack.',
+        verified: true
+      },
+      {
+        name: 'Rahul Verma',
+        rating: 5,
+        date: '2025-07-28',
+        title: 'Superb quality, great packaging',
+        text: 'Received in a nitrogen-flushed pack which kept everything fresh. The almonds are uniform in size, no broken pieces at all. RTC Foods has really set a high standard here. Highly recommended for daily snacking.',
+        verified: true
+      },
+      {
+        name: 'Ananya Gupta',
+        rating: 4,
+        date: '2025-07-15',
+        title: 'Good quality but slightly pricey',
+        text: 'Quality is genuinely top-notch — you can tell these are real California almonds from the taste and size. Only reason for 4 stars is the price is a bit steep compared to local brands, but you do get what you pay for.',
+        verified: true
+      },
+      {
+        name: 'Vikram Patel',
+        rating: 5,
+        date: '2025-06-30',
+        title: 'Perfect for making almond milk',
+        text: 'I use these exclusively for homemade almond milk and almond butter. The yield is amazing because the kernels are so plump and fresh. No bitter aftertaste at all. My go-to brand now!',
+        verified: true
+      },
+      {
+        name: 'Sneha Reddy',
+        rating: 5,
+        date: '2025-06-18',
+        title: 'Gifted to family, everyone loved it!',
+        text: 'Ordered the 500g pack for Diwali gifting and the response was overwhelming. Everyone asked where I got these from. The freshness and crunch stood out. RTC Foods is my new favourite for dry fruits.',
+        verified: true
+      },
+      {
+        name: 'Arjun Mehta',
+        rating: 4,
+        date: '2025-05-22',
+        title: 'Consistent quality across orders',
+        text: 'This is my third order and the quality has been consistent every single time. Large, crunchy kernels with no dust or residue. I eat a handful every day as a mid-morning snack. Delivery was also very quick.',
+        verified: true
+      }
     ]
   },
   {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../types/product';
 import { adminStore } from '../data/adminStore';
-import { ShoppingBag, Star, CheckCircle2, ChevronLeft, ChevronRight, Eye, Heart, Minus, Plus } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Sparkles, ArrowRight, Handshake, ArrowUpRight, CheckCircle2, Building2, PhoneCall, Send, ShieldCheck, Truck, MessageCircle } from 'lucide-react';
+import { ProductCard } from '../components/ProductCard';
 
 interface HomePageProps {
   onSelectProduct: (product: Product) => void;
@@ -32,571 +33,243 @@ export const HomePage: React.FC<HomePageProps> = ({
   }, []);
 
   const products = adminStore.products;
-  const renderCartButton = (productId: number) => {
-    const qty = cartQuantities[productId] || 0;
-    if (qty > 0) {
-      return (
-        <div className="hover-action-item">
-          <span className="tooltip-label">Quantity in cart</span>
-          <div
-            style={{
-              height: '48px',
-              borderRadius: '24px',
-              background: '#ffffff',
-              border: '1px solid #e2e8f0',
-              color: '#222222',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              padding: '0 14px',
-              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.12)'
-            }}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onUpdateCartQty) onUpdateCartQty(productId, qty - 1);
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#222222',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '2px'
-              }}
-              title="Decrease quantity"
-            >
-              <Minus size={16} />
-            </button>
-            <span style={{ fontSize: '0.9rem', fontWeight: 600, minWidth: '16px', textAlign: 'center' }}>
-              {qty}
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (onAddToCart) onAddToCart(productId, 1);
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#222222',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                padding: '2px'
-              }}
-              title="Increase quantity"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="hover-action-item">
-        <span className="tooltip-label">Add to cart</span>
-        <button
-          className="action-circle-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (onAddToCart) onAddToCart(productId, 1);
-          }}
-        >
-          <ShoppingBag size={20} />
-        </button>
-      </div>
-    );
+  const [inquirySubmitted, setInquirySubmitted] = useState(false);
+  const [inquiryName, setInquiryName] = useState('');
+  const [inquiryPhone, setInquiryPhone] = useState('');
+  const [inquiryDetails, setInquiryDetails] = useState('');
+
+  const heroBanners = [
+    { id: 1, image: '/slide-2.jpg', title: 'RTC Foods Premium Dry Fruits' },
+    { id: 2, image: '/slide-3.png', title: 'Festive & Luxury Gift Boxes' },
+    { id: 3, image: '/slide-4.png', title: 'Pure Natural Quality' },
+    { id: 4, image: '/slide-5.jpg', title: 'Wholesale & Private Labelling' },
+  ];
+  const [currentHeroSlide, setCurrentHeroSlide] = useState<number>(0);
+  const [isHoveredHero, setIsHoveredHero] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isHoveredHero) return;
+    const slideTimer = setInterval(() => {
+      setCurrentHeroSlide((prev) => (prev + 1) % heroBanners.length);
+    }, 4500);
+    return () => clearInterval(slideTimer);
+  }, [isHoveredHero, heroBanners.length]);
+
+  const handlePrevHeroSlide = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentHeroSlide((prev) => (prev - 1 + heroBanners.length) % heroBanners.length);
+  };
+
+  const handleNextHeroSlide = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setCurrentHeroSlide((prev) => (prev + 1) % heroBanners.length);
   };
 
   return (
     <div>
-      {/* 1. Hero Banner Carousel Replica */}
-      <section className="hero-section">
-        <div className="hero-bg-overlay" style={{ backgroundImage: "url('/hero_dry_fruits_1785924400069.png')" }}></div>
-        <div className="container">
-          <div className="hero-content-grid">
-            <div className="hero-text-side">
-              <div className="hero-tag">
-                <CheckCircle2 size={16} /> 30+ YEARS OF PURE QUALITY LEGACY
-              </div>
-              <h1 className="hero-title">
-                Taste the Authentic Goodness of <span>Pure Dry Fruits & Spices</span>
-              </h1>
-              <p className="hero-desc">
-                Hygienically sorted, triple-graded whole cashews, almonds, pure Kashmiri saffron, and premium nuts delivered fresh from nature to your doorstep.
-              </p>
-              <div className="hero-actions">
-                <button className="btn btn-gold" onClick={() => setCurrentView('products')}>
-                  <ShoppingBag size={18} /> Explore Collection
-                </button>
-                <button className="btn btn-outline" style={{ borderColor: 'rgba(255,255,255,0.4)', color: '#fff' }} onClick={() => { document.getElementById('wholesale')?.scrollIntoView({ behavior: 'smooth' }); }}>
-                  Bulk Inquiry
-                </button>
-              </div>
-              <div className="hero-stats">
-                <div className="stat-item">
-                  <h3>100%</h3>
-                  <p>Natural & Lab Tested</p>
-                </div>
-                <div className="stat-item">
-                  <h3>500+</h3>
-                  <p>Wholesale Retailers</p>
-                </div>
-                <div className="stat-item">
-                  <h3>30+ Yrs</h3>
-                  <p>Industry Trust</p>
-                </div>
-              </div>
+      {/* 1. Hero Banner Slider - Edge to Edge */}
+      <section className="hero-slider-section">
+        <div
+          className="hero-slider-wrapper"
+          onMouseEnter={() => setIsHoveredHero(true)}
+          onMouseLeave={() => setIsHoveredHero(false)}
+        >
+          {heroBanners.map((banner, index) => (
+            <div
+              key={banner.id}
+              className={`hero-slide ${index === currentHeroSlide ? 'active' : ''}`}
+              onClick={() => setCurrentView('products')}
+            >
+              <img
+                src={banner.image}
+                alt={banner.title}
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
             </div>
-            <div className="hero-image-wrapper">
-              <img src="/hero_dry_fruits_1785924400069.png" alt="RTC Foods Premium Selection" className="hero-main-img" />
-            </div>
+          ))}
+
+          {/* Previous & Next Chevrons */}
+          <button
+            className="hero-slider-nav-btn hero-slider-prev"
+            onClick={handlePrevHeroSlide}
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft size={22} />
+          </button>
+          <button
+            className="hero-slider-nav-btn hero-slider-next"
+            onClick={handleNextHeroSlide}
+            aria-label="Next Slide"
+          >
+            <ChevronRight size={22} />
+          </button>
+
+          {/* Dots Indicator */}
+          <div className="hero-slider-dots">
+            {heroBanners.map((_, index) => (
+              <button
+                key={index}
+                className={`hero-slider-dot ${index === currentHeroSlide ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentHeroSlide(index);
+                }}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 2. Best Sellers Carousel Replica matching exact 1:1 WordPress layout */}
-      <section className="section" style={{ background: '#FFF', padding: '60px 0 60px 0' }}>
+      {/* 2. Best Sellers Section */}
+      <section className="bestsellers-section">
         <div className="bestsellers-wrapper">
-          <h2 style={{ textAlign: 'center', fontSize: '2.5rem', fontWeight: '700', marginBottom: '40px', color: '#222222', fontFamily: "'Jost', sans-serif" }}>
-            Best Sellers
-          </h2>
+          <div className="section-header-modern">
+            <h2 className="section-main-title">
+              Best Sellers
+            </h2>
+            <p className="section-sub-title">
+              Our most-loved, premium quality dry fruits, nuts & superfood seeds delivered fresh to your doorstep
+            </p>
+          </div>
 
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            {/* Left Carousel Nav Button */}
-            <button className="carousel-nav-btn left-nav" title="Previous Products">
-              <ChevronLeft size={28} />
-            </button>
+          {/* Bestsellers Grid - 2 Rows (8 Products) */}
+          <div className="bestsellers-grid">
+            {(() => {
+              const list = [1, 4, 3, 6, 2, 7, 5, 9].map((id) => products.find((prod) => prod.id === id)).filter(Boolean) as Product[];
+              const displayList = list.length > 0 ? list : products.slice(0, 8);
+              return displayList.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  onSelectProduct={onSelectProduct}
+                  onAddToCart={onAddToCart}
+                  onUpdateCartQty={onUpdateCartQty}
+                  cartQty={cartQuantities[p.id] || 0}
+                  isWishlisted={wishlistIds.includes(p.id)}
+                  onToggleWishlist={onToggleWishlist}
+                />
+              ));
+            })()}
+          </div>
 
-            {/* 4 Bestseller Cards Matching Exact WordPress Screenshot Layout */}
-            <div className="bestsellers-grid">
-              {/* Card 1: California Almonds (ID: 1) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 1) || products[0];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-
-                      {/* Hover Quick-Actions Overlay matching screenshot */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(1)}
-
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(1); }}>
-                            <Heart size={20} fill={wishlistIds.includes(1) ? "#E53935" : "none"} color={wishlistIds.includes(1) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                      {!p.stock && (
-                        <span style={{ position: 'absolute', top: '12px', right: '12px', background: '#d63638', color: '#FFF', padding: '4px 10px', fontSize: '0.75rem', fontWeight: 700, borderRadius: '3px', zIndex: 5, textTransform: 'uppercase' }}>
-                          Out of Stock
-                        </span>
-                      )}
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Almonds</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">
-                        ₹274.00 – ₹1,082.00
-                        {!p.stock && (
-                          <span style={{ color: '#d63638', fontSize: '0.8rem', marginLeft: '8px', fontWeight: 600 }}>(Out of Stock)</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 2: Chia Seeds (ID: 2) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 2) || products[1];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(2)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
-                            <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Seeds</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹27.00 – ₹108.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 3: Cashew (ID: 3) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 3) || products[2];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(3)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(3); }}>
-                            <Heart size={20} fill={wishlistIds.includes(3) ? "#E53935" : "none"} color={wishlistIds.includes(3) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Cashew</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹301.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 4: Dry Figs Diamond (ID: 4) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 4) || products[3];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(4)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(4); }}>
-                            <Heart size={20} fill={wishlistIds.includes(4) ? "#E53935" : "none"} color={wishlistIds.includes(4) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Dry Figs</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹265.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-
-            {/* Right Carousel Nav Button */}
-            <button className="carousel-nav-btn right-nav" title="Next Products">
-              <ChevronRight size={28} />
+          {/* Bottom Explore All Button */}
+          <div style={{ textAlign: 'center', marginTop: '36px' }}>
+            <button
+              className="btn btn-gold"
+              onClick={() => setCurrentView('products')}
+              style={{
+                background: '#15803D',
+                borderColor: '#15803D',
+                color: '#ffffff',
+                padding: '12px 32px',
+                borderRadius: '30px',
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(21, 128, 61, 0.2)',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <span>View All Products</span>
+              <ArrowRight size={16} />
             </button>
           </div>
         </div>
       </section>
 
-      {/* Screenshot 1: Thoughtful Gift Boxes & Premium Dry Fruits Banners */}
-      <section className="section" style={{ background: '#FFF', padding: '0 0 60px 0' }}>
+      {/* 3. Shop by Category Showcase */}
+      <section className="category-showcase-section">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.7fr', gap: '24px' }}>
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', background: '#FFF', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <img src="/thoughtful_gift_boxes_v3.jpg" alt="Thoughtful Gift Boxes" style={{ width: '100%', height: '420px', objectFit: 'cover', borderRadius: '8px', marginBottom: '16px', display: 'block' }} />
-                <h3 style={{ fontSize: '1.7rem', fontWeight: 700, margin: '8px 0 14px 0', color: '#222' }}>Thoughtful Gift Boxes</h3>
-              </div>
-              <button className="btn btn-gold" style={{ background: '#007A3D', borderColor: '#007A3D', color: '#FFF', padding: '10px 24px', borderRadius: '6px', alignSelf: 'flex-start' }} onClick={() => setCurrentView('gifting')}>
-                Shop Now
-              </button>
-            </div>
-
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', background: '#FFF', textAlign: 'left', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <img src="/premium_dry_fruits_v3.jpg" alt="Premium Dry Fruits" style={{ width: '100%', height: '420px', objectFit: 'cover', borderRadius: '8px', marginBottom: '16px', display: 'block' }} />
-                <h3 style={{ fontSize: '1.7rem', fontWeight: 700, margin: '8px 0 14px 0', color: '#222' }}>Premium Dry Fruits</h3>
-              </div>
-              <button className="btn btn-gold" style={{ background: '#007A3D', borderColor: '#007A3D', color: '#FFF', padding: '10px 24px', borderRadius: '6px', alignSelf: 'flex-start' }} onClick={() => setCurrentView('products')}>
-                Shop Now
-              </button>
-            </div>
+          <div className="section-header-modern">
+            <h2 className="section-main-title">
+              Shop by Category
+            </h2>
+            <p className="section-sub-title">
+              Explore our handpicked range of farm-fresh dry fruits, organic superfood seeds, exotic berries & gourmet mixes
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Screenshot 2: Shop by Category Grid */}
-      <section className="section" style={{ background: '#FFF', padding: '40px 0 60px 0' }}>
-        <div className="container">
-          <h2 style={{ textAlign: 'center', fontSize: '2.5rem', fontWeight: 700, marginBottom: '40px', color: '#222222', fontFamily: "'Jost', sans-serif" }}>
-            Shop by Category
-          </h2>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '24px 16px', textAlign: 'center' }}>
+          <div className="category-modern-grid">
             {[
-              { name: 'Dry Figs', img: '/cat_dry_figs.png' },
-              { name: 'Dried Apricot', img: '/cat_apricot.png' },
-              { name: 'Raisins', img: '/cat_raisins.png' },
-              { name: 'Walnut', img: '/cat_walnut.png' },
-              { name: 'Almond', img: '/cat_almond.png' },
-              { name: 'Cashew', img: '/cat_cashew.png' },
-              { name: 'Chemical and Herbs', img: '/cat_herbs.png' },
-              { name: 'Seeds', img: '/cat_seeds.png' },
-              { name: 'Fusion', img: '/cat_fusion.png' },
-              { name: 'Dehydrated Fruits', img: '/cat_dehydrated.png' },
-              { name: 'Snacking', img: '/cat_snacking.png' },
-              { name: 'Dry Fruits', img: '/cat_dry_fruits_all.png' },
-              { name: 'Spices', img: '/cat_spices.png' }
+              { name: 'Almonds', sub: 'California & Mamra', img: '/cat_almond.png', tint: '#ECFDF5', glow: 'rgba(21, 128, 61, 0.15)', count: '8 Items' },
+              { name: 'Cashews', sub: 'Jumbo W240 & W320', img: '/cat_cashew.png', tint: '#FFFBEB', glow: 'rgba(217, 119, 6, 0.15)', count: '6 Items' },
+              { name: 'Walnuts', sub: 'Chilean & Kashmiri', img: '/cat_walnut.png', tint: '#FEF3C7', glow: 'rgba(180, 83, 9, 0.15)', count: '5 Items' },
+              { name: 'Dry Figs', sub: 'Diamond & Natural Gold', img: '/cat_dry_figs.png', tint: '#FFF7ED', glow: 'rgba(234, 88, 12, 0.15)', count: '4 Items' },
+              { name: 'Raisins', sub: 'Kishmish & Long Black', img: '/cat_raisins.png', tint: '#F5F3FF', glow: 'rgba(124, 58, 237, 0.15)', count: '5 Items' },
+              { name: 'Dried Apricot', sub: 'Sun-Dried Turkish', img: '/cat_apricot.png', tint: '#FFF7ED', glow: 'rgba(249, 115, 22, 0.15)', count: '3 Items' },
+              { name: 'Seeds & Berries', sub: 'Chia, Flax & Pumpkin', img: '/cat_seeds.png', tint: '#ECFDF5', glow: 'rgba(5, 150, 105, 0.15)', count: '10 Items' },
+              { name: 'Dehydrated Fruits', sub: 'Cranberries & Kiwis', img: '/cat_dehydrated.png', tint: '#FFF1F2', glow: 'rgba(225, 29, 72, 0.15)', count: '7 Items' },
+              { name: 'Whole Spices', sub: 'Cardamom & Cloves', img: '/cat_spices.png', tint: '#FFFBEB', glow: 'rgba(217, 119, 6, 0.15)', count: '9 Items' },
+              { name: 'Herbs & Seasoning', sub: 'Pure Kasuri Methi', img: '/cat_herbs.png', tint: '#F0FDF4', glow: 'rgba(22, 163, 74, 0.15)', count: '4 Items' },
+              { name: 'Fusion Mixes', sub: 'Energy & Snack Blends', img: '/cat_fusion.png', tint: '#FEF2F2', glow: 'rgba(239, 68, 68, 0.15)', count: '6 Items' },
+              { name: 'Festive Gifting', sub: 'Luxury Gift Hampers', img: '/cat_snacking.png', tint: '#FAF5FF', glow: 'rgba(147, 51, 234, 0.15)', count: '12 Items' }
             ].map((catItem, cIdx) => (
-              <div key={cIdx} onClick={() => setCurrentView('products')} style={{ cursor: 'pointer', padding: '10px' }}>
-                <div style={{ width: '140px', height: '140px', margin: '0 auto 12px auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src={catItem.img} alt={catItem.name} style={{ maxHeight: '130px', maxWidth: '130px', objectFit: 'contain', width: '100%', height: '100%' }} />
+              <div
+                key={cIdx}
+                className="category-modern-card"
+                onClick={() => setCurrentView('products')}
+                style={{ '--cat-tint': catItem.tint, '--cat-glow': catItem.glow } as React.CSSProperties}
+              >
+                <div className="cat-img-halo">
+                  <img src={catItem.img} alt={catItem.name} className="cat-product-img" />
                 </div>
-                <h4 style={{ fontSize: '1rem', fontWeight: 400, color: '#222222', fontFamily: "'Jost', sans-serif" }}>{catItem.name}</h4>
+                <div className="cat-content-wrap">
+                  <h3 className="cat-card-title">{catItem.name}</h3>
+                  <span className="cat-card-sub">{catItem.sub}</span>
+                  <div className="cat-explore-pill">
+                    <span>{catItem.count}</span>
+                    <ArrowRight size={12} className="cat-arrow" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Screenshot 3: Bulk Order & Whole Spices Cards */}
-      <section className="section" style={{ background: '#FFF', padding: '0 0 60px 0' }}>
-        <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: '1.77fr 1fr', gap: '24px', alignItems: 'stretch' }}>
-            <div className="popup-hover-card" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', background: '#FFF', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ width: '100%', height: '420px', background: '#FAF8F5', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/bulk_order_wall.jpg" alt="Bulk Order" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
-                </div>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 700, margin: '20px 0 8px 0', color: '#222' }}>Bulk Order</h3>
-              </div>
-              <p style={{ color: '#666', fontSize: '0.95rem' }}>Deliciously delivered in bulk perfect for events celebrations and more</p>
-            </div>
 
-            <div className="popup-hover-card" style={{ border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', background: '#FFF', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ width: '100%', height: '420px', background: '#FAF8F5', borderRadius: '8px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/whole_spices_cardamom.jpg" alt="Whole Spices" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                </div>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: 700, margin: '20px 0 8px 0', color: '#222' }}>Whole Spices</h3>
-              </div>
-              <p style={{ color: '#666', fontSize: '0.95rem' }}>Discover the finest variety of Spices with RTC</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Secondary Bestsellers Section (Matching Bottom Carousel) */}
+      {/* 4. Trending Products Section */}
       <section className="section" style={{ background: '#FBF9F4', padding: '60px 0' }}>
         <div className="container">
-          <div className="section-title">
-            <h2>Trending Products</h2>
-            <div className="title-underline"></div>
+          <div className="section-header-modern">
+            <h2 className="section-main-title">
+              Trending Products
+            </h2>
+            <p className="section-sub-title">
+              Explore freshly packed exotic fruits, nutritious seeds and whole nuts curated for wellness
+            </p>
           </div>
 
           <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-            <button className="carousel-nav-btn left-nav" title="Previous Products">
-              <ChevronLeft size={28} />
+            <button className="carousel-nav-btn left-nav" title="Previous Products" onClick={() => setCurrentView('products')}>
+              <ChevronLeft size={22} />
             </button>
 
             <div className="bestsellers-grid">
-              {/* Card 1: Exotic Dried Kiwi (ID: 5) */}
               {(() => {
-                const p = products.find((prod) => prod.id === 5) || products[4];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(5)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(5); }}>
-                            <Heart size={20} fill={wishlistIds.includes(5) ? "#E53935" : "none"} color={wishlistIds.includes(5) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Dehydrated Fruits</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹171.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 2: Chia Seeds (ID: 2) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 2) || products[1];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-                      
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(2)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(2); }}>
-                            <Heart size={20} fill={wishlistIds.includes(2) ? "#E53935" : "none"} color={wishlistIds.includes(2) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Seeds</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹27.00 – ₹108.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 3: Walnut Kernels Platinum (ID: 6) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 6) || products[5];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-                      
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(6)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(6); }}>
-                            <Heart size={20} fill={wishlistIds.includes(6) ? "#E53935" : "none"} color={wishlistIds.includes(6) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Dry fruits</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹420.00</div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* Card 4: Whole Cranberries Dried Gold (ID: 7) */}
-              {(() => {
-                const p = products.find((prod) => prod.id === 7) || products[6];
-                const firstImg = p.gallery && p.gallery[0] ? p.gallery[0] : p.image;
-                const secondImg = p.gallery && p.gallery.length > 1 && p.gallery[1] ? p.gallery[1] : firstImg;
-                return (
-                  <div className="bestseller-card" onClick={() => onSelectProduct(p)}>
-                    <div className="bestseller-img-container">
-                      <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#FFF', padding: '2px 8px', fontSize: '0.75rem', fontWeight: 'bold', borderRadius: '4px', zIndex: 3 }}>NEW</span>
-                      <img src={firstImg} alt={p.name} className="main-img" />
-                      {secondImg && <img src={secondImg} alt={`${p.name} Back`} className="hover-img" />}
-                      
-                      {/* Hover Quick-Actions Overlay */}
-                      <div className="card-hover-actions">
-                        {renderCartButton(7)}
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Quick View</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); onSelectProduct(p); }}>
-                            <Eye size={20} />
-                          </button>
-                        </div>
-                        <div className="hover-action-item">
-                          <span className="tooltip-label">Wishlist</span>
-                          <button className="action-circle-btn" onClick={(e) => { e.stopPropagation(); if (onToggleWishlist) onToggleWishlist(7); }}>
-                            <Heart size={20} fill={wishlistIds.includes(7) ? "#E53935" : "none"} color={wishlistIds.includes(7) ? "#E53935" : "#222222"} />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bestseller-green-footer">
-                      <span className="bestseller-cat">Dehydrated Fruits</span>
-                      <h3 className="bestseller-title">{p.name}</h3>
-                      <div className="bestseller-price">₹310.00</div>
-                    </div>
-                  </div>
-                );
+                const list = [5, 2, 6, 7].map((id) => products.find((prod) => prod.id === id)).filter(Boolean) as Product[];
+                const displayList = list.length > 0 ? list : products.slice(0, 4);
+                return displayList.map((p) => (
+                  <ProductCard
+                    key={p.id}
+                    product={p}
+                    onSelectProduct={onSelectProduct}
+                    onAddToCart={onAddToCart}
+                    onUpdateCartQty={onUpdateCartQty}
+                    cartQty={cartQuantities[p.id] || 0}
+                    isWishlisted={wishlistIds.includes(p.id)}
+                    onToggleWishlist={onToggleWishlist}
+                  />
+                ));
               })()}
             </div>
 
-            <button className="carousel-nav-btn right-nav" title="Next Products">
-              <ChevronRight size={28} />
+            <button className="carousel-nav-btn right-nav" title="Next Products" onClick={() => setCurrentView('products')}>
+              <ChevronRight size={22} />
             </button>
           </div>
         </div>
@@ -610,9 +283,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             <h2 className="section-title" style={{ fontSize: '2.5rem', fontWeight: 700, color: '#222' }}>Latest Buyers Reviews</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '30px', alignItems: 'center' }}>
+          <div className="reviews-main-grid">
             {/* Left Google Badge Box */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '10px' }}>
+            <div className="reviews-badge-box">
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#FFF', border: '1px solid #E0E0E0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <img src="/rtc-google-pfp.png" alt="RTC Foods" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
@@ -648,12 +321,8 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             {/* Right Reviews Carousel */}
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <button className="carousel-nav-btn left-nav" style={{ position: 'absolute', left: '-20px', zIndex: 4 }} title="Previous">
-                <ChevronLeft size={20} />
-              </button>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', width: '100%' }}>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+              <div className="reviews-cards-grid">
                 {/* Review 1 */}
                 <div style={{ background: '#ECECEC', padding: '20px', borderRadius: '12px', position: 'relative' }}>
                   <span style={{ position: 'absolute', top: '16px', right: '16px', fontWeight: 'bold', color: '#4285F4' }}>G</span>
@@ -734,144 +403,434 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* Screenshot 8: Our Partners Section with Infinite Scroll & Hover Pause */}
-      <section className="section" style={{ background: '#007A3D', padding: '40px 0 30px 0' }}>
-        <div className="container">
-          <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#FFF', marginBottom: '24px' }}>Our Partners</h2>
-          
-          <div className="marquee-container">
-            <div className="marquee-track">
-              {[
-                { name: 'bigbasket', img: '/partner_bigbasket.png' },
-                { name: 'METRO', img: '/partner_metro.png' },
-                { name: 'Country Delight', img: '/partner_countrydelight.png' },
-                { name: 'Pansari', img: '/partner_pansari.png' },
-                { name: 'Zepto', img: '/partner_zepto.png' },
-                { name: 'Zomato', img: '/partner_zomato.png' },
-                { name: 'Blinkit', img: '/partner_blinkit.png' },
-                { name: 'Swiggy', img: '/partner_swiggy.png' },
-                // Duplicate set for seamless continuous infinite loop
-                { name: 'bigbasket', img: '/partner_bigbasket.png' },
-                { name: 'METRO', img: '/partner_metro.png' },
-                { name: 'Country Delight', img: '/partner_countrydelight.png' },
-                { name: 'Pansari', img: '/partner_pansari.png' },
-                { name: 'Zepto', img: '/partner_zepto.png' },
-                { name: 'Zomato', img: '/partner_zomato.png' },
-                { name: 'Blinkit', img: '/partner_blinkit.png' },
-                { name: 'Swiggy', img: '/partner_swiggy.png' },
-              ].map((partner, idx) => (
-                <div 
-                  key={idx} 
-                  style={{ 
-                    background: '#FFF', 
-                    padding: '8px 12px', 
-                    borderRadius: '8px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center', 
-                    height: '80px',
-                    width: '210px',
-                    flexShrink: 0,
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                    transition: 'transform 0.2s ease, boxShadow 0.2s ease',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)';
-                  }}
-                >
-                  <img 
-                    src={partner.img} 
-                    alt={partner.name} 
-                    style={{ maxHeight: '66px', maxWidth: '92%', height: '92%', objectFit: 'contain' }} 
-                  />
-                </div>
-              ))}
+      {/* Enhanced Partners & Enterprise Trust Section */}
+      <section className="section" style={{ background: 'linear-gradient(180deg, #072e18 0%, #031c0e 100%)', padding: '70px 0 60px 0', position: 'relative', overflow: 'hidden' }}>
+        {/* Ambient Glows */}
+        <div style={{ position: 'absolute', top: '-10%', left: '20%', width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(50px)' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', right: '15%', width: '450px', height: '450px', background: 'radial-gradient(circle, rgba(0, 200, 100, 0.1) 0%, transparent 70%)', pointerEvents: 'none', filter: 'blur(60px)' }} />
+
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          {/* Section Header */}
+          <div style={{ textAlign: 'center', maxWidth: '820px', margin: '0 auto 44px auto' }}>
+            <h2 style={{ fontSize: '2.6rem', fontWeight: 800, color: '#FFFFFF', margin: '0 0 14px 0', lineHeight: 1.25 }}>
+              Powering India's Foremost <span style={{ background: 'linear-gradient(135deg, #F5D061 0%, #D4AF37 50%, #FFE082 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Retail & Quick-Commerce</span> Brands
+            </h2>
+            <p style={{ color: 'rgba(255, 255, 255, 0.78)', fontSize: '1.05rem', lineHeight: 1.6, margin: 0 }}>
+              From 10-minute grocery delivery giants to nationwide supermarket chains, leading food brands trust RTC for unmatched quality, batch consistency & seamless bulk fulfillment.
+            </p>
+          </div>
+
+
+
+          {/* Dual Marquee Rows */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '36px' }}>
+            {/* Row 1: Forward Track */}
+            <div className="marquee-container">
+              <div className="marquee-track">
+                {[
+                  { name: 'Zepto', img: '/partner_zepto.png', cat: 'Quick Commerce', desc: '10-Min Dark Store Fulfillment' },
+                  { name: 'Blinkit', img: '/partner_blinkit.png', cat: 'Instant Grocery', desc: 'Nationwide Express Network' },
+                  { name: 'Swiggy Instamart', img: '/partner_swiggy.png', cat: 'On-Demand Delivery', desc: 'Tier 1 & 2 Metro Supply' },
+                  { name: 'Zomato Hyperpure', img: '/partner_zomato.png', cat: 'HORECA & HoReCa', desc: 'Restaurant Sourcing Partner' },
+                  // Seamless loop duplicate
+                  { name: 'Zepto', img: '/partner_zepto.png', cat: 'Quick Commerce', desc: '10-Min Dark Store Fulfillment' },
+                  { name: 'Blinkit', img: '/partner_blinkit.png', cat: 'Instant Grocery', desc: 'Nationwide Express Network' },
+                  { name: 'Swiggy Instamart', img: '/partner_swiggy.png', cat: 'On-Demand Delivery', desc: 'Tier 1 & 2 Metro Supply' },
+                  { name: 'Zomato Hyperpure', img: '/partner_zomato.png', cat: 'HORECA & HoReCa', desc: 'Restaurant Sourcing Partner' },
+                ].map((partner, idx) => (
+                  <div key={`row1-${idx}`} className="partner-modern-card">
+                    <div className="partner-logo-box">
+                      <img src={partner.img} alt={partner.name} />
+                    </div>
+                    <div className="partner-card-meta">
+                      <span className="partner-card-category">{partner.cat}</span>
+                      <span className="partner-card-status">{partner.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* Row 2: Reverse Track */}
+            <div className="marquee-container">
+              <div className="marquee-track-reverse">
+                {[
+                  { name: 'bigbasket', img: '/partner_bigbasket.png', cat: 'E-Supermarket', desc: 'Pan-India Distribution Hub' },
+                  { name: 'METRO Cash & Carry', img: '/partner_metro.png', cat: 'Wholesale B2B', desc: 'Institutional Bulk Partner' },
+                  { name: 'Country Delight', img: '/partner_countrydelight.png', cat: 'Pure Sourcing', desc: 'Daily Direct Supply' },
+                  { name: 'Pansari Group', img: '/partner_pansari.png', cat: 'Modern FMCG', desc: 'Retail Distribution Chain' },
+                  // Seamless loop duplicate
+                  { name: 'bigbasket', img: '/partner_bigbasket.png', cat: 'E-Supermarket', desc: 'Pan-India Distribution Hub' },
+                  { name: 'METRO Cash & Carry', img: '/partner_metro.png', cat: 'Wholesale B2B', desc: 'Institutional Bulk Partner' },
+                  { name: 'Country Delight', img: '/partner_countrydelight.png', cat: 'Pure Sourcing', desc: 'Daily Direct Supply' },
+                  { name: 'Pansari Group', img: '/partner_pansari.png', cat: 'Modern FMCG', desc: 'Retail Distribution Chain' },
+                ].map((partner, idx) => (
+                  <div key={`row2-${idx}`} className="partner-modern-card">
+                    <div className="partner-logo-box">
+                      <img src={partner.img} alt={partner.name} />
+                    </div>
+                    <div className="partner-card-meta">
+                      <span className="partner-card-category" style={{ color: '#92400E', background: '#FEF3C7' }}>{partner.cat}</span>
+                      <span className="partner-card-status">{partner.desc}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Partnership Callout Strip */}
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(212, 175, 55, 0.3)',
+            borderRadius: '16px',
+            padding: '20px 28px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                background: 'rgba(212, 175, 55, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#F5D061',
+                flexShrink: 0
+              }}>
+                <Handshake size={22} />
+              </div>
+              <div>
+                <h4 style={{ color: '#FFFFFF', fontSize: '1.05rem', margin: 0, fontWeight: 700 }}>
+                  Looking to onboard RTC for Bulk Supply, FMCG Retail or Private Labeling?
+                </h4>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.88rem', margin: '2px 0 0 0' }}>
+                  Get custom tiered pricing, sample batches, and dedicated institutional account management.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href="#wholesale"
+              style={{
+                background: 'linear-gradient(135deg, #D4AF37 0%, #AA820A 100%)',
+                color: '#031C0E',
+                fontWeight: 800,
+                fontSize: '0.92rem',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(212, 175, 55, 0.4)',
+                transition: 'all 0.25s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(212, 175, 55, 0.4)';
+              }}
+            >
+              Partner With RTC <ArrowUpRight size={16} />
+            </a>
           </div>
         </div>
       </section>
 
-      {/* 6. Bulk Orders Section */}
-      <section id="wholesale" className="section" style={{ background: '#007A3D', color: '#FFF', borderTop: '1px solid rgba(255,255,255,0.2)', padding: '60px 0' }}>
-        <div className="container">
-          <div className="hero-content-grid">
+      {/* 6. Bulk Orders & Private Labeling Modern Section */}
+      <section
+        id="wholesale"
+        style={{
+          background: 'linear-gradient(135deg, #031D12 0%, #063320 50%, #0B4A2E 100%)',
+          color: '#FFF',
+          padding: '64px 0 70px 0',
+          position: 'relative',
+          overflow: 'hidden',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+        }}
+      >
+        {/* Subtle Ambient Decorative Glows */}
+        <div style={{ position: 'absolute', top: '-80px', left: '10%', width: '380px', height: '380px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(21, 128, 61, 0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '-80px', right: '5%', width: '420px', height: '420px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '48px', alignItems: 'center' }}>
+            
+            {/* Left Column: B2B Value Proposition */}
             <div>
-              <span style={{ color: 'var(--primary-gold)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>Bulk Orders & Private Labeling</span>
-              <h2 style={{ fontSize: '2.5rem', color: '#FFF', margin: '12px 0 20px 0' }}>Looking for Wholesale Supply or Customized Packaging?</h2>
-              <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.05rem', marginBottom: '30px' }}>
-                We cater to supermarket chains, hotel groups, corporate gifting partners, and sweet manufacturers across India.
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: 'rgba(212, 175, 55, 0.12)', border: '1px solid rgba(212, 175, 55, 0.3)', padding: '6px 14px', borderRadius: '24px', marginBottom: '16px' }}>
+                <Building2 size={15} color="#FCD34D" />
+                <span style={{ color: '#FCD34D', fontWeight: 600, fontSize: '0.80rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  Enterprise & Private Labeling
+                </span>
+              </div>
+
+              <h2 style={{ fontSize: 'clamp(1.9rem, 3.2vw, 2.6rem)', color: '#FFFFFF', lineHeight: 1.22, fontWeight: 700, margin: '0 0 16px 0', letterSpacing: '-0.02em' }}>
+                Looking for Wholesale Supply or Customized Packaging?
+              </h2>
+
+              <p style={{ color: 'rgba(255, 255, 255, 0.82)', fontSize: '1.02rem', lineHeight: 1.6, marginBottom: '26px', maxWidth: '540px' }}>
+                We partner with leading supermarket chains, luxury hotel groups, corporate gifting programs, and confectionery brands across India with verified batch certificates and tiered contract pricing.
               </p>
-            </div>
-            <div>
-              <div style={{ background: 'rgba(255,255,255,0.06)', padding: '36px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(212,175,55,0.3)' }}>
-                <h3 style={{ color: 'var(--primary-gold)', marginBottom: '20px', fontSize: '1.4rem' }}>Quick Business Inquiry</h3>
-                <form onSubmit={(e) => { e.preventDefault(); alert('Inquiry sent successfully!'); }}>
-                  <div style={{ marginBottom: '14px' }}>
-                    <input
-                      type="text"
-                      className="bulk-input-field"
-                      placeholder="Your Name / Business Name"
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        background: 'rgba(0,0,0,0.25)',
-                        color: '#FFFFFF',
-                        fontWeight: 400,
-                        fontSize: '0.95rem',
-                        fontFamily: "'Jost', sans-serif"
-                      }}
-                    />
+
+              {/* 4 Core B2B Pillars */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '14px', marginBottom: '30px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <CheckCircle2 size={18} color="#4ADE80" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.90rem', color: '#FFFFFF' }}>Custom Private Labeling</strong>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)' }}>Pouch, jar, and tin branding</span>
                   </div>
-                  <div style={{ marginBottom: '14px' }}>
-                    <input
-                      type="tel"
-                      className="bulk-input-field"
-                      placeholder="Mobile Number"
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        background: 'rgba(0,0,0,0.25)',
-                        color: '#FFFFFF',
-                        fontWeight: 400,
-                        fontSize: '0.95rem',
-                        fontFamily: "'Jost', sans-serif"
-                      }}
-                    />
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <ShieldCheck size={18} color="#4ADE80" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.90rem', color: '#FFFFFF' }}>FSSAI & Lab Tested</strong>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)' }}>Triple-sorted premium grades</span>
                   </div>
-                  <div style={{ marginBottom: '18px' }}>
-                    <textarea
-                      className="bulk-input-field"
-                      placeholder="Requirement Details (e.g. 500kg Cashews)"
-                      rows={3}
-                      style={{
-                        width: '100%',
-                        padding: '12px 16px',
-                        borderRadius: '6px',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        background: 'rgba(0,0,0,0.25)',
-                        color: '#FFFFFF',
-                        fontWeight: 400,
-                        fontSize: '0.95rem',
-                        fontFamily: "'Jost', sans-serif"
-                      }}
-                    ></textarea>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <Truck size={18} color="#4ADE80" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.90rem', color: '#FFFFFF' }}>Pan-India Cold Chain</strong>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)' }}>Bulk dispatch within 24-48h</span>
                   </div>
-                  <button type="submit" className="btn btn-gold" style={{ width: '100%', fontWeight: 400 }}>Send Bulk Inquiry</button>
-                </form>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', background: 'rgba(255, 255, 255, 0.05)', padding: '12px 14px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                  <Building2 size={18} color="#4ADE80" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.90rem', color: '#FFFFFF' }}>GST Invoiced & Tiered</strong>
+                    <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.7)' }}>Dedicated account manager</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Direct WhatsApp Callout */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                <a
+                  href="https://wa.me/918929191914?text=Hi%20RTC%20Foods,%20I%20would%20like%20to%20inquire%20about%20Bulk%20Order%20/%20Private%20Labeling."
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: '#25D366',
+                    color: '#FFFFFF',
+                    padding: '10px 18px',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    fontSize: '0.90rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 14px rgba(37, 211, 102, 0.35)',
+                    transition: 'transform 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; }}
+                >
+                  <MessageCircle size={17} /> Direct WhatsApp Desk
+                </a>
+                <span style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.88rem' }}>
+                  or Call <strong>+91-89291 91914</strong>
+                </span>
               </div>
             </div>
+
+            {/* Right Column: Clean, Crisp High-Contrast Form Card */}
+            <div>
+              <div
+                style={{
+                  background: '#FFFFFF',
+                  padding: '36px 32px',
+                  borderRadius: '16px',
+                  boxShadow: '0 20px 50px rgba(0, 0, 0, 0.28)',
+                  border: '1px solid rgba(255, 255, 255, 0.9)',
+                  color: '#1E293B'
+                }}
+              >
+                {inquirySubmitted ? (
+                  <div style={{ textAlign: 'center', padding: '24px 10px' }}>
+                    <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#ECFDF5', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px auto' }}>
+                      <CheckCircle2 size={32} />
+                    </div>
+                    <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#0F172A', marginBottom: '8px' }}>
+                      Inquiry Received!
+                    </h3>
+                    <p style={{ fontSize: '0.94rem', color: '#64748B', lineHeight: 1.5, marginBottom: '20px' }}>
+                      Thank you, <strong>{inquiryName || 'Valued Partner'}</strong>. Our B2B enterprise desk will review your requirement and share quotation & wholesale pricing within 2 business hours.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInquirySubmitted(false);
+                        setInquiryName('');
+                        setInquiryPhone('');
+                        setInquiryDetails('');
+                      }}
+                      style={{
+                        background: '#F1F5F9',
+                        border: '1px solid #CBD5E1',
+                        padding: '8px 18px',
+                        borderRadius: '6px',
+                        fontWeight: 600,
+                        fontSize: '0.86rem',
+                        color: '#334155',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Submit Another Inquiry
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ marginBottom: '22px' }}>
+                      <h3 style={{ color: '#0F172A', fontSize: '1.35rem', fontWeight: 700, margin: '0 0 4px 0' }}>
+                        Quick Business Inquiry
+                      </h3>
+                      <p style={{ color: '#64748B', fontSize: '0.86rem', margin: 0 }}>
+                        Get custom wholesale quotation & specimen catalogs
+                      </p>
+                    </div>
+
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        setInquirySubmitted(true);
+                      }}
+                      style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}
+                    >
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>
+                          Your Name / Company Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={inquiryName}
+                          onChange={(e) => setInquiryName(e.target.value)}
+                          placeholder="e.g. Rahul Verma / Verma Retail"
+                          style={{
+                            width: '100%',
+                            padding: '11px 14px',
+                            borderRadius: '8px',
+                            border: '1.5px solid #E2E8F0',
+                            background: '#F8FAFC',
+                            color: '#0F172A',
+                            fontSize: '0.92rem',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease',
+                            fontFamily: "'Jost', sans-serif"
+                          }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#15803D'; e.currentTarget.style.background = '#FFFFFF'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#F8FAFC'; }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>
+                          Mobile Number / WhatsApp *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          value={inquiryPhone}
+                          onChange={(e) => setInquiryPhone(e.target.value)}
+                          placeholder="+91 98XXX XXXXX"
+                          style={{
+                            width: '100%',
+                            padding: '11px 14px',
+                            borderRadius: '8px',
+                            border: '1.5px solid #E2E8F0',
+                            background: '#F8FAFC',
+                            color: '#0F172A',
+                            fontSize: '0.92rem',
+                            outline: 'none',
+                            transition: 'border-color 0.2s ease',
+                            fontFamily: "'Jost', sans-serif"
+                          }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#15803D'; e.currentTarget.style.background = '#FFFFFF'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#F8FAFC'; }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>
+                          Requirement Details & Estimated Quantity *
+                        </label>
+                        <textarea
+                          required
+                          rows={3}
+                          value={inquiryDetails}
+                          onChange={(e) => setInquiryDetails(e.target.value)}
+                          placeholder="e.g. 500kg Cashew W240, 200kg California Almonds, Private Label Pouches"
+                          style={{
+                            width: '100%',
+                            padding: '11px 14px',
+                            borderRadius: '8px',
+                            border: '1.5px solid #E2E8F0',
+                            background: '#F8FAFC',
+                            color: '#0F172A',
+                            fontSize: '0.92rem',
+                            outline: 'none',
+                            resize: 'vertical',
+                            transition: 'border-color 0.2s ease',
+                            fontFamily: "'Jost', sans-serif"
+                          }}
+                          onFocus={(e) => { e.currentTarget.style.borderColor = '#15803D'; e.currentTarget.style.background = '#FFFFFF'; }}
+                          onBlur={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#F8FAFC'; }}
+                        ></textarea>
+                      </div>
+
+                      <button
+                        type="submit"
+                        style={{
+                          width: '100%',
+                          padding: '13px 20px',
+                          background: 'linear-gradient(135deg, #15803D 0%, #0F6831 100%)',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontWeight: 600,
+                          fontSize: '0.96rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          boxShadow: '0 4px 14px rgba(21, 128, 61, 0.35)',
+                          transition: 'all 0.2s ease',
+                          marginTop: '4px'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(21, 128, 61, 0.45)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 14px rgba(21, 128, 61, 0.35)';
+                        }}
+                      >
+                        <Send size={16} /> Send Bulk Inquiry
+                      </button>
+                    </form>
+                  </>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

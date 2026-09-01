@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { adminStore } from '../../data/adminStore';
 import type { Product } from '../../types/product';
-import { Plus, Search, Edit2, Save, Trash2, Layers, X, Check } from 'lucide-react';
+import { Plus, Search, Edit2, Save, Trash2, Layers, X, Check, ArrowLeft, ExternalLink, HelpCircle, Image, Package, Sliders, FileText, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export const ProductsPanel: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
+  // View state: 'list' | 'edit' | 'add'
+  const [currentView, setCurrentView] = useState<'list' | 'editor'>('list');
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
+
+  // Active tab inside WooCommerce Product Data metabox: 'general' | 'inventory' | 'variations' | 'attributes' | 'bullets' | 'custom_table'
+  const [productDataTab, setProductDataTab] = useState<'general' | 'inventory' | 'variations' | 'attributes' | 'bullets' | 'custom_table'>('general');
+
   const [bulkStockData, setBulkStockData] = useState<{ [id: number]: number }>({});
   const [selectedWeights, setSelectedWeights] = useState<{ [id: number]: string }>({});
 
-  // Save Banner Notification State
+  // Toast Save Notification State
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const products = adminStore.products;
@@ -25,49 +30,52 @@ export const ProductsPanel: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleOpenAddModal = () => {
+  const handleOpenAdd = () => {
     setEditingProduct({
       name: '',
+      slug: '',
       category: 'dry-fruits',
       categoryName: 'Dry Fruits & Nuts',
-      price: 0,
-      originalPrice: 0,
+      price: 499,
+      originalPrice: 599,
       badge: '',
-      image: '',
-      gallery: [''],
-      description: '',
-      shortDesc: '',
-      weights: ['250g'],
-      stockCount: 10,
-      stock: true
+      image: '/hero_dry_fruits_1785924400069.png',
+      gallery: ['/hero_dry_fruits_1785924400069.png'],
+      description: 'Handpicked, 100% natural premium grade produce harvested from pristine orchards.',
+      shortDesc: 'Handpicked, 100% natural premium grade produce.',
+      weights: ['250g', '500g', '1kg'],
+      weightPrices: { '250g': 499, '500g': 949, '1kg': 1799 },
+      weightOriginalPrices: { '250g': 599, '500g': 1149, '1kg': 2199 },
+      stockCount: 25,
+      stock: true,
+      sku: 'RTC-PRD-' + Math.floor(1000 + Math.random() * 9000),
+      bullets: [
+        { title: 'Origin', text: 'Finest 100% natural harvest' },
+        { title: 'Grade', text: 'Grade-A triple sorted whole kernels' },
+        { title: 'Nutritional Value', text: 'Rich in dietary fiber, protein & healthy fats' }
+      ]
     });
-    setIsModalOpen(true);
+    setProductDataTab('general');
+    setCurrentView('editor');
   };
 
-  const handleSaveProduct = async (p: Product) => {
-    const isSuccess = await adminStore.addOrUpdateProduct(p);
-    if (isSuccess) {
-      setSaveStatus({ type: 'success', message: 'Saved' });
-    } else {
-      setSaveStatus({ type: 'error', message: 'an issue occurred, try saving it again' });
-    }
-    setTimeout(() => {
-      setSaveStatus(null);
-    }, 3500);
-  };
-
-  const handleOpenEditModal = (p: Product) => {
+  const handleOpenEdit = (p: Product) => {
     const galleryArr = p.gallery && p.gallery.length > 0 ? p.gallery : [p.image];
     setEditingProduct({
       ...p,
-      gallery: galleryArr
+      gallery: galleryArr,
+      sku: p.sku || `RTC-${p.category.toUpperCase().substring(0, 3)}-${p.id}`
     });
-    setIsModalOpen(true);
+    setProductDataTab('general');
+    setCurrentView('editor');
   };
 
-  const handleSaveModalProduct = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingProduct || !editingProduct.name) return;
+  const handleSaveProduct = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editingProduct || !editingProduct.name) {
+      alert('Please enter a product name before publishing.');
+      return;
+    }
 
     const galleryArr = (editingProduct.gallery && editingProduct.gallery.length > 0)
       ? editingProduct.gallery.filter(g => g && g.trim() !== '')
@@ -77,27 +85,33 @@ export const ProductsPanel: React.FC = () => {
 
     const productToSave: Partial<Product> = {
       ...editingProduct,
+      slug: editingProduct.slug || editingProduct.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
       image: primaryImg,
-      gallery: galleryArr.length > 0 ? galleryArr : [primaryImg]
+      gallery: galleryArr.length > 0 ? galleryArr : [primaryImg],
+      stock: (editingProduct.stockCount ?? 0) > 0
     };
 
     const isSuccess = adminStore.addOrUpdateProduct(productToSave);
     if (isSuccess) {
-      setSaveStatus({ type: 'success', message: 'Saved' });
+      setSaveStatus({ type: 'success', message: 'Product updated successfully.' });
     } else {
-      setSaveStatus({ type: 'error', message: 'An error has occurred. The changes were not saved' });
+      setSaveStatus({ type: 'error', message: 'An error occurred while saving the product.' });
     }
     setTimeout(() => {
       setSaveStatus(null);
     }, 3500);
 
-    setIsModalOpen(false);
+    setCurrentView('list');
     setEditingProduct(null);
   };
 
   const handleDeleteProduct = (id: number, name: string) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+    if (window.confirm(`Are you sure you want to move "${name}" to trash?`)) {
       adminStore.deleteProduct(id);
+      if (editingProduct?.id === id) {
+        setCurrentView('list');
+        setEditingProduct(null);
+      }
     }
   };
 
@@ -115,6 +129,8 @@ export const ProductsPanel: React.FC = () => {
       adminStore.updateProductStockCount(Number(idStr), Number(qty));
     });
     setIsBulkModalOpen(false);
+    setSaveStatus({ type: 'success', message: 'Bulk stock levels updated.' });
+    setTimeout(() => setSaveStatus(null), 3000);
   };
 
   return (
@@ -124,813 +140,938 @@ export const ProductsPanel: React.FC = () => {
         <div
           style={{
             position: 'fixed',
-            top: '24px',
+            top: '40px',
             right: '24px',
             background: saveStatus.type === 'success' ? '#008a20' : '#d63638',
             color: '#ffffff',
-            padding: '12px 24px',
-            borderRadius: '6px',
-            boxShadow: '0 6px 20px rgba(0,0,0,0.18)',
+            padding: '12px 20px',
+            borderRadius: '4px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
             zIndex: 99999,
-            fontWeight: 700,
-            fontSize: '0.95rem',
+            fontWeight: 600,
+            fontSize: '13px',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '10px',
+            gap: '8px',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif'
           }}
         >
-          {saveStatus.type === 'success' ? (
-            <div
-              style={{
-                width: '22px',
-                height: '22px',
-                borderRadius: '50%',
-                background: 'rgba(255,255,255,0.2)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Check size={16} color="#ffffff" strokeWidth={3.5} />
-            </div>
-          ) : (
-            <span style={{ fontSize: '1.1rem' }}>⚠️</span>
-          )}
+          {saveStatus.type === 'success' ? <Check size={16} color="#fff" /> : <AlertCircle size={16} color="#fff" />}
           <span>{saveStatus.message}</span>
         </div>
       )}
 
-      {/* Header Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <div className="admin-header-search" style={{ width: '260px' }}>
-            <Search size={18} />
-            <input
-              type="text"
-              placeholder="Search product name or SKU..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      {/* ========================================================================= */}
+      {/* 1. ALL PRODUCTS LIST VIEW (Classic WooCommerce Table) */}
+      {/* ========================================================================= */}
+      {currentView === 'list' && (
+        <div>
+          {/* Page Heading with Add New button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <h1 className="wp-page-title" style={{ margin: 0 }}>Products</h1>
+            <button className="wp-button-secondary" onClick={handleOpenAdd} style={{ fontWeight: 600 }}>
+              Add New
+            </button>
+            <button className="wp-button-secondary" onClick={handleOpenBulkStock} style={{ fontWeight: 600 }}>
+              <Layers size={13} style={{ display: 'inline', marginRight: '4px' }} /> Quick Edit Stock
+            </button>
           </div>
 
-          <select
-            className="admin-form-control"
-            style={{ width: '180px' }}
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button className="wp-button-secondary" onClick={handleOpenBulkStock} style={{ padding: '6px 12px', fontSize: '13px', fontWeight: 600 }}>
-            <Layers size={15} /> Bulk Stock Update
-          </button>
-          <button className="wp-button-primary" onClick={handleOpenAddModal} style={{ padding: '6px 14px', fontSize: '13px', fontWeight: 600 }}>
-            <Plus size={15} /> Add Product
-          </button>
-        </div>
-      </div>
-
-      {/* Product List Table */}
-      <div className="wp-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table className="wp-list-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Sub-Category</th>
-                <th>Price / MRP</th>
-                <th>Weight / Size</th>
-                <th>Stock Quantity</th>
-                <th>Stock Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((p) => (
-                <tr key={p.id}>
-                  <td style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <img src={p.image} alt={p.name} style={{ width: '44px', height: '44px', borderRadius: '4px', objectFit: 'cover', border: '1px solid #c3c4c7' }} />
-                    <div>
-                      <div style={{ fontWeight: 600, color: '#1d2327' }}>{p.name}</div>
-                      <div style={{ fontSize: '11px', color: '#646970' }}>Badge: <span style={{ color: '#2271b1', fontWeight: 600 }}>{p.badge}</span></div>
-                    </div>
-                  </td>
-                  <td>{p.categoryName}</td>
-                  <td>
-                    {p.subCategory ? (
-                      <span style={{ background: '#f0f6fc', color: '#0969da', padding: '3px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 600 }}>
-                        {p.subCategory}
-                      </span>
-                    ) : (
-                      <span style={{ color: '#8c8f94', fontSize: '12px', fontStyle: 'italic' }}>—</span>
-                    )}
-                  </td>
-                  <td>
-                    <span style={{ fontWeight: 700, color: '#008a20' }}>₹{p.price}</span>
-                    <span style={{ fontSize: '11px', color: '#646970', textDecoration: 'line-through', marginLeft: '6px' }}>₹{p.originalPrice}</span>
-                  </td>
-                  <td>
-                    {p.weights && p.weights.length > 0 ? (
-                      <select
-                        style={{ padding: '4px 6px', fontSize: '12px', border: '1px solid #8c8f94', borderRadius: '4px', background: '#fff' }}
-                        value={selectedWeights[p.id] || p.weights[0]}
-                        onChange={(e) => setSelectedWeights({ ...selectedWeights, [p.id]: e.target.value })}
-                      >
-                        {p.weights.map((w) => (
-                          <option key={w} value={w}>{w}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      'N/A'
-                    )}
-                  </td>
-                  <td>
-                    {(() => {
-                      const curWeight = selectedWeights[p.id] || (p.weights && p.weights[0]) || '';
-                      const weightData = curWeight && p.weightStock ? p.weightStock[curWeight] : undefined;
-                      const countVal = weightData ? weightData.stockCount : (p.stockCount ?? 0);
-
-                      return (
-                        <input
-                          type="number"
-                          min="0"
-                          style={{ width: '65px', padding: '4px 6px', textAlign: 'center', fontSize: '13px' }}
-                          value={countVal}
-                          onChange={(e) => {
-                            const newCount = parseInt(e.target.value) || 0;
-                            adminStore.updateProductStockCount(p.id, newCount, curWeight || undefined);
-                          }}
-                        />
-                      );
-                    })()}
-                  </td>
-                  <td>
-                    {(() => {
-                      const curWeight = selectedWeights[p.id] || (p.weights && p.weights[0]) || '';
-                      const weightData = curWeight && p.weightStock ? p.weightStock[curWeight] : undefined;
-                      const isWeightInStock = weightData ? weightData.stock : p.stock;
-
-                      return (
-                        <button
-                          type="button"
-                          style={{
-                            padding: '4px 10px',
-                            borderRadius: '3px',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            border: 'none',
-                            cursor: 'pointer',
-                            background: isWeightInStock ? '#008a20' : '#d63638',
-                            color: '#ffffff',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px'
-                          }}
-                          onClick={() => adminStore.toggleProductStock(p.id, curWeight || undefined)}
-                          title="Click to toggle Stock availability for selected size"
-                        >
-                          {isWeightInStock ? 'In Stock' : 'Out of Stock'}
-                        </button>
-                      );
-                    })()}
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                      <button className="wp-button-secondary" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => handleOpenEditModal(p)}>
-                        <Edit2 size={13} /> Edit
-                      </button>
-                      <button
-                        type="button"
-                        style={{
-                          background: '#008a20',
-                          border: 'none',
-                          color: '#ffffff',
-                          padding: '4px 10px',
-                          borderRadius: '3px',
-                          cursor: 'pointer',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '4px'
-                        }}
-                        onClick={() => handleSaveProduct(p)}
-                        title="Save changes"
-                      >
-                        <Save size={13} /> Save
-                      </button>
-                      <button type="button" style={{ background: '#fcf0f1', border: '1px solid #d63638', color: '#d63638', padding: '4px 8px', borderRadius: '3px', cursor: 'pointer', fontSize: '12px' }} onClick={() => handleDeleteProduct(p.id, p.name)}>
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Comprehensive Add / Edit Product Form Modal */}
-      {isModalOpen && editingProduct && (
-        <div className="admin-modal-overlay" style={{ zIndex: 999999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflowY: 'auto', padding: '20px 10px' }}>
-          <div className="admin-modal" style={{ maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#ffffff', color: '#1d2327', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,0.3)', border: '1px solid #c3c4c7' }}>
-            <div className="admin-modal-header" style={{ position: 'sticky', top: 0, zIndex: 10, background: '#2271b1', color: '#ffffff', padding: '14px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTopLeftRadius: '7px', borderTopRightRadius: '7px' }}>
-              <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.1rem', fontWeight: 600 }}>{editingProduct.id ? `Edit Product: "${editingProduct.name || ''}"` : 'Add New Product'}</h3>
-              <button type="button" style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer', display: 'flex', alignItems: 'center' }} onClick={() => setIsModalOpen(false)}>
-                <X size={22} />
+          {/* Filter Toolbar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                style={{ padding: '5px 10px', fontSize: '13px', borderRadius: '3px' }}
+              >
+                <option value="all">Select a category</option>
+                {categories.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="wp-button-secondary"
+                onClick={() => {}}
+                style={{ padding: '5px 10px', fontSize: '13px' }}
+              >
+                Filter
               </button>
             </div>
-            <form onSubmit={handleSaveModalProduct} className="admin-modal-body" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', background: '#f8fafc', color: '#1d2327', textAlign: 'left' }}>
-              
-              {/* SECTION 1: Basic Info */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <h4 style={{ margin: '0 0 16px 0', color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>1. Basic Info</h4>
-                <div className="admin-form-group" style={{ marginBottom: '14px', textAlign: 'left' }}>
-                  <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', textAlign: 'left' }}>Product Name *</label>
-                  <input
-                    type="text"
-                    required
-                    className="admin-form-control"
-                    placeholder="e.g. California Almonds"
-                    value={editingProduct.name || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                  />
-                </div>
 
-                <div className="admin-form-row" style={{ textAlign: 'left' }}>
-                  <div className="admin-form-group" style={{ textAlign: 'left' }}>
-                    <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', textAlign: 'left' }}>Category *</label>
-                    <select
-                      className="admin-form-control"
-                      value={editingProduct.category || 'dry-fruits'}
-                      onChange={(e) => {
-                        const foundCat = categories.find((c) => c.id === e.target.value);
-                        setEditingProduct({
-                          ...editingProduct,
-                          category: e.target.value,
-                          categoryName: foundCat ? foundCat.name : e.target.value
-                        });
-                      }}
-                    >
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </select>
-                  </div>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+              <input
+                type="search"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ padding: '5px 10px', fontSize: '13px', width: '220px' }}
+              />
+              <button className="wp-button-secondary" style={{ padding: '5px 10px', fontSize: '13px' }}>
+                Search Products
+              </button>
+            </div>
+          </div>
 
-                  <div className="admin-form-group" style={{ textAlign: 'left' }}>
-                    <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', textAlign: 'left' }}>Subcategory</label>
-                    <select
-                      className="admin-form-control"
-                      value={editingProduct.subCategory || ''}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, subCategory: e.target.value })}
-                    >
-                      <option value="">None / Standard</option>
-                      {(() => {
-                        const selectedCatObj = categories.find((c) => c.id === (editingProduct.category || 'dry-fruits'));
-                        const dynamicSubcats = selectedCatObj?.subcategories || ['Almonds', 'Cashew', 'Dried Apricot', 'Raisins', 'Walnut'];
-                        return dynamicSubcats.map((sub) => (
-                          <option key={sub} value={sub}>{sub}</option>
-                        ));
-                      })()}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="admin-form-group" style={{ marginTop: '14px', textAlign: 'left' }}>
-                  <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', textAlign: 'left' }}>Badge / Tag</label>
-                  <input
-                    type="text"
-                    className="admin-form-control"
-                    placeholder="e.g. Best Seller, Organic"
-                    value={editingProduct.badge || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, badge: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              {/* SECTION 2: Product Type */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <h4 style={{ margin: '0 0 14px 0', color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>2. Product Type</h4>
-                <div className="admin-form-group" style={{ textAlign: 'left' }}>
-                  <label style={{ fontWeight: 600, display: 'block', marginBottom: '6px', textAlign: 'left' }}>Product Grade / Tier (Optional)</label>
-                  <select
-                    className="admin-form-control"
-                    value={(editingProduct.productTypes && editingProduct.productTypes[0]) || ''}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, productTypes: e.target.value ? [e.target.value] : [] })}
-                  >
-                    <option value="">None (Standard Product)</option>
-                    {(adminStore.productTypes || ['Gold', 'Platinum', 'Diamond']).map((pt) => (
-                      <option key={pt} value={pt}>{pt}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* SECTION 3: Multi-Weight / Size Inventory System */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h4 style={{ margin: 0, color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>3. Multi-Weight / Size Inventory System</h4>
-                  <button
-                    type="button"
-                    className="wp-button-secondary"
-                    style={{ fontSize: '12px', padding: '4px 12px', fontWeight: 600 }}
-                    onClick={() => {
-                      const currentWeights = editingProduct.weights || ['250g'];
-                      const newWeights = [...currentWeights, '500g'];
-                      setEditingProduct({ ...editingProduct, weights: newWeights });
-                    }}
-                  >
-                    + Add Size Option
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(editingProduct.weights || ['250g']).map((w, idx) => {
-                    const weightStockMap = editingProduct.weightStock || {};
-                    const wData = weightStockMap[w] || { stock: true, stockCount: 10, price: editingProduct.price || 0 };
+          {/* WooCommerce Product List Table */}
+          <div className="wp-card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #c3c4c7' }}>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="wp-list-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '45px' }}><Image size={15} color="#888" /></th>
+                    <th>Name</th>
+                    <th>SKU</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Categories</th>
+                    <th>Tags / Badges</th>
+                    <th style={{ width: '90px' }}>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((p) => {
+                    const currentStock = p.stockCount ?? (p.stock ? 20 : 0);
                     return (
-                      <div key={idx} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', textAlign: 'left' }}>
-                        <div style={{ flex: 1, textAlign: 'left' }}>
-                          <label style={{ fontSize: '11px', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Size Name</label>
-                          <input
-                            type="text"
-                            className="admin-form-control"
-                            value={w}
-                            onChange={(e) => {
-                              const newWeights = [...(editingProduct.weights || [])];
-                              newWeights[idx] = e.target.value;
-                              setEditingProduct({ ...editingProduct, weights: newWeights });
-                            }}
+                      <tr key={p.id}>
+                        {/* Thumbnail */}
+                        <td style={{ padding: '6px 10px' }}>
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            style={{ width: '38px', height: '38px', objectFit: 'contain', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '3px' }}
                           />
-                        </div>
+                        </td>
 
-                        <div style={{ flex: 1, textAlign: 'left' }}>
-                          <label style={{ fontSize: '11px', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Price (₹)</label>
-                          <input
-                            type="number"
-                            className="admin-form-control"
-                            value={wData.price ?? (editingProduct.price || 0)}
-                            onChange={(e) => {
-                              const val = parseFloat(e.target.value) || 0;
-                              const updatedMap = { ...weightStockMap, [w]: { ...wData, price: val } };
-                              setEditingProduct({ ...editingProduct, weightStock: updatedMap, price: idx === 0 ? val : (editingProduct.price || val) });
-                            }}
-                          />
-                        </div>
-
-                        <div style={{ flex: 1, textAlign: 'left' }}>
-                          <label style={{ fontSize: '11px', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Stock Qty</label>
-                          <input
-                            type="number"
-                            className="admin-form-control"
-                            value={wData.stockCount ?? 10}
-                            onChange={(e) => {
-                              const val = parseInt(e.target.value) || 0;
-                              const updatedMap = { ...weightStockMap, [w]: { ...wData, stockCount: val, stock: val > 0 } };
-                              setEditingProduct({ ...editingProduct, weightStock: updatedMap });
-                            }}
-                          />
-                        </div>
-
-                        <div style={{ flex: 1, textAlign: 'left' }}>
-                          <label style={{ fontSize: '11px', color: '#475569', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Stock Status</label>
-                          <select
-                            className="admin-form-control"
-                            value={wData.stock ? 'in' : 'out'}
-                            onChange={(e) => {
-                              const isStk = e.target.value === 'in';
-                              const updatedMap = { ...weightStockMap, [w]: { ...wData, stock: isStk } };
-                              setEditingProduct({ ...editingProduct, weightStock: updatedMap });
-                            }}
+                        {/* Name & Row Actions */}
+                        <td>
+                          <span
+                            className="wp-post-title-link"
+                            onClick={() => handleOpenEdit(p)}
                           >
-                            <option value="in">In Stock</option>
-                            <option value="out">Out of Stock</option>
-                          </select>
-                        </div>
+                            {p.name}
+                          </span>
+                          <div className="row-actions">
+                            <span style={{ color: '#2271b1', cursor: 'pointer' }} onClick={() => handleOpenEdit(p)}>Edit</span>
+                            <span style={{ color: '#ddd' }}>|</span>
+                            <span style={{ color: '#a00', cursor: 'pointer' }} onClick={() => handleDeleteProduct(p.id, p.name)}>Trash</span>
+                            <span style={{ color: '#ddd' }}>|</span>
+                            <a href={`/product/${p.slug}`} target="_blank" rel="noreferrer" style={{ color: '#2271b1', textDecoration: 'none' }}>View</a>
+                          </div>
+                        </td>
 
-                        {(editingProduct.weights || []).length > 1 && (
-                          <button
-                            type="button"
-                            style={{ background: '#fcf0f1', border: '1px solid #d63638', color: '#d63638', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer', marginTop: '16px' }}
-                            onClick={() => {
-                              const newWeights = (editingProduct.weights || []).filter((_, i) => i !== idx);
-                              setEditingProduct({ ...editingProduct, weights: newWeights });
-                            }}
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        )}
-                      </div>
+                        {/* SKU */}
+                        <td style={{ fontFamily: 'monospace', color: '#64748b' }}>
+                          {p.sku || `RTC-PRD-${p.id}`}
+                        </td>
+
+                        {/* Stock */}
+                        <td>
+                          {currentStock > 0 ? (
+                            <span style={{ color: '#008a20', fontWeight: 600 }}>
+                              In stock ({currentStock})
+                            </span>
+                          ) : (
+                            <span style={{ color: '#d63638', fontWeight: 600 }}>
+                              Out of stock
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Price */}
+                        <td>
+                          <span style={{ fontWeight: 600, color: '#1d2327' }}>₹{p.price}</span>
+                          {p.originalPrice && p.originalPrice > p.price && (
+                            <span style={{ textDecoration: 'line-through', color: '#8c8f94', marginLeft: '6px', fontSize: '12px' }}>
+                              ₹{p.originalPrice}
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Category */}
+                        <td>{p.categoryName || p.category}</td>
+
+                        {/* Badge */}
+                        <td>
+                          {p.badge ? (
+                            <span style={{ background: '#f0fdf4', color: '#15803D', border: '1px solid #bbf7d0', padding: '2px 6px', borderRadius: '3px', fontSize: '11px', fontWeight: 600 }}>
+                              {p.badge}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#8c8f94' }}>—</span>
+                          )}
+                        </td>
+
+                        {/* Date */}
+                        <td style={{ fontSize: '12px', color: '#64748b' }}>
+                          Published<br />
+                          {new Date().toISOString().split('T')[0]}
+                        </td>
+                      </tr>
                     );
                   })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. AUTHENTIC WOOCOMMERCE PRODUCT EDITOR (Edit Product / Add New) */}
+      {/* ========================================================================= */}
+      {currentView === 'editor' && editingProduct && (
+        <form onSubmit={handleSaveProduct} style={{ textAlign: 'left' }}>
+          
+          {/* Header & Back Link */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                type="button"
+                className="wp-button-secondary"
+                onClick={() => setCurrentView('list')}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <ArrowLeft size={14} /> Back to Products
+              </button>
+              <h1 className="wp-page-title" style={{ margin: 0 }}>
+                {editingProduct.id ? `Edit product` : 'Add new product'}
+              </h1>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {editingProduct.id && (
+                <button
+                  type="button"
+                  style={{ background: '#fcf0f1', border: '1px solid #d63638', color: '#d63638', padding: '5px 12px', borderRadius: '3px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+                  onClick={() => handleDeleteProduct(editingProduct.id as number, editingProduct.name || '')}
+                >
+                  Move to Trash
+                </button>
+              )}
+              <button type="submit" className="wp-button-primary" style={{ padding: '6px 16px', fontWeight: 700 }}>
+                {editingProduct.id ? 'Update Product' : 'Publish Product'}
+              </button>
+            </div>
+          </div>
+
+          {/* 2-Column WordPress Post Layout */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px', alignItems: 'start' }} className="wp-post-body">
+            
+            {/* LEFT MAIN COLUMN */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              
+              {/* Product Title Input */}
+              <div style={{ background: '#fff', border: '1px solid #c3c4c7', padding: '12px 14px', borderRadius: '3px' }}>
+                <input
+                  type="text"
+                  required
+                  placeholder="Enter product name here"
+                  value={editingProduct.name || ''}
+                  onChange={(e) => {
+                    const nameVal = e.target.value;
+                    const autoSlug = nameVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                    setEditingProduct({
+                      ...editingProduct,
+                      name: nameVal,
+                      slug: editingProduct.id ? (editingProduct.slug || autoSlug) : autoSlug
+                    });
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                    border: '1px solid #8c8f94',
+                    borderRadius: '2px',
+                    boxSizing: 'border-box'
+                  }}
+                />
+
+                {/* Permalink Slug Bar */}
+                <div style={{ marginTop: '8px', fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <strong>Permalink:</strong>
+                  <span>http://rtcfoods.in/product/</span>
+                  <input
+                    type="text"
+                    value={editingProduct.slug || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, slug: e.target.value })}
+                    style={{ padding: '2px 6px', fontSize: '12px', width: '200px' }}
+                  />
+                  {editingProduct.slug && (
+                    <a
+                      href={`/product/${editingProduct.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: '#2271b1', textDecoration: 'none', marginLeft: '6px' }}
+                    >
+                      [View Product]
+                    </a>
+                  )}
                 </div>
               </div>
 
-              {/* SECTION 4: Key Bullet Points */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h4 style={{ margin: 0, color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>4. Key Bullet Points</h4>
-                  <button
-                    type="button"
-                    className="wp-button-secondary"
-                    style={{ fontSize: '12px', padding: '4px 12px', fontWeight: 600 }}
-                    onClick={() => {
-                      const currentBullets = editingProduct.bullets || [];
-                      setEditingProduct({ ...editingProduct, bullets: [...currentBullets, { title: 'Feature', text: 'Detail text' }] });
-                    }}
-                  >
-                    + Add Bullet
-                  </button>
+              {/* Long Description Box (WYSIWYG Simulation) */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Product description
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(editingProduct.bullets || [
-                    { title: 'Premium Quality', text: 'Selected with high standard taste' },
-                    { title: 'Naturally Nutritious', text: 'Rich source of protein & healthy fats' }
-                  ]).map((b, bIdx) => (
-                    <div key={bIdx} style={{ display: 'flex', gap: '8px', alignItems: 'center', textAlign: 'left' }}>
-                      <input
-                        type="text"
-                        placeholder="Title (e.g. Origin)"
-                        className="admin-form-control"
-                        style={{ width: '30%' }}
-                        value={b.title}
-                        onChange={(e) => {
-                          const newB = [...(editingProduct.bullets || [])];
-                          newB[bIdx] = { ...newB[bIdx], title: e.target.value };
-                          setEditingProduct({ ...editingProduct, bullets: newB });
-                        }}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Bullet Text"
-                        className="admin-form-control"
-                        style={{ flex: 1 }}
-                        value={b.text}
-                        onChange={(e) => {
-                          const newB = [...(editingProduct.bullets || [])];
-                          newB[bIdx] = { ...newB[bIdx], text: e.target.value };
-                          setEditingProduct({ ...editingProduct, bullets: newB });
-                        }}
-                      />
-                      <button
-                        type="button"
-                        style={{ background: '#fcf0f1', border: '1px solid #d63638', color: '#d63638', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer' }}
-                        onClick={() => {
-                          const newB = (editingProduct.bullets || []).filter((_, i) => i !== bIdx);
-                          setEditingProduct({ ...editingProduct, bullets: newB });
-                        }}
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* SECTION 5: Additional Information Tab Data */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <h4 style={{ margin: '0 0 14px 0', color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>5. Additional Information Tab Data</h4>
-                {(() => {
-                  const defaultLabels = [
-                    'Country of origin',
-                    'Brand',
-                    'Common name',
-                    'Additive info',
-                    'Product Dimensions',
-                    'Manufacturer or packer name',
-                    'Manufacturer or packer address',
-                    'Ingredients',
-                    'contact details consumer care'
-                  ];
-                  const currentTable = editingProduct.additionalInfoTable || defaultLabels.map(l => ({ label: l, value: '' }));
-
-                  return (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', background: '#f8fafc', padding: '14px', borderRadius: '8px', border: '1px solid #cbd5e1', textAlign: 'left' }}>
-                      {defaultLabels.map((lbl, lIdx) => {
-                        const existingEntry = currentTable.find(t => t.label.toLowerCase() === lbl.toLowerCase()) || { label: lbl, value: '' };
-                        return (
-                          <React.Fragment key={lIdx}>
-                            <div style={{ background: '#ffffff', padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '4px', fontWeight: 600, fontSize: '12px', color: '#334155', display: 'flex', alignItems: 'center', textAlign: 'left' }}>
-                              {lbl}
-                            </div>
-                            <input
-                              type="text"
-                              className="admin-form-control"
-                              placeholder={`Enter ${lbl}...`}
-                              value={existingEntry.value || ''}
-                              onChange={(e) => {
-                                const newVal = e.target.value;
-                                const updated = [...currentTable];
-                                const matchIdx = updated.findIndex(t => t.label.toLowerCase() === lbl.toLowerCase());
-                                if (matchIdx >= 0) {
-                                  updated[matchIdx] = { label: lbl, value: newVal };
-                                } else {
-                                  updated.push({ label: lbl, value: newVal });
-                                }
-                                setEditingProduct({ ...editingProduct, additionalInfoTable: updated });
-                              }}
-                            />
-                          </React.Fragment>
-                        );
-                      })}
-                    </div>
-                  );
-                })()}
-
-                <div className="admin-form-group" style={{ marginTop: '16px', textAlign: 'left', width: '100%' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <label style={{ fontWeight: 600, margin: 0, textAlign: 'left' }}>Written Description (Below Metadata Table)</label>
-                    <span style={{ fontSize: '11px', color: '#64748b', background: '#e2e8f0', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
-                      Tip: Select text and press <strong>Ctrl+B</strong> to toggle bold formatting
-                    </span>
+                <div style={{ padding: '12px' }}>
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '8px', background: '#f0f0f1', padding: '4px 8px', borderRadius: '3px' }}>
+                    <button
+                      type="button"
+                      style={{ background: '#fff', border: '1px solid #c3c4c7', borderRadius: '2px', padding: '2px 8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                      onClick={() => {
+                        const current = editingProduct.description || '';
+                        setEditingProduct({ ...editingProduct, description: current + ' **Bold Text**' });
+                      }}
+                    >
+                      B
+                    </button>
+                    <button
+                      type="button"
+                      style={{ background: '#fff', border: '1px solid #c3c4c7', borderRadius: '2px', padding: '2px 8px', fontStyle: 'italic', fontSize: '12px', cursor: 'pointer' }}
+                      onClick={() => {
+                        const current = editingProduct.description || '';
+                        setEditingProduct({ ...editingProduct, description: current + ' *Italic Text*' });
+                      }}
+                    >
+                      I
+                    </button>
+                    <button
+                      type="button"
+                      style={{ background: '#fff', border: '1px solid #c3c4c7', borderRadius: '2px', padding: '2px 8px', fontSize: '12px', cursor: 'pointer' }}
+                      onClick={() => {
+                        const current = editingProduct.description || '';
+                        setEditingProduct({ ...editingProduct, description: current + '\n- Bullet Item' });
+                      }}
+                    >
+                      • List
+                    </button>
                   </div>
                   <textarea
-                    className="admin-form-control"
                     rows={6}
-                    style={{ width: '100%', minWidth: '100%', boxSizing: 'border-box', background: '#ffffff', color: '#1d2327', border: '1px solid #cbd5e1', borderRadius: '6px', padding: '12px', fontSize: '13px', lineHeight: 1.5 }}
-                    placeholder="Enter comprehensive paragraph description..."
-                    value={editingProduct.paragraphs ? editingProduct.paragraphs.join('\n\n') : (editingProduct.description || '')}
-                    onKeyDown={(e) => {
-                      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
-                        e.preventDefault();
-                        const target = e.currentTarget;
-                        const start = target.selectionStart;
-                        const end = target.selectionEnd;
-                        const text = target.value;
-                        const selectedText = text.substring(start, end);
-
-                        if (selectedText.length > 0) {
-                          let newText = '';
-                          if (selectedText.startsWith('**') && selectedText.endsWith('**') && selectedText.length >= 4) {
-                            newText = text.substring(0, start) + selectedText.substring(2, selectedText.length - 2) + text.substring(end);
-                          } else {
-                            newText = text.substring(0, start) + `**${selectedText}**` + text.substring(end);
-                          }
-                          const paras = newText.split('\n\n');
-                          setEditingProduct({ ...editingProduct, paragraphs: paras, description: newText, shortDesc: newText.substring(0, 80) });
-                        }
-                      }
-                    }}
-                    onChange={(e) => {
-                      const paras = e.target.value.split('\n\n');
-                      setEditingProduct({ ...editingProduct, paragraphs: paras, description: e.target.value, shortDesc: e.target.value.substring(0, 80) });
-                    }}
+                    value={editingProduct.description || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                    placeholder="Enter detailed comprehensive product description..."
+                    style={{ width: '100%', minWidth: '100%', boxSizing: 'border-box', padding: '10px', fontSize: '13px', lineHeight: 1.6 }}
                   />
                 </div>
               </div>
 
-              {/* SECTION 6: Description Tab Custom Table */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h4 style={{ margin: 0, color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>6. Description Tab Custom Table</h4>
+              {/* PRODUCT DETAILS & SPECIFICATIONS METABOX */}
+              <div style={{ background: '#fff', border: '1px solid #c3c4c7', borderRadius: '3px', overflow: 'hidden' }}>
+                {/* Metabox Top Bar */}
+                <div style={{ background: '#f6f7f7', borderBottom: '1px solid #c3c4c7', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontWeight: 700, fontSize: '13px', color: '#1d2327' }}>Product Specifications & Pricing</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b' }}>
+                    Configure pricing, stock, weights & ingredients
+                  </div>
+                </div>
+
+                {/* Metabox Tab Layout (Left vertical tabs + Right content) */}
+                <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', minHeight: '320px' }}>
+                  
+                  {/* Left Tabs Bar */}
+                  <div style={{ background: '#f0f0f1', borderRight: '1px solid #c3c4c7', display: 'flex', flexDirection: 'column' }}>
+                    {[
+                      { id: 'general', label: '⚙️ General' },
+                      { id: 'inventory', label: '📦 Inventory' },
+                      { id: 'variations', label: '⚖️ Variations (Packs)' },
+                      { id: 'attributes', label: '📋 Attributes / Specs' },
+                      { id: 'bullets', label: '✨ Bullet Highlights' },
+                      { id: 'custom_table', label: '📑 Custom Matrix' }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setProductDataTab(tab.id as any)}
+                        style={{
+                          padding: '10px 12px',
+                          border: 'none',
+                          borderBottom: '1px solid #e0e0e1',
+                          background: productDataTab === tab.id ? '#ffffff' : 'transparent',
+                          color: productDataTab === tab.id ? '#2271b1' : '#50575e',
+                          fontWeight: productDataTab === tab.id ? 700 : 500,
+                          fontSize: '12px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          borderLeft: productDataTab === tab.id ? '3px solid #2271b1' : '3px solid transparent'
+                        }}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Right Tab Content Panel */}
+                  <div style={{ padding: '20px' }}>
+                    
+                    {/* 1. GENERAL TAB */}
+                    {productDataTab === 'general' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Regular price (₹):</label>
+                          <input
+                            type="number"
+                            value={editingProduct.originalPrice || ''}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, originalPrice: parseFloat(e.target.value) || 0 })}
+                            style={{ width: '180px' }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Sale price (₹):</label>
+                          <input
+                            type="number"
+                            required
+                            value={editingProduct.price || ''}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })}
+                            style={{ width: '180px' }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Badge / Tag:</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 20% OFF, Bestseller, Fresh Harvest"
+                            value={editingProduct.badge || ''}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, badge: e.target.value })}
+                            style={{ width: '240px' }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Default Weight:</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. 250g, 500g, 1kg"
+                            value={(editingProduct.weights || [])[0] || '250g'}
+                            onChange={(e) => {
+                              const otherWeights = (editingProduct.weights || []).slice(1);
+                              setEditingProduct({ ...editingProduct, weights: [e.target.value, ...otherWeights] });
+                            }}
+                            style={{ width: '180px' }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 2. INVENTORY TAB */}
+                    {productDataTab === 'inventory' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>SKU:</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. RTC-ALM-001"
+                            value={editingProduct.sku || ''}
+                            onChange={(e) => setEditingProduct({ ...editingProduct, sku: e.target.value })}
+                            style={{ width: '220px' }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Stock quantity:</label>
+                          <input
+                            type="number"
+                            value={editingProduct.stockCount ?? 10}
+                            onChange={(e) => {
+                              const count = parseInt(e.target.value) || 0;
+                              setEditingProduct({ ...editingProduct, stockCount: count, stock: count > 0 });
+                            }}
+                            style={{ width: '140px' }}
+                          />
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '140px 1fr', alignItems: 'center', gap: '12px' }}>
+                          <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>Stock status:</label>
+                          <select
+                            value={(editingProduct.stockCount ?? 0) > 0 ? 'instock' : 'outofstock'}
+                            onChange={(e) => {
+                              const isInstock = e.target.value === 'instock';
+                              setEditingProduct({
+                                ...editingProduct,
+                                stock: isInstock,
+                                stockCount: isInstock ? (editingProduct.stockCount || 10) : 0
+                              });
+                            }}
+                            style={{ width: '180px' }}
+                          >
+                            <option value="instock">In stock</option>
+                            <option value="outofstock">Out of stock</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 3. VARIATIONS & PACK SIZES TAB */}
+                    {productDataTab === 'variations' && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 600 }}>Configure Pack Weights & Prices:</span>
+                          <button
+                            type="button"
+                            className="wp-button-secondary"
+                            style={{ fontSize: '12px' }}
+                            onClick={() => {
+                              const currentW = editingProduct.weights || ['250g'];
+                              setEditingProduct({ ...editingProduct, weights: [...currentW, '1kg'] });
+                            }}
+                          >
+                            + Add Weight Pack
+                          </button>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(editingProduct.weights || ['250g']).map((w, wIdx) => {
+                            const wpMap = editingProduct.weightPrices || {};
+                            const wopMap = editingProduct.weightOriginalPrices || {};
+                            return (
+                              <div key={wIdx} style={{ display: 'flex', gap: '8px', alignItems: 'center', background: '#f8fafc', padding: '8px 12px', border: '1px solid #e2e8f0', borderRadius: '4px' }}>
+                                <input
+                                  type="text"
+                                  placeholder="Weight (e.g. 500g)"
+                                  value={w}
+                                  onChange={(e) => {
+                                    const newW = [...(editingProduct.weights || [])];
+                                    newW[wIdx] = e.target.value;
+                                    setEditingProduct({ ...editingProduct, weights: newW });
+                                  }}
+                                  style={{ width: '100px' }}
+                                />
+                                <input
+                                  type="number"
+                                  placeholder="Sale Price (₹)"
+                                  value={wpMap[w] || ''}
+                                  onChange={(e) => {
+                                    const updated = { ...wpMap, [w]: parseFloat(e.target.value) || 0 };
+                                    setEditingProduct({ ...editingProduct, weightPrices: updated });
+                                  }}
+                                  style={{ width: '120px' }}
+                                />
+                                <input
+                                  type="number"
+                                  placeholder="MRP Price (₹)"
+                                  value={wopMap[w] || ''}
+                                  onChange={(e) => {
+                                    const updated = { ...wopMap, [w]: parseFloat(e.target.value) || 0 };
+                                    setEditingProduct({ ...editingProduct, weightOriginalPrices: updated });
+                                  }}
+                                  style={{ width: '120px' }}
+                                />
+                                {(editingProduct.weights || []).length > 1 && (
+                                  <button
+                                    type="button"
+                                    style={{ background: 'none', border: 'none', color: '#d63638', cursor: 'pointer', padding: '4px' }}
+                                    onClick={() => {
+                                      const newW = (editingProduct.weights || []).filter((_, i) => i !== wIdx);
+                                      setEditingProduct({ ...editingProduct, weights: newW });
+                                    }}
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 4. ATTRIBUTES / SPECS TAB */}
+                    {productDataTab === 'attributes' && (
+                      <div>
+                        <span style={{ fontSize: '13px', fontWeight: 600, display: 'block', marginBottom: '10px' }}>Product Specifications Table:</span>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '8px' }}>
+                          {[
+                            'Country of origin',
+                            'Brand',
+                            'Common name',
+                            'Additive info',
+                            'Product Dimensions',
+                            'Manufacturer name',
+                            'Ingredients',
+                            'Customer care'
+                          ].map((lbl, lIdx) => {
+                            const table = editingProduct.additionalInfoTable || [];
+                            const entry = table.find(t => t.label.toLowerCase() === lbl.toLowerCase()) || { label: lbl, value: '' };
+                            return (
+                              <React.Fragment key={lIdx}>
+                                <div style={{ background: '#f0f0f1', padding: '6px 10px', fontSize: '12px', fontWeight: 600, border: '1px solid #c3c4c7', borderRadius: '3px', display: 'flex', alignItems: 'center' }}>
+                                  {lbl}
+                                </div>
+                                <input
+                                  type="text"
+                                  placeholder={`Enter ${lbl}...`}
+                                  value={entry.value || ''}
+                                  onChange={(e) => {
+                                    const updated = [...table];
+                                    const matchIdx = updated.findIndex(t => t.label.toLowerCase() === lbl.toLowerCase());
+                                    if (matchIdx >= 0) {
+                                      updated[matchIdx] = { label: lbl, value: e.target.value };
+                                    } else {
+                                      updated.push({ label: lbl, value: e.target.value });
+                                    }
+                                    setEditingProduct({ ...editingProduct, additionalInfoTable: updated });
+                                  }}
+                                  style={{ width: '100%' }}
+                                />
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 5. BULLET HIGHLIGHTS TAB */}
+                    {productDataTab === 'bullets' && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 600 }}>Key PDP Highlights:</span>
+                          <button
+                            type="button"
+                            className="wp-button-secondary"
+                            style={{ fontSize: '12px' }}
+                            onClick={() => {
+                              const cur = editingProduct.bullets || [];
+                              setEditingProduct({ ...editingProduct, bullets: [...cur, { title: 'Feature', text: 'Detail text' }] });
+                            }}
+                          >
+                            + Add Highlight
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(editingProduct.bullets || []).map((b, bIdx) => (
+                            <div key={bIdx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <input
+                                type="text"
+                                placeholder="Title"
+                                value={b.title}
+                                onChange={(e) => {
+                                  const updated = [...(editingProduct.bullets || [])];
+                                  updated[bIdx] = { ...updated[bIdx], title: e.target.value };
+                                  setEditingProduct({ ...editingProduct, bullets: updated });
+                                }}
+                                style={{ width: '140px' }}
+                              />
+                              <input
+                                type="text"
+                                placeholder="Highlight detail"
+                                value={b.text}
+                                onChange={(e) => {
+                                  const updated = [...(editingProduct.bullets || [])];
+                                  updated[bIdx] = { ...updated[bIdx], text: e.target.value };
+                                  setEditingProduct({ ...editingProduct, bullets: updated });
+                                }}
+                                style={{ flex: 1 }}
+                              />
+                              <button
+                                type="button"
+                                style={{ background: 'none', border: 'none', color: '#d63638', cursor: 'pointer' }}
+                                onClick={() => {
+                                  const updated = (editingProduct.bullets || []).filter((_, i) => i !== bIdx);
+                                  setEditingProduct({ ...editingProduct, bullets: updated });
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 6. CUSTOM TABLE DATA TAB */}
+                    {productDataTab === 'custom_table' && (
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 600 }}>Size vs Grade Matrix:</span>
+                          <button
+                            type="button"
+                            className="wp-button-secondary"
+                            style={{ fontSize: '12px' }}
+                            onClick={() => {
+                              const cur = editingProduct.customDescriptionRows || [];
+                              setEditingProduct({ ...editingProduct, customDescriptionRows: [...cur, { size: '500g', productType: 'Gold Grade' }] });
+                            }}
+                          >
+                            + Add Row
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {(editingProduct.customDescriptionRows || [{ size: '250g', productType: 'Standard' }]).map((r, rIdx) => (
+                            <div key={rIdx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <input
+                                type="text"
+                                placeholder="Size (e.g. 500g)"
+                                value={r.size}
+                                onChange={(e) => {
+                                  const updated = [...(editingProduct.customDescriptionRows || [])];
+                                  updated[rIdx] = { ...updated[rIdx], size: e.target.value };
+                                  setEditingProduct({ ...editingProduct, customDescriptionRows: updated });
+                                }}
+                                style={{ width: '140px' }}
+                              />
+                              <input
+                                type="text"
+                                placeholder="Product Type / Quality"
+                                value={r.productType}
+                                onChange={(e) => {
+                                  const updated = [...(editingProduct.customDescriptionRows || [])];
+                                  updated[rIdx] = { ...updated[rIdx], productType: e.target.value };
+                                  setEditingProduct({ ...editingProduct, customDescriptionRows: updated });
+                                }}
+                                style={{ flex: 1 }}
+                              />
+                              <button
+                                type="button"
+                                style={{ background: 'none', border: 'none', color: '#d63638', cursor: 'pointer' }}
+                                onClick={() => {
+                                  const updated = (editingProduct.customDescriptionRows || []).filter((_, i) => i !== rIdx);
+                                  setEditingProduct({ ...editingProduct, customDescriptionRows: updated });
+                                }}
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Product Short Description Metabox */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Product short description
+                </div>
+                <div style={{ padding: '12px' }}>
+                  <textarea
+                    rows={3}
+                    value={editingProduct.shortDesc || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, shortDesc: e.target.value })}
+                    placeholder="Short snippet displayed next to the main product image..."
+                    style={{ width: '100%', minWidth: '100%', boxSizing: 'border-box', padding: '10px', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+            </div>
+
+            {/* RIGHT SIDEBAR COLUMN (Publish, Category, Product Image, Gallery) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+              
+              {/* 1. PUBLISH METABOX */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Publish
+                </div>
+                <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px', color: '#50575e' }}>
+                  <div>Status: <strong style={{ color: '#1d2327' }}>Published</strong></div>
+                  <div>Visibility: <strong style={{ color: '#1d2327' }}>Public</strong></div>
+                  <div>Catalog visibility: <strong style={{ color: '#1d2327' }}>Shop and search</strong></div>
+                </div>
+                <div style={{ padding: '10px 14px', background: '#f6f7f7', borderTop: '1px solid #c3c4c7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {editingProduct.id ? (
+                    <span
+                      style={{ color: '#a00', textDecoration: 'underline', fontSize: '12px', cursor: 'pointer' }}
+                      onClick={() => handleDeleteProduct(editingProduct.id as number, editingProduct.name || '')}
+                    >
+                      Move to Trash
+                    </span>
+                  ) : <div />}
+                  <button type="submit" className="wp-button-primary" style={{ fontWeight: 700 }}>
+                    {editingProduct.id ? 'Update' : 'Publish'}
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. PRODUCT CATEGORIES METABOX */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Product categories
+                </div>
+                <div style={{ padding: '12px 14px', maxHeight: '180px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {categories.map((c) => (
+                    <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', cursor: 'pointer' }}>
+                      <input
+                        type="radio"
+                        name="product_category"
+                        checked={editingProduct.category === c.id}
+                        onChange={() => setEditingProduct({ ...editingProduct, category: c.id, categoryName: c.name })}
+                      />
+                      <span>{c.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* 3. PRODUCT IMAGE METABOX */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Product image
+                </div>
+                <div style={{ padding: '14px', textAlign: 'center' }}>
+                  {editingProduct.image ? (
+                    <div>
+                      <img
+                        src={editingProduct.image}
+                        alt="Product preview"
+                        style={{ width: '100%', maxHeight: '160px', objectFit: 'contain', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px', marginBottom: '8px' }}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Image URL..."
+                        value={editingProduct.image}
+                        onChange={(e) => setEditingProduct({ ...editingProduct, image: e.target.value })}
+                        style={{ width: '100%', boxSizing: 'border-box', fontSize: '12px' }}
+                      />
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: '12px', color: '#8c8f94' }}>No featured image set</span>
+                  )}
+                </div>
+              </div>
+
+              {/* 4. PRODUCT GALLERY METABOX */}
+              <div className="wp-card" style={{ padding: 0 }}>
+                <div className="wp-card-header" style={{ padding: '10px 14px', margin: 0, background: '#f6f7f7', fontWeight: 600, fontSize: '13px' }}>
+                  Product gallery
+                </div>
+                <div style={{ padding: '12px 14px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '10px' }}>
+                    {(editingProduct.gallery || []).map((imgUrl, gIdx) => (
+                      <div key={gIdx} style={{ position: 'relative' }}>
+                        <img
+                          src={imgUrl}
+                          alt={`Gallery ${gIdx}`}
+                          style={{ width: '100%', height: '54px', objectFit: 'contain', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '3px' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = (editingProduct.gallery || []).filter((_, i) => i !== gIdx);
+                            setEditingProduct({ ...editingProduct, gallery: updated });
+                          }}
+                          style={{ position: 'absolute', top: '-4px', right: '-4px', background: '#d63638', color: '#fff', border: 'none', borderRadius: '50%', width: '16px', height: '16px', fontSize: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
                   <button
                     type="button"
                     className="wp-button-secondary"
-                    style={{ fontSize: '12px', padding: '4px 12px', fontWeight: 600 }}
+                    style={{ fontSize: '12px', width: '100%', textAlign: 'center' }}
                     onClick={() => {
-                      const currentRows = editingProduct.customDescriptionRows || [{ size: (editingProduct.weights || ['250g'])[0], productType: (editingProduct.productTypes || ['Standard'])[0] }];
-                      setEditingProduct({ ...editingProduct, customDescriptionRows: [...currentRows, { size: '500g', productType: 'Gold' }] });
+                      const newImg = prompt('Enter additional product image URL:', '/hero_dry_fruits_1785924400069.png');
+                      if (newImg && newImg.trim() !== '') {
+                        const cur = editingProduct.gallery || [];
+                        setEditingProduct({ ...editingProduct, gallery: [...cur, newImg.trim()] });
+                      }
                     }}
                   >
-                    + Add Row
+                    + Add gallery image
                   </button>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {(editingProduct.customDescriptionRows || [
-                    { size: (editingProduct.weights || ['250g'])[0] || '250g', productType: (editingProduct.productTypes || ['Standard'])[0] || 'Gold' }
-                  ]).map((r, rIdx) => (
-                    <div key={rIdx} style={{ display: 'flex', gap: '10px', alignItems: 'center', textAlign: 'left' }}>
-                      <input
-                        type="text"
-                        placeholder="Size (Column 1)"
-                        className="admin-form-control"
-                        value={r.size || ''}
-                        onChange={(e) => {
-                          const newRows = [...(editingProduct.customDescriptionRows || [])];
-                          newRows[rIdx] = { ...newRows[rIdx], size: e.target.value };
-                          setEditingProduct({ ...editingProduct, customDescriptionRows: newRows });
-                        }}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Product Type (Column 2)"
-                        className="admin-form-control"
-                        value={r.productType || ''}
-                        onChange={(e) => {
-                          const newRows = [...(editingProduct.customDescriptionRows || [])];
-                          newRows[rIdx] = { ...newRows[rIdx], productType: e.target.value };
-                          setEditingProduct({ ...editingProduct, customDescriptionRows: newRows });
-                        }}
-                      />
-                      {(editingProduct.customDescriptionRows || []).length > 1 && (
-                        <button
-                          type="button"
-                          style={{ background: '#fcf0f1', border: '1px solid #d63638', color: '#d63638', padding: '6px 8px', borderRadius: '4px', cursor: 'pointer' }}
-                          onClick={() => {
-                            const newRows = (editingProduct.customDescriptionRows || []).filter((_, i) => i !== rIdx);
-                            setEditingProduct({ ...editingProduct, customDescriptionRows: newRows });
-                          }}
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                </div>
               </div>
 
-              {/* SECTION 7: Image Drag-and-Drop & Sequence Manager */}
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '20px', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)', textAlign: 'left' }}>
-                <h4 style={{ margin: '0 0 8px 0', color: '#1e293b', fontSize: '15px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>7. Image Drag-and-Drop & Sequence Manager</h4>
-                <p style={{ margin: '0 0 14px 0', fontSize: '12px', color: '#64748b' }}>
-                  Images will be rendered on the customer single product page in this exact sequence. Click on a container and press <strong>Ctrl+V</strong> to paste copied images, or drag & drop files directly!
-                </p>
+            </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
-                  {(editingProduct.gallery && editingProduct.gallery.length > 0 ? editingProduct.gallery : ['']).map((imgUrl, imgIdx) => (
-                    <div
-                      key={imgIdx}
-                      tabIndex={0}
-                      style={{
-                        position: 'relative',
-                        height: '130px',
-                        border: '2px dashed #2271b1',
-                        borderRadius: '8px',
-                        overflow: 'hidden',
-                        background: '#f8fafc',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        outline: 'none'
-                      }}
-                      onPaste={(e) => {
-                        const items = e.clipboardData.items;
-                        for (let i = 0; i < items.length; i++) {
-                          if (items[i].type.indexOf('image') !== -1) {
-                            const blob = items[i].getAsFile();
-                            if (blob) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                const base64 = event.target?.result as string;
-                                const newGallery = [...(editingProduct.gallery || [editingProduct.image || ''])];
-                                newGallery[imgIdx] = base64;
-                                setEditingProduct({ ...editingProduct, gallery: newGallery, image: imgIdx === 0 ? base64 : editingProduct.image });
-                              };
-                              reader.readAsDataURL(blob);
-                            }
-                          }
-                        }
-                      }}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                          const file = e.dataTransfer.files[0];
-                          const reader = new FileReader();
-                          reader.onload = (event) => {
-                            const base64 = event.target?.result as string;
-                            const newGallery = [...(editingProduct.gallery || [editingProduct.image || ''])];
-                            newGallery[imgIdx] = base64;
-                            setEditingProduct({ ...editingProduct, gallery: newGallery, image: imgIdx === 0 ? base64 : editingProduct.image });
-                          };
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    >
-                      {imgUrl ? (
-                        <>
-                          <img src={imgUrl} alt={`Seq ${imgIdx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }} />
-                          <span style={{ position: 'absolute', top: 4, left: 4, background: '#2271b1', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px' }}>
-                            #{imgIdx + 1}
-                          </span>
-                          <button
-                            type="button"
-                            style={{ position: 'absolute', top: 4, right: 4, background: '#d63638', color: '#fff', border: 'none', borderRadius: '50%', width: '20px', height: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
-                            onClick={() => {
-                              const newGallery = (editingProduct.gallery || []).filter((_, i) => i !== imgIdx);
-                              setEditingProduct({ ...editingProduct, gallery: newGallery, image: newGallery[0] || '' });
-                            }}
-                          >
-                            <X size={12} />
-                          </button>
-                        </>
-                      ) : (
-                        <div style={{ textAlign: 'center', padding: '8px', color: '#64748b', fontSize: '11px', width: '100%' }}>
-                          <div>Paste Ctrl+V, Drag File</div>
-                          <div style={{ margin: '6px 0', fontSize: '10px', color: '#94a3b8' }}>OR ENTER URL:</div>
-                          <input
-                            type="text"
-                            placeholder="https://..."
-                            style={{ width: '90%', padding: '4px', fontSize: '10px', border: '1px solid #cbd5e1', borderRadius: '3px' }}
-                            onChange={(e) => {
-                              const url = e.target.value;
-                              const newGallery = [...(editingProduct.gallery || [editingProduct.image || ''])];
-                              newGallery[imgIdx] = url;
-                              setEditingProduct({ ...editingProduct, gallery: newGallery, image: imgIdx === 0 ? url : editingProduct.image });
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Add New Container Button */}
-                  <div
-                    onClick={() => {
-                      const currentGallery = editingProduct.gallery || [editingProduct.image || ''];
-                      setEditingProduct({ ...editingProduct, gallery: [...currentGallery, ''] });
-                    }}
-                    style={{
-                      height: '130px',
-                      border: '2px dashed #cbd5e1',
-                      borderRadius: '8px',
-                      background: '#ffffff',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      color: '#2271b1',
-                      fontWeight: 600,
-                      fontSize: '12px',
-                      gap: '4px'
-                    }}
-                  >
-                    <Plus size={24} />
-                    <span>+ Add Container</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Form Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1rem', paddingTop: '15px', borderTop: '1px solid #cbd5e1' }}>
-                <button type="button" className="wp-button-secondary" style={{ padding: '8px 18px', fontSize: '13px' }} onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{ background: '#008a20', color: '#ffffff', border: 'none', borderRadius: '4px', padding: '8px 22px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <Save size={15} /> Save Product
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
+
+        </form>
       )}
 
-      {/* Bulk Stock Edit Modal */}
+      {/* ========================================================================= */}
+      {/* 3. BULK STOCK QUICK-EDIT MODAL */}
+      {/* ========================================================================= */}
       {isBulkModalOpen && (
-        <div className="admin-modal-overlay">
-          <div className="admin-modal" style={{ maxWidth: '550px' }}>
-            <div className="admin-modal-header">
-              <h3>Bulk Inventory Stock Update</h3>
-              <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsBulkModalOpen(false)}>
-                <X size={20} />
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setIsBulkModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              width: '100%',
+              maxWidth: '680px',
+              maxHeight: '85vh',
+              borderRadius: '4px',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+              display: 'flex',
+              flexDirection: 'column',
+              textAlign: 'left'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '14px 18px', borderBottom: '1px solid #c3c4c7', background: '#f6f7f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600 }}>Quick Edit Inventory / Stock Levels</h3>
+              <button onClick={() => setIsBulkModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={18} />
               </button>
             </div>
-            <div className="admin-modal-body">
-              <div style={{ maxHeight: '350px', overflowY: 'auto', marginBottom: '1.5rem' }}>
-                {products.map((p) => (
-                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--admin-border-color)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <img src={p.image} alt={p.name} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
-                      <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{p.name}</span>
-                    </div>
-                    <input
-                      type="number"
-                      className="admin-form-control"
-                      style={{ width: '80px', textAlign: 'center' }}
-                      value={bulkStockData[p.id] ?? 0}
-                      onChange={(e) => setBulkStockData({ ...bulkStockData, [p.id]: parseInt(e.target.value) || 0 })}
-                    />
-                  </div>
-                ))}
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                <button className="admin-btn admin-btn-secondary" onClick={() => setIsBulkModalOpen(false)}>
-                  Cancel
-                </button>
-                <button className="admin-btn admin-btn-primary" onClick={handleSaveBulkStock}>
-                  Save All Quantities
-                </button>
-              </div>
+
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+              <table className="wp-list-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th style={{ width: '120px' }}>Stock Qty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map((p) => (
+                    <tr key={p.id}>
+                      <td style={{ fontWeight: 600 }}>{p.name}</td>
+                      <td>{p.categoryName}</td>
+                      <td>
+                        <input
+                          type="number"
+                          min={0}
+                          value={bulkStockData[p.id] ?? 0}
+                          onChange={(e) => setBulkStockData({ ...bulkStockData, [p.id]: parseInt(e.target.value) || 0 })}
+                          style={{ width: '90px' }}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ padding: '12px 18px', borderTop: '1px solid #c3c4c7', background: '#f6f7f7', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button className="wp-button-secondary" onClick={() => setIsBulkModalOpen(false)}>Cancel</button>
+              <button className="wp-button-primary" onClick={handleSaveBulkStock}>Save All Stock</button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

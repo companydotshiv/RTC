@@ -13,59 +13,135 @@ import './App.css';
 
 import { Check, X } from 'lucide-react';
 
+import { LegalPolicyPage, type PolicyType } from './pages/LegalPolicyPage';
+import { AboutUsPage } from './pages/AboutUsPage';
+import { CertificatesPage } from './pages/CertificatesPage';
+import { FaqsPage } from './pages/FaqsPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
+import { ContactUsPage } from './pages/ContactUsPage';
 import { AdminPage } from './pages/AdminPage';
+import { AccountPage } from './pages/AccountPage';
 
 // Helper to derive view state from window.location.pathname
-const parseLocation = (): { view: string; product: Product | null } => {
+const parseLocation = (): { view: string; product: Product | null; blogSlug: string } => {
   const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
   if (!path || path === '') {
-    return { view: 'home', product: null };
+    return { view: 'home', product: null, blogSlug: '' };
   }
   if (path === '/admin') {
-    return { view: 'admin', product: null };
+    return { view: 'admin', product: null, blogSlug: '' };
+  }
+  if (path === '/account' || path === '/my-account') {
+    return { view: 'account', product: null, blogSlug: '' };
   }
   if (path === '/products' || path === '/shop') {
-    return { view: 'products', product: null };
+    return { view: 'products', product: null, blogSlug: '' };
   }
   if (path === '/wishlist') {
-    return { view: 'wishlist', product: null };
+    return { view: 'wishlist', product: null, blogSlug: '' };
   }
   if (path === '/checkout') {
-    return { view: 'checkout', product: null };
+    return { view: 'checkout', product: null, blogSlug: '' };
+  }
+  if (path === '/shipping-policy') {
+    return { view: 'shipping-policy', product: null, blogSlug: '' };
+  }
+  if (path === '/privacy-policy') {
+    return { view: 'privacy-policy', product: null, blogSlug: '' };
+  }
+  if (path === '/returns-policy' || path === '/returns-cancellation') {
+    return { view: 'returns-policy', product: null, blogSlug: '' };
+  }
+  if (path === '/terms-conditions' || path === '/terms-and-conditions') {
+    return { view: 'terms-conditions', product: null, blogSlug: '' };
+  }
+  if (path === '/about-us' || path === '/about') {
+    return { view: 'about-us', product: null, blogSlug: '' };
+  }
+  if (path === '/certificate' || path === '/certificates') {
+    return { view: 'certificates', product: null, blogSlug: '' };
+  }
+  if (path === '/faqs' || path === '/faq') {
+    return { view: 'faqs', product: null, blogSlug: '' };
+  }
+  if (path === '/blog' || path === '/blogs') {
+    return { view: 'blog', product: null, blogSlug: '' };
+  }
+  if (path.startsWith('/blog/')) {
+    const slug = path.replace('/blog/', '');
+    return { view: 'blog-post', product: null, blogSlug: slug };
+  }
+  if (path === '/contact-us' || path === '/contact') {
+    return { view: 'contact-us', product: null, blogSlug: '' };
   }
   if (path.startsWith('/product/')) {
     const slug = path.replace('/product/', '');
     const found = products.find((p) => p.slug.toLowerCase() === slug || p.id.toString() === slug);
     if (found) {
-      return { view: 'detail', product: found };
+      return { view: 'detail', product: found, blogSlug: '' };
     }
   }
-  return { view: 'home', product: null };
+  return { view: 'home', product: null, blogSlug: '' };
 };
 
-export function App() {
+export default function App() {
   const initial = parseLocation();
   const [currentView, setCurrentViewInternal] = useState<string>(initial.view);
   const [selectedProduct, setSelectedProductInternal] = useState<Product | null>(initial.product);
+  const [selectedBlogSlug, setSelectedBlogSlug] = useState<string>(initial.blogSlug);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
+  const [selectedSubCategoryFilter, setSelectedSubCategoryFilter] = useState<string>('');
   const [cartQuantities, setCartQuantities] = useState<{ [id: number]: number }>({});
   const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState<boolean>(false);
 
+  const handleNavigateToCategory = (category: string, subCategory = '') => {
+    setSelectedCategoryFilter(category);
+    setSelectedSubCategoryFilter(subCategory);
+    if (category === 'all' && !subCategory) {
+      setSearchQuery('');
+    }
+    setCurrentView('products');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Synchronize view state with browser URL & history
   const setCurrentView = (view: string, pushHistory = true) => {
+    if (view.startsWith('blog-') && view !== 'blog-post' && view !== 'blog') {
+      const slug = view.replace('blog-', '');
+      setSelectedBlogSlug(slug);
+      setCurrentViewInternal('blog-post');
+      if (pushHistory) {
+        window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `/blog/${slug}`);
+      }
+      return;
+    }
+
     setCurrentViewInternal(view);
     if (pushHistory) {
       let path = '/';
       if (view === 'products') path = '/products';
       else if (view === 'wishlist') path = '/wishlist';
       else if (view === 'checkout') path = '/checkout';
+      else if (view === 'account') path = '/account';
       else if (view === 'admin') path = '/admin';
+      else if (view === 'shipping-policy') path = '/shipping-policy';
+      else if (view === 'privacy-policy') path = '/privacy-policy';
+      else if (view === 'returns-policy') path = '/returns-policy';
+      else if (view === 'terms-conditions') path = '/terms-conditions';
+      else if (view === 'about-us') path = '/about-us';
+      else if (view === 'certificates') path = '/certificates';
+      else if (view === 'faqs') path = '/faqs';
+      else if (view === 'blog') path = '/blog';
+      else if (view === 'blog-post' && selectedBlogSlug) path = `/blog/${selectedBlogSlug}`;
+      else if (view === 'contact-us') path = '/contact-us';
       else if (view === 'detail' && selectedProduct) path = `/product/${selectedProduct.slug}`;
 
       if (window.location.pathname !== path) {
-        window.history.pushState({ view, productSlug: selectedProduct?.slug }, '', path);
+        window.history.pushState({ view, productSlug: selectedProduct?.slug, blogSlug: selectedBlogSlug }, '', path);
       }
     }
   };
@@ -81,12 +157,30 @@ export function App() {
     }
   };
 
-  // Handle browser Back / Forward navigation buttons (popstate event)
+  const handleSelectBlogPost = (slug: string) => {
+    setSelectedBlogSlug(slug);
+    setCurrentViewInternal('blog-post');
+    window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `/blog/${slug}`);
+  };
+
+  // Handle browser Back & Forward navigation buttons
   useEffect(() => {
-    const handlePopState = () => {
-      const parsed = parseLocation();
-      setCurrentViewInternal(parsed.view);
-      setSelectedProductInternal(parsed.product);
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setCurrentViewInternal(event.state.view);
+        if (event.state.productSlug) {
+          const found = products.find((p) => p.slug === event.state.productSlug);
+          if (found) setSelectedProductInternal(found);
+        }
+        if (event.state.blogSlug) {
+          setSelectedBlogSlug(event.state.blogSlug);
+        }
+      } else {
+        const currentLoc = parseLocation();
+        setCurrentViewInternal(currentLoc.view);
+        setSelectedProductInternal(currentLoc.product);
+        setSelectedBlogSlug(currentLoc.blogSlug);
+      }
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -99,38 +193,43 @@ export function App() {
   const [showToast, setShowToast] = useState<boolean>(false);
   const [toastHiding, setToastHiding] = useState<boolean>(false);
 
-  const triggerToast = (msg: string, type: 'cart' | 'wishlist' = 'cart') => {
-    setToastMessage(msg);
+  const triggerToast = (message: string, type: 'cart' | 'wishlist') => {
+    setToastMessage(message);
     setToastType(type);
-    setShowToast(true);
     setToastHiding(false);
+    setShowToast(true);
 
-    // After 3 seconds, start moving up and away animation
     setTimeout(() => {
       setToastHiding(true);
-      // Remove from DOM after slide away animation finishes
       setTimeout(() => {
         setShowToast(false);
         setToastHiding(false);
-      }, 400);
-    }, 3000);
+      }, 500);
+    }, 4500);
   };
 
-  const handleAddToCart = (productId: number = 1, qty: number = 1) => {
-    setCartQuantities((prev) => ({
-      ...prev,
-      [productId]: (prev[productId] || 0) + qty,
-    }));
-    triggerToast('Item added to your cart', 'cart');
+  const handleAddToCart = (productId: number, qtyToAdd = 1) => {
+    setCartQuantities((prev) => {
+      const currentQty = prev[productId] || 0;
+      return { ...prev, [productId]: currentQty + qtyToAdd };
+    });
+
+    const product = products.find((p) => p.id === productId);
+    const prodName = product ? product.name : 'Item';
+    triggerToast(`"${prodName}" has been added to your cart.`, 'cart');
   };
 
   const handleToggleWishlist = (productId: number) => {
-    const isAdding = !wishlistIds.includes(productId);
-    setWishlistIds((prev) =>
-      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
-    );
-    if (isAdding) {
-      triggerToast('Item added to your wishlist', 'wishlist');
+    const isCurrentlyIn = wishlistIds.includes(productId);
+    const product = products.find((p) => p.id === productId);
+    const prodName = product ? product.name : 'Item';
+
+    if (isCurrentlyIn) {
+      setWishlistIds((prev) => prev.filter((id) => id !== productId));
+      triggerToast(`"${prodName}" removed from wishlist.`, 'wishlist');
+    } else {
+      setWishlistIds((prev) => [...prev, productId]);
+      triggerToast(`"${prodName}" added to your wishlist.`, 'wishlist');
     }
   };
 
@@ -143,97 +242,83 @@ export function App() {
   }
 
   return (
-    <div className="app-root">
+    <div className="app-container">
       <Header
         currentView={currentView}
         setCurrentView={setCurrentView}
-        cartCount={0}
-        wishlistCount={wishlistIds.length}
         cartQuantities={cartQuantities}
+        wishlistCount={wishlistIds.length}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
         isCartOpen={isCartOpen}
         setIsCartOpen={setIsCartOpen}
-        onOpenCheckoutModal={() => {
-          setIsCheckoutModalOpen(true);
-        }}
-        onUpdateCartQty={(id, qty) => {
+        onUpdateCartQty={(productId, newQty) => {
           setCartQuantities((prev) => {
             const updated = { ...prev };
-            if (qty <= 0) {
-              delete updated[id];
+            if (newQty <= 0) {
+              delete updated[productId];
             } else {
-              updated[id] = qty;
+              updated[productId] = newQty;
             }
             return updated;
           });
         }}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSelectProduct={handleSelectProduct}
+        onRemoveCartItem={(productId) => {
+          setCartQuantities((prev) => {
+            const updated = { ...prev };
+            delete updated[productId];
+            return updated;
+          });
+        }}
+        onOpenCheckoutModal={() => {
+          setIsCheckoutModalOpen(true);
+        }}
+        onNavigateToCategory={handleNavigateToCategory}
       />
 
-      <main>
+      <main className="main-content">
         {currentView === 'home' && (
           <HomePage
-            onSelectProduct={handleSelectProduct}
             setCurrentView={setCurrentView}
+            onAddToCart={handleAddToCart}
+            onSelectProduct={handleSelectProduct}
             onToggleWishlist={handleToggleWishlist}
             wishlistIds={wishlistIds}
-            cartQuantities={cartQuantities}
-            onAddToCart={handleAddToCart}
-            onUpdateCartQty={(productId, newQty) => {
-              setCartQuantities((prev) => {
-                const updated = { ...prev };
-                if (newQty <= 0) {
-                  delete updated[productId];
-                } else {
-                  updated[productId] = newQty;
-                }
-                return updated;
-              });
-            }}
           />
         )}
         {currentView === 'products' && (
           <ProductsPage
-            onSelectProduct={handleSelectProduct}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            cartQuantities={cartQuantities}
             onAddToCart={handleAddToCart}
-            onUpdateCartQty={(productId, newQty) => {
-              setCartQuantities((prev) => {
-                const updated = { ...prev };
-                if (newQty <= 0) {
-                  delete updated[productId];
-                } else {
-                  updated[productId] = newQty;
-                }
-                return updated;
-              });
-            }}
+            onSelectProduct={handleSelectProduct}
             onToggleWishlist={handleToggleWishlist}
             wishlistIds={wishlistIds}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setCurrentView={setCurrentView}
+            initialCategory={selectedCategoryFilter}
+            initialSubCategory={selectedSubCategoryFilter}
           />
         )}
         {currentView === 'detail' && selectedProduct && (
           <ProductDetailPage
             product={selectedProduct}
+            onAddToCart={handleAddToCart}
+            onToggleWishlist={handleToggleWishlist}
+            isWishlisted={wishlistIds.includes(selectedProduct.id)}
+            onSelectProduct={handleSelectProduct}
             setCurrentView={setCurrentView}
-            onAddToCart={(qty) => handleAddToCart(selectedProduct.id, qty)}
-            cartQty={cartQuantities[selectedProduct.id] || 0}
-            onUpdateCartQty={(newQty) => {
+            cartQuantities={cartQuantities}
+            onUpdateCartQty={(productId, newQty) => {
               setCartQuantities((prev) => {
                 const updated = { ...prev };
                 if (newQty <= 0) {
-                  delete updated[selectedProduct.id];
+                  delete updated[productId];
                 } else {
-                  updated[selectedProduct.id] = newQty;
+                  updated[productId] = newQty;
                 }
                 return updated;
               });
             }}
-            onToggleWishlist={() => handleToggleWishlist(selectedProduct.id)}
-            isWishlisted={wishlistIds.includes(selectedProduct.id)}
           />
         )}
         {currentView === 'wishlist' && (
@@ -264,11 +349,60 @@ export function App() {
             onClearCart={handleClearCart}
           />
         )}
+        {['shipping-policy', 'privacy-policy', 'returns-policy', 'terms-conditions'].includes(currentView) && (
+          <LegalPolicyPage
+            initialPolicy={currentView as PolicyType}
+            setCurrentView={setCurrentView}
+          />
+        )}
+        {currentView === 'about-us' && (
+          <AboutUsPage setCurrentView={setCurrentView} />
+        )}
+        {currentView === 'certificates' && (
+          <CertificatesPage setCurrentView={setCurrentView} />
+        )}
+        {currentView === 'faqs' && (
+          <FaqsPage setCurrentView={setCurrentView} />
+        )}
+        {currentView === 'blog' && (
+          <BlogPage setCurrentView={setCurrentView} onSelectPost={handleSelectBlogPost} />
+        )}
+        {currentView === 'blog-post' && (
+          <BlogPostPage
+            slug={selectedBlogSlug}
+            setCurrentView={setCurrentView}
+            onAddToCart={handleAddToCart}
+          />
+        )}
+        {currentView === 'account' && (
+          <AccountPage
+            setCurrentView={setCurrentView}
+            cartQuantities={cartQuantities}
+            wishlistIds={wishlistIds}
+            onAddToCart={handleAddToCart}
+            onUpdateCartQty={(productId, newQty) => {
+              setCartQuantities((prev) => {
+                const updated = { ...prev };
+                if (newQty <= 0) {
+                  delete updated[productId];
+                } else {
+                  updated[productId] = newQty;
+                }
+                return updated;
+              });
+            }}
+            onToggleWishlist={handleToggleWishlist}
+            onSelectProduct={handleSelectProduct}
+          />
+        )}
+        {currentView === 'contact-us' && (
+          <ContactUsPage setCurrentView={setCurrentView} />
+        )}
       </main>
 
       <Footer setCurrentView={setCurrentView} />
 
-      {/* Floating Toast Notification matching RTC Foods style */}
+      {/* Floating Toast Notification */}
       {showToast && (
         <div
           className={`toast-notification ${toastType === 'wishlist' ? 'toast-wishlist' : ''} ${toastHiding ? 'hide' : ''}`}
@@ -300,7 +434,7 @@ export function App() {
         </div>
       )}
 
-      {/* RTC Foods Floating Checkout Popover Modal */}
+      {/* Floating Checkout Popover Modal */}
       <CheckoutModal
         isOpen={isCheckoutModalOpen}
         onClose={() => setIsCheckoutModalOpen(false)}
@@ -312,5 +446,3 @@ export function App() {
     </div>
   );
 }
-
-export default App;

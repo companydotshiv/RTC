@@ -3,6 +3,8 @@ import { ShieldCheck, CheckCircle2, Truck, CreditCard, ArrowLeft } from 'lucide-
 import { products } from '../data/productsData';
 import type { Product } from '../types/product';
 
+import { adminStore } from '../data/adminStore';
+
 interface CheckoutPageProps {
   cartQuantities: { [id: number]: number };
   setCurrentView: (view: string) => void;
@@ -80,8 +82,33 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       alert('Your cart is empty!');
       return;
     }
-    const generatedId = 'RTC-' + Math.floor(100000 + Math.random() * 900000);
-    setOrderId(generatedId);
+
+    const orderItems = cartItems.map((item) => ({
+      productId: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.qty,
+      image: item.product.image,
+      weight: item.product.weights && item.product.weights.length > 0 ? item.product.weights[0] : '250g'
+    }));
+
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim() || 'Valued Customer';
+    const fullAddress = `${formData.address}${formData.apartment ? ', ' + formData.apartment : ''}`;
+
+    const placedOrder = adminStore.placeCustomerOrder({
+      customerName: fullName,
+      email: formData.email || 'customer@example.com',
+      phone: formData.phone || '+91 98765 43210',
+      shippingAddress: fullAddress || 'Direct Store Order',
+      city: formData.city || 'Delhi',
+      state: formData.state || 'Delhi',
+      pincode: formData.pincode || '110006',
+      items: orderItems,
+      couponCodeApplied: appliedCoupon || undefined,
+      paymentMethod: paymentMethod === 'cod' ? 'COD' : paymentMethod === 'card' ? 'Card' : 'UPI'
+    });
+
+    setOrderId(placedOrder.id);
     setIsOrderPlaced(true);
     if (onClearCart) {
       onClearCart();
@@ -106,7 +133,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
           Checkout
         </h1>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '36px', alignItems: 'start' }}>
+        <div className="checkout-main-grid">
           
           {/* Left Column: Form & Information */}
           <form onSubmit={handlePlaceOrder} style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }}>
@@ -116,7 +143,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <h2 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#222222', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 1. Contact Details
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="checkout-two-col-grid">
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>Email Address *</label>
                   <input
@@ -172,7 +199,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 2. Shipping Address
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="checkout-two-col-grid">
                   <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>First Name *</label>
                     <input
@@ -245,7 +272,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div className="checkout-three-col-grid">
                   <div>
                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 400, color: '#555555', marginBottom: '6px' }}>City *</label>
                     <input

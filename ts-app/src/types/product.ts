@@ -28,7 +28,10 @@ export interface Product {
   productTypes?: string[];
   stockCount?: number;
   weightStock?: Record<string, { stock: boolean; stockCount: number; price?: number }>;
+  weightPrices?: Record<string, number>;
+  weightOriginalPrices?: Record<string, number>;
   customDescriptionRows?: { size?: string; productType?: string; [key: string]: string | undefined }[];
+  reviews?: { name: string; rating: number; date: string; title: string; text: string; verified: boolean }[];
 }
 
 export interface Category {

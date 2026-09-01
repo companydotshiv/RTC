@@ -272,23 +272,128 @@ const defaultBanners: AdminBanner[] = [
     page: 'products',
     position: 'top',
     title: 'Explore Our Complete Wholesome Range',
-    subtitle: '100% natural, hygienic food-grade pouches preserved for peak crunch and freshness',
-    imageUrl: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=1200',
-    mobileImageUrl: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?auto=format&fit=crop&q=80&w=600',
+    subtitle: '100% natural, triple-sorted dry fruits, gourmet nuts, authentic Kashmiri saffron, and culinary seeds delivered fresh to your doorstep.',
+    imageUrl: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=1600',
+    mobileImageUrl: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=800',
     linkUrl: '/products',
     buttonText: 'Browse Catalog',
     buttonStyle: 'glass',
     textAlign: 'center',
-    bgColor: '#007A3D',
-    overlayOpacity: 0.25,
+    bgColor: '#062C19',
+    overlayOpacity: 0.45,
+    badgeText: '🌿 100% Pure Natural Harvest',
     isActive: true,
     order: 1,
   }
 ];
 
-// Clean initial empty real data (no fake orders or sales)
-const defaultOrders: AdminOrder[] = [];
-const defaultCustomers: AdminCustomer[] = [];
+// Initial realistic sample data
+const defaultOrders: AdminOrder[] = [
+  {
+    id: 'ORD-8491',
+    customerName: 'Rajesh Sharma',
+    email: 'rajesh.sharma@example.com',
+    phone: '+91 98201 45872',
+    shippingAddress: 'Flat 402, Royal Palms, Goregaon East',
+    city: 'Mumbai',
+    state: 'Maharashtra',
+    pincode: '400063',
+    items: [
+      { productId: 1, name: 'California Almonds (Badam Giri)', price: 499, quantity: 2, image: '/hero_dry_fruits_1785924400069.png', weight: '500g' },
+      { productId: 3, name: 'Kashmiri Walnut Kernels (Akhrot)', price: 549, quantity: 1, image: '/hero_dry_fruits_1785924400069.png', weight: '250g' }
+    ],
+    subtotal: 1547,
+    discount: 200,
+    taxGst: 67,
+    shippingFee: 0,
+    totalAmount: 1414,
+    paymentMethod: 'UPI',
+    paymentStatus: 'Paid',
+    status: 'Processing',
+    courierName: 'BlueDart Express',
+    trackingId: 'BD-884920194',
+    createdAt: '2026-03-24 at 10:15 am'
+  },
+  {
+    id: 'ORD-8492',
+    customerName: 'Priya Mukherjee',
+    email: 'priya.m@example.com',
+    phone: '+91 98302 78192',
+    shippingAddress: 'House 12B, Salt Lake Sector 3',
+    city: 'Kolkata',
+    state: 'West Bengal',
+    pincode: '700091',
+    items: [
+      { productId: 2, name: 'Whole Cashews W-240 (Kaju)', price: 449, quantity: 1, image: '/hero_dry_fruits_1785924400069.png', weight: '500g' }
+    ],
+    subtotal: 449,
+    discount: 0,
+    taxGst: 22,
+    shippingFee: 49,
+    totalAmount: 520,
+    paymentMethod: 'COD',
+    paymentStatus: 'Pending',
+    status: 'Pending',
+    createdAt: '2026-03-24 at 09:40 am'
+  },
+  {
+    id: 'ORD-8488',
+    customerName: 'Ananya Gupta',
+    email: 'ananya.gupta@example.com',
+    phone: '+91 99100 23411',
+    shippingAddress: 'C-4/82, Safdarjung Development Area',
+    city: 'New Delhi',
+    state: 'Delhi',
+    pincode: '110016',
+    items: [
+      { productId: 5, name: 'Royal Kashmiri Mongra Saffron (Kesar)', price: 449, quantity: 2, image: '/hero_dry_fruits_1785924400069.png', weight: '1g' }
+    ],
+    subtotal: 898,
+    discount: 100,
+    taxGst: 40,
+    shippingFee: 0,
+    totalAmount: 838,
+    paymentMethod: 'Card',
+    paymentStatus: 'Paid',
+    status: 'Delivered',
+    courierName: 'Delhivery Surface',
+    trackingId: 'DLV-492019482',
+    createdAt: '2026-03-22 at 04:30 pm'
+  }
+];
+
+const defaultCustomers: AdminCustomer[] = [
+  {
+    id: 'cust-1',
+    name: 'Rajesh Sharma',
+    email: 'rajesh.sharma@example.com',
+    phone: '+91 98201 45872',
+    city: 'Mumbai',
+    totalOrders: 3,
+    totalSpent: 4250,
+    joinedDate: '2026-01-15'
+  },
+  {
+    id: 'cust-2',
+    name: 'Priya Mukherjee',
+    email: 'priya.m@example.com',
+    phone: '+91 98302 78192',
+    city: 'Kolkata',
+    totalOrders: 1,
+    totalSpent: 520,
+    joinedDate: '2026-03-24'
+  },
+  {
+    id: 'cust-3',
+    name: 'Ananya Gupta',
+    email: 'ananya.gupta@example.com',
+    phone: '+91 99100 23411',
+    city: 'New Delhi',
+    totalOrders: 2,
+    totalSpent: 2180,
+    joinedDate: '2026-02-10'
+  }
+];
 
 const defaultReviews: AdminReview[] = [
   { id: 'rev-1', productId: 1, productName: 'Alphonso Mangoes Premium', customerName: 'Aarav Sharma', rating: 5, comment: 'Extremely sweet and naturally ripened! Excellent packaging.', status: 'Approved', createdAt: '2026-08-10' }
@@ -313,7 +418,7 @@ const defaultAnnouncement: AnnouncementConfig = {
   linkText: 'Claim Offer',
   linkUrl: '/products',
   isActive: true,
-  bgColor: '#0284c7',
+  bgColor: '#15803D',
   textColor: '#ffffff'
 };
 
@@ -372,6 +477,20 @@ const initCategoriesList = (): Category[] => {
   return initialCategories;
 };
 
+const initAnnouncement = (): AnnouncementConfig => {
+  const stored = localStorage.getItem('admin_announcement');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      if (parsed.bgColor === '#0284c7' || parsed.bgColor === '#0B6638') {
+        parsed.bgColor = '#15803D';
+      }
+      return parsed;
+    } catch (e) { console.error(e); }
+  }
+  return defaultAnnouncement;
+};
+
 class AdminStore {
   adminAccounts: AdminUserAccount[] = JSON.parse(localStorage.getItem('admin_accounts') || JSON.stringify(defaultAdminAccounts));
   authenticatedUser: AdminUserAccount | null = JSON.parse(sessionStorage.getItem('admin_session') || 'null');
@@ -385,7 +504,7 @@ class AdminStore {
   reviews: AdminReview[] = JSON.parse(localStorage.getItem('admin_reviews') || JSON.stringify(defaultReviews));
   pincodes: PincodeRule[] = JSON.parse(localStorage.getItem('admin_pincodes') || JSON.stringify(defaultPincodes));
   shippingRule: ShippingRule = JSON.parse(localStorage.getItem('admin_shipping') || JSON.stringify(defaultShippingRule));
-  announcement: AnnouncementConfig = JSON.parse(localStorage.getItem('admin_announcement') || JSON.stringify(defaultAnnouncement));
+  announcement: AnnouncementConfig = initAnnouncement();
   popup: PopupConfig = JSON.parse(localStorage.getItem('admin_popup') || JSON.stringify(defaultPopup));
   auditLogs: AuditLogItem[] = JSON.parse(localStorage.getItem('admin_audit_logs') || JSON.stringify(defaultAuditLogs));
 

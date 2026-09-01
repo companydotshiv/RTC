@@ -8,14 +8,14 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentView }) => {
   return (
     <footer id="footer-contact" style={{ background: '#0F1710', color: '#FFFFFF', padding: '60px 0 0 0', position: 'relative', textAlign: 'left' }}>
       <div className="container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 1fr 1fr 1.8fr', gap: '30px', paddingBottom: '40px', textAlign: 'left' }}>
+        <div className="footer-grid-layout" style={{ paddingBottom: '40px', textAlign: 'left' }}>
           
           {/* Column 1: Logo & Social Icons */}
-          <div style={{ textAlign: 'left' }}>
-            <div style={{ marginBottom: '24px', textAlign: 'left' }}>
-              <img src="/footer_rtc_logo.png" alt="RTC Foods" style={{ height: '54px', width: 'auto', objectFit: 'contain' }} />
+          <div className="footer-col footer-brand-col" style={{ textAlign: 'left' }}>
+            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+              <img src="/footer_rtc_logo.png" alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
             </div>
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'flex-start' }}>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'center', justifyContent: 'flex-start' }}>
               <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', opacity: 0.9 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
@@ -30,20 +30,36 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentView }) => {
           </div>
 
           {/* Column 2: SUPPORT */}
-          <div style={{ textAlign: 'left' }}>
+          <div className="footer-col footer-support-col" style={{ textAlign: 'left' }}>
             <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '18px', textTransform: 'uppercase', textAlign: 'left' }}>
               SUPPORT
             </h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', textAlign: 'left' }}>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Shipping Policy</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Privacy Policy</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Returns & Cancellation</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Terms & Conditions</a></li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/shipping-policy" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('shipping-policy'); }}>
+                  Shipping Policy
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/privacy-policy" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('privacy-policy'); }}>
+                  Privacy Policy
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/returns-policy" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('returns-policy'); }}>
+                  Returns & Cancellation
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/terms-conditions" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('terms-conditions'); }}>
+                  Terms & Conditions
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Column 3: SHOP */}
-          <div style={{ textAlign: 'left' }}>
+          <div className="footer-col footer-shop-col" style={{ textAlign: 'left' }}>
             <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '18px', textTransform: 'uppercase', textAlign: 'left' }}>
               SHOP
             </h4>
@@ -57,21 +73,41 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentView }) => {
           </div>
 
           {/* Column 4: COMPANY */}
-          <div style={{ textAlign: 'left' }}>
+          <div className="footer-col footer-company-col" style={{ textAlign: 'left' }}>
             <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '18px', textTransform: 'uppercase', textAlign: 'left' }}>
               COMPANY
             </h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.88rem', textAlign: 'left' }}>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('home'); }}>About Us</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Certificate</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">FAQs</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link">Blog</a></li>
-              <li style={{ textAlign: 'left' }}><a href="#" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('home'); }}>Contact Us</a></li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/about-us" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('about-us'); }}>
+                  About Us
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/certificates" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('certificates'); }}>
+                  Certificate
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/faqs" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('faqs'); }}>
+                  FAQs
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/blog" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('blog'); }}>
+                  Blog
+                </a>
+              </li>
+              <li style={{ textAlign: 'left' }}>
+                <a href="/contact-us" className="footer-hover-link" onClick={(e) => { e.preventDefault(); setCurrentView('contact-us'); }}>
+                  Contact Us
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Column 5: CONTACT */}
-          <div style={{ textAlign: 'left' }}>
+          <div className="footer-col footer-contact-col" style={{ textAlign: 'left' }}>
             <h4 style={{ color: '#FFFFFF', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.5px', marginBottom: '18px', textTransform: 'uppercase', textAlign: 'left' }}>
               CONTACT
             </h4>

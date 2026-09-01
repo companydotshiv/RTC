@@ -1,180 +1,178 @@
 import React, { useState } from 'react';
 import { adminStore } from '../../data/adminStore';
-import type { AnnouncementConfig, PopupConfig } from '../../data/adminStore';
-import { Megaphone, LayoutList, Save, Power } from 'lucide-react';
+import type { AnnouncementConfig } from '../../data/adminStore';
+import { Megaphone, Check, AlertCircle } from 'lucide-react';
 
 export const AnnouncementsPanel: React.FC = () => {
   const announcement = adminStore.announcement;
-  const popup = adminStore.popup;
-
   const [annForm, setAnnForm] = useState<AnnouncementConfig>({ ...announcement });
-  const [popForm, setPopForm] = useState<PopupConfig>({ ...popup });
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const handleSaveAnnouncement = (e: React.FormEvent) => {
     e.preventDefault();
     adminStore.updateAnnouncement(annForm);
-    alert('Top Announcement Header Ticker Updated!');
-  };
-
-  const handleSavePopup = (e: React.FormEvent) => {
-    e.preventDefault();
-    adminStore.updatePopup(popForm);
-    alert('Promotional Popup Modal Settings Updated!');
+    setSaveStatus({ type: 'success', message: 'Announcement bar settings updated.' });
+    setTimeout(() => setSaveStatus(null), 3000);
   };
 
   return (
-    <div className="announcements-panel">
-      {/* Top Header Announcement Ticker Bar */}
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h3 className="admin-card-title">
-            <Megaphone size={20} color="#38bdf8" /> Top Announcement Ticker Bar
-          </h3>
-          <button
-            className={`status-pill ${annForm.isActive ? 'success' : 'danger'}`}
-            style={{ border: 'none', cursor: 'pointer' }}
-            onClick={() => {
-              const updated = !annForm.isActive;
-              setAnnForm({ ...annForm, isActive: updated });
-              adminStore.updateAnnouncement({ isActive: updated });
-            }}
-          >
-            <Power size={12} /> {annForm.isActive ? 'Active on Store' : 'Hidden'}
-          </button>
-        </div>
-
-        {/* Live Preview Bar */}
+    <div className="announcements-panel" style={{ textAlign: 'left', maxWidth: '850px' }}>
+      
+      {/* Toast Save Notification */}
+      {saveStatus && (
         <div
           style={{
-            padding: '0.75rem 1rem',
-            borderRadius: '8px',
-            backgroundColor: annForm.bgColor,
-            color: annForm.textColor,
+            position: 'fixed',
+            top: '40px',
+            right: '24px',
+            background: saveStatus.type === 'success' ? '#008a20' : '#d63638',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '4px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+            zIndex: 99999,
+            fontWeight: 600,
+            fontSize: '13px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          {saveStatus.type === 'success' ? <Check size={16} color="#fff" /> : <AlertCircle size={16} color="#fff" />}
+          <span>{saveStatus.message}</span>
+        </div>
+      )}
+
+      <h1 className="wp-page-title">Announcement Bar Settings</h1>
+      <p style={{ color: '#50575e', fontSize: '13px', margin: '-8px 0 20px 0' }}>
+        Configure top header notification ribbon message, background theme color, and active visibility.
+      </p>
+
+      {/* Live Preview Card */}
+      <div className="wp-card" style={{ padding: '16px', marginBottom: '20px' }}>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Live Storefront Preview
+        </div>
+        <div
+          style={{
+            padding: '10px 16px',
+            borderRadius: '4px',
+            backgroundColor: annForm.bgColor || '#15803D',
+            color: annForm.textColor || '#ffffff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '0.75rem',
-            fontSize: '0.85rem',
+            gap: '12px',
+            fontSize: '13px',
             fontWeight: 600,
-            marginBottom: '1.5rem'
+            boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
           }}
         >
-          <span>{annForm.text}</span>
+          <span>{annForm.text || 'Enter announcement message...'}</span>
           {annForm.linkText && (
-            <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>{annForm.linkText} →</span>
+            <span style={{ textDecoration: 'underline', cursor: 'pointer', fontSize: '12px' }}>{annForm.linkText} →</span>
           )}
         </div>
-
-        <form onSubmit={handleSaveAnnouncement} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-          <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
-            <label>Ticker Message Text</label>
-            <input
-              type="text"
-              required
-              className="admin-form-control"
-              value={annForm.text}
-              onChange={(e) => setAnnForm({ ...annForm, text: e.target.value })}
-            />
-          </div>
-
-          <div className="admin-form-group">
-            <label>Call-to-Action Link Text</label>
-            <input
-              type="text"
-              className="admin-form-control"
-              value={annForm.linkText || ''}
-              onChange={(e) => setAnnForm({ ...annForm, linkText: e.target.value })}
-            />
-          </div>
-
-          <div className="admin-form-group">
-            <label>Background Color</label>
-            <input
-              type="color"
-              className="admin-form-control"
-              style={{ height: '42px', padding: '0.2rem' }}
-              value={annForm.bgColor}
-              onChange={(e) => setAnnForm({ ...annForm, bgColor: e.target.value })}
-            />
-          </div>
-
-          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="admin-btn admin-btn-primary">
-              <Save size={16} /> Update Announcement Ticker
-            </button>
-          </div>
-        </form>
       </div>
 
-      {/* Promotional Popup Builder */}
-      <div className="admin-card">
-        <div className="admin-card-header">
-          <h3 className="admin-card-title">
-            <LayoutList size={20} color="#fbbf24" /> Promotional Lead Popup Modal
-          </h3>
-          <button
-            className={`status-pill ${popForm.isActive ? 'success' : 'danger'}`}
-            style={{ border: 'none', cursor: 'pointer' }}
-            onClick={() => {
-              const updated = !popForm.isActive;
-              setPopForm({ ...popForm, isActive: updated });
-              adminStore.updatePopup({ isActive: updated });
-            }}
-          >
-            <Power size={12} /> {popForm.isActive ? 'Active' : 'Disabled'}
-          </button>
+      {/* Form Card */}
+      <form onSubmit={handleSaveAnnouncement} className="wp-card" style={{ padding: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'start', gap: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327', marginTop: '6px' }}>
+              Announcement text *
+            </label>
+            <div style={{ width: '100%' }}>
+              <input
+                type="text"
+                required
+                value={annForm.text}
+                onChange={(e) => setAnnForm({ ...annForm, text: e.target.value })}
+                placeholder="e.g. ✨ FLAT 20% OFF on all Dry Fruits & Spices | Code: WELCOME20"
+                style={{ width: '100%', boxSizing: 'border-box' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'start', gap: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327', marginTop: '6px' }}>
+              Action link text (optional)
+            </label>
+            <div>
+              <input
+                type="text"
+                value={annForm.linkText || ''}
+                onChange={(e) => setAnnForm({ ...annForm, linkText: e.target.value })}
+                placeholder="e.g. Shop Festive Range"
+                style={{ width: '240px' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'start', gap: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327', marginTop: '6px' }}>
+              Banner background color
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="color"
+                value={annForm.bgColor || '#15803D'}
+                onChange={(e) => setAnnForm({ ...annForm, bgColor: e.target.value })}
+                style={{ width: '40px', height: '34px', padding: 0, cursor: 'pointer', border: '1px solid #c3c4c7', borderRadius: '3px' }}
+              />
+              <input
+                type="text"
+                value={annForm.bgColor || '#15803D'}
+                onChange={(e) => setAnnForm({ ...annForm, bgColor: e.target.value })}
+                style={{ width: '110px', fontFamily: 'monospace' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'start', gap: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327', marginTop: '6px' }}>
+              Text font color
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <input
+                type="color"
+                value={annForm.textColor || '#ffffff'}
+                onChange={(e) => setAnnForm({ ...annForm, textColor: e.target.value })}
+                style={{ width: '40px', height: '34px', padding: 0, cursor: 'pointer', border: '1px solid #c3c4c7', borderRadius: '3px' }}
+              />
+              <input
+                type="text"
+                value={annForm.textColor || '#ffffff'}
+                onChange={(e) => setAnnForm({ ...annForm, textColor: e.target.value })}
+                style={{ width: '110px', fontFamily: 'monospace' }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', alignItems: 'center', gap: '16px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600, color: '#1d2327' }}>
+              Display status
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '13px' }}>
+              <input
+                type="checkbox"
+                checked={annForm.isActive}
+                onChange={(e) => setAnnForm({ ...annForm, isActive: e.target.checked })}
+              />
+              <span>Enable announcement bar on top of website</span>
+            </label>
+          </div>
+
         </div>
 
-        <form onSubmit={handleSavePopup} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
-          <div className="admin-form-group">
-            <label>Popup Headline Title</label>
-            <input
-              type="text"
-              required
-              className="admin-form-control"
-              value={popForm.title}
-              onChange={(e) => setPopForm({ ...popForm, title: e.target.value })}
-            />
-          </div>
+        <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f1' }}>
+          <button type="submit" className="wp-button-primary" style={{ padding: '7px 18px', fontWeight: 700 }}>
+            Save changes
+          </button>
+        </div>
+      </form>
 
-          <div className="admin-form-group">
-            <label>Attached Promo Coupon Code</label>
-            <input
-              type="text"
-              className="admin-form-control"
-              style={{ textTransform: 'uppercase' }}
-              value={popForm.couponCode || ''}
-              onChange={(e) => setPopForm({ ...popForm, couponCode: e.target.value.toUpperCase() })}
-            />
-          </div>
-
-          <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
-            <label>Image URL</label>
-            <input
-              type="url"
-              className="admin-form-control"
-              value={popForm.imageUrl}
-              onChange={(e) => setPopForm({ ...popForm, imageUrl: e.target.value })}
-            />
-          </div>
-
-          <div className="admin-form-group" style={{ gridColumn: '1 / -1' }}>
-            <label>Description / Subtext</label>
-            <textarea
-              className="admin-form-control"
-              rows={2}
-              value={popForm.description}
-              onChange={(e) => setPopForm({ ...popForm, description: e.target.value })}
-            />
-          </div>
-
-          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="submit" className="admin-btn admin-btn-primary">
-              <Save size={16} /> Save Popup Settings
-            </button>
-          </div>
-        </form>
-      </div>
     </div>
   );
 };

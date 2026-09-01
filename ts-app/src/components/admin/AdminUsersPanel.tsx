@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { adminStore } from '../../data/adminStore';
 import type { AdminUserAccount } from '../../data/adminStore';
-import { UserPlus, Power, Trash2, ShieldCheck, X } from 'lucide-react';
+import { Plus, Trash2, Check, AlertCircle, X, User } from 'lucide-react';
 
 export const AdminUsersPanel: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [fullNameInput, setFullNameInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [roleInput, setRoleInput] = useState<AdminUserAccount['role']>('Order Manager');
   const [errorMessage, setErrorMessage] = useState('');
+  const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const accounts = adminStore.adminAccounts;
 
@@ -19,16 +21,19 @@ export const AdminUsersPanel: React.FC = () => {
 
     try {
       adminStore.createAdminUser({
-        username: usernameInput,
+        username: usernameInput.trim(),
         password: passwordInput,
-        fullName: fullNameInput || usernameInput,
+        fullName: fullNameInput.trim() || usernameInput.trim(),
         role: roleInput
       });
 
       setUsernameInput('');
       setPasswordInput('');
       setFullNameInput('');
+      setEmailInput('');
       setIsModalOpen(false);
+      setSaveStatus({ type: 'success', message: 'New user added successfully.' });
+      setTimeout(() => setSaveStatus(null), 3000);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to create account');
     }
@@ -39,9 +44,11 @@ export const AdminUsersPanel: React.FC = () => {
   };
 
   const handleDeleteAccount = (id: string, username: string) => {
-    if (window.confirm(`Are you sure you want to delete personnel account "${username}"?`)) {
+    if (window.confirm(`Are you sure you want to delete user "${username}"?`)) {
       try {
         adminStore.deleteAdminUser(id);
+        setSaveStatus({ type: 'success', message: 'User deleted.' });
+        setTimeout(() => setSaveStatus(null), 3000);
       } catch (err: any) {
         alert(err.message);
       }
@@ -49,157 +56,225 @@ export const AdminUsersPanel: React.FC = () => {
   };
 
   return (
-    <div className="admin-users-panel">
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Personnel Access Control & Accounts</h2>
-          <p style={{ margin: '4px 0 0 0', color: 'var(--admin-text-muted)', fontSize: '0.85rem' }}>
-            Create admin login credentials, assign operational roles, and activate/deactivate personnel access
-          </p>
+    <div className="admin-users-panel" style={{ textAlign: 'left' }}>
+      
+      {/* Toast Save Notification */}
+      {saveStatus && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '40px',
+            right: '24px',
+            background: saveStatus.type === 'success' ? '#008a20' : '#d63638',
+            color: '#ffffff',
+            padding: '12px 20px',
+            borderRadius: '4px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.18)',
+            zIndex: 99999,
+            fontWeight: 600,
+            fontSize: '13px',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}
+        >
+          {saveStatus.type === 'success' ? <Check size={16} color="#fff" /> : <AlertCircle size={16} color="#fff" />}
+          <span>{saveStatus.message}</span>
         </div>
-        <button className="admin-btn admin-btn-primary" onClick={() => setIsModalOpen(true)}>
-          <UserPlus size={16} /> Create Personnel Account
+      )}
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+        <h1 className="wp-page-title" style={{ margin: 0 }}>Users</h1>
+        <button className="wp-button-secondary" onClick={() => setIsModalOpen(true)} style={{ fontWeight: 600 }}>
+          Add New User
         </button>
       </div>
 
-      {/* Accounts List Table */}
-      <div className="admin-card">
-        <div className="admin-table-container">
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Assigned Role</th>
-                <th>Date Created</th>
-                <th>Access Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {accounts.map((acc) => (
-                <tr key={acc.id}>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <ShieldCheck size={18} color="#38bdf8" />
-                      <div>
-                        <div style={{ fontWeight: 600, color: '#38bdf8' }}>{acc.username}</div>
-                        {acc.username === 'Login1' && (
-                          <span style={{ fontSize: '0.7rem', color: '#fbbf24', background: 'rgba(245, 158, 11, 0.15)', padding: '1px 6px', borderRadius: '4px' }}>
-                            Master Personnel
-                          </span>
+      {/* Users Table */}
+      <div className="wp-card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #c3c4c7' }}>
+        <table className="wp-list-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created Date</th>
+              <th style={{ textAlign: 'right', width: '80px' }}>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {accounts.map((acc) => (
+              <tr key={acc.id}>
+                {/* Username */}
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#2271b1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700 }}>
+                      {acc.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <strong style={{ color: '#2271b1', cursor: 'pointer' }}>{acc.username}</strong>
+                      <div className="row-actions">
+                        <span style={{ color: '#555', cursor: 'pointer' }} onClick={() => handleToggleAccess(acc.id)}>
+                          {acc.isActive ? 'Deactivate' : 'Activate'}
+                        </span>
+                        {accounts.length > 1 && (
+                          <>
+                            <span style={{ color: '#ddd' }}>|</span>
+                            <span style={{ color: '#a00', cursor: 'pointer' }} onClick={() => handleDeleteAccount(acc.id, acc.username)}>Delete</span>
+                          </>
                         )}
                       </div>
                     </div>
-                  </td>
-                  <td style={{ fontWeight: 500 }}>{acc.fullName}</td>
-                  <td>
-                    <span className="status-pill info">{acc.role}</span>
-                  </td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--admin-text-muted)' }}>{acc.createdAt}</td>
-                  <td>
+                  </div>
+                </td>
+
+                {/* Name */}
+                <td>{acc.fullName}</td>
+
+                {/* Email */}
+                <td style={{ color: '#50575e' }}>{acc.username.toLowerCase()}@rtcfoods.in</td>
+
+                {/* Role */}
+                <td>
+                  <span style={{ background: '#f0f0f1', padding: '3px 8px', borderRadius: '3px', fontSize: '12px', fontWeight: 600, color: '#1d2327' }}>
+                    {acc.role}
+                  </span>
+                </td>
+
+                {/* Status */}
+                <td>
+                  {acc.isActive ? (
+                    <span style={{ color: '#008a20', fontWeight: 600, fontSize: '12px' }}>Active</span>
+                  ) : (
+                    <span style={{ color: '#d63638', fontWeight: 600, fontSize: '12px' }}>Suspended</span>
+                  )}
+                </td>
+
+                {/* Date */}
+                <td style={{ fontSize: '12px', color: '#64748b' }}>{acc.createdAt}</td>
+
+                {/* Actions */}
+                <td style={{ textAlign: 'right' }}>
+                  {accounts.length > 1 && (
                     <button
-                      className={`status-pill ${acc.isActive ? 'success' : 'danger'}`}
-                      style={{ border: 'none', cursor: 'pointer' }}
-                      onClick={() => handleToggleAccess(acc.id)}
-                      title="Click to Activate / Deactivate access"
+                      type="button"
+                      onClick={() => handleDeleteAccount(acc.id, acc.username)}
+                      style={{ background: 'none', border: 'none', color: '#a00', cursor: 'pointer', padding: '4px' }}
+                      title="Delete User"
                     >
-                      <Power size={12} /> {acc.isActive ? 'Active Access' : 'Deactivated'}
+                      <Trash2 size={15} />
                     </button>
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    {acc.username !== 'Login1' && (
-                      <button className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => handleDeleteAccount(acc.id, acc.username)}>
-                        <Trash2 size={14} /> Remove
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
-      {/* Create Account Modal */}
+      {/* Add User Modal */}
       {isModalOpen && (
-        <div className="admin-modal-overlay">
-          <div className="admin-modal" style={{ maxWidth: '500px' }}>
-            <div className="admin-modal-header">
-              <h3>Create Personnel Account</h3>
-              <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => setIsModalOpen(false)}>
-                <X size={20} />
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 99999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              width: '100%',
+              maxWidth: '480px',
+              borderRadius: '3px',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.2)',
+              overflow: 'hidden'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ padding: '14px 18px', borderBottom: '1px solid #c3c4c7', background: '#f6f7f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 600 }}>Add New User</h3>
+              <button onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                <X size={16} />
               </button>
             </div>
-            <form onSubmit={handleCreateAccount} className="admin-modal-body">
+
+            <form onSubmit={handleCreateAccount} style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
               {errorMessage && (
-                <div style={{ color: '#f87171', background: 'rgba(239, 68, 68, 0.15)', padding: '0.6rem 0.8rem', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <div style={{ background: '#fcf0f1', borderLeft: '4px solid #d63638', padding: '8px 12px', fontSize: '13px', color: '#d63638' }}>
                   {errorMessage}
                 </div>
               )}
 
-              <div className="admin-form-group">
-                <label>Login Username</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Username (required) *</label>
                 <input
                   type="text"
                   required
-                  className="admin-form-control"
-                  placeholder="e.g. Manager1"
+                  placeholder="e.g. manager1"
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div className="admin-form-group">
-                <label>Login Password</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Full Name</label>
                 <input
-                  type="password"
-                  required
-                  className="admin-form-control"
-                  placeholder="e.g. Pass@12345"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
+                  type="text"
+                  placeholder="e.g. Rajesh Sharma"
+                  value={fullNameInput}
+                  onChange={(e) => setFullNameInput(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div className="admin-form-group">
-                <label>Full Name</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Password *</label>
                 <input
                   type="text"
                   required
-                  className="admin-form-control"
-                  placeholder="e.g. Rajesh Kumar"
-                  value={fullNameInput}
-                  onChange={(e) => setFullNameInput(e.target.value)}
+                  placeholder="Enter strong password..."
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                 />
               </div>
 
-              <div className="admin-form-group">
-                <label>Personnel Role & Permissions</label>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '4px' }}>Role</label>
                 <select
-                  className="admin-form-control"
                   value={roleInput}
-                  onChange={(e) => setRoleInput(e.target.value as AdminUserAccount['role'])}
+                  onChange={(e) => setRoleInput(e.target.value as any)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
                 >
-                  <option value="Super Admin">Super Admin (Full Access)</option>
-                  <option value="Order Manager">Order Manager (Orders & Logistics)</option>
-                  <option value="Catalog Manager">Catalog Manager (Products & Stock)</option>
+                  <option value="Super Admin">Administrator (Super Admin)</option>
+                  <option value="Order Manager">Shop Manager (Orders & Inventory)</option>
+                  <option value="Catalog Manager">Author (Catalog & Blog)</option>
                 </select>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
-                <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="admin-btn admin-btn-primary">
-                  Save Personnel Account
-                </button>
+              <div style={{ padding: '12px 0 0 0', borderTop: '1px solid #f0f0f1', display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                <button type="button" className="wp-button-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
+                <button type="submit" className="wp-button-primary">Add New User</button>
               </div>
             </form>
           </div>
         </div>
       )}
+
     </div>
   );
 };
