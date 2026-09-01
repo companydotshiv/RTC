@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-deploy:
     name: Build React App and Deploy to cPanel
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: ⬇️ Checkout Repository
@@ -19,12 +19,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ts-app/package-lock.json
 
       - name: 📦 Install Dependencies
         working-directory: ./ts-app
-        run: npm install
+        run: npm install --force
 
       - name: 🔨 Build Production Bundle
         working-directory: ./ts-app
