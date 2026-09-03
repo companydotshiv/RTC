@@ -23,10 +23,23 @@ import { ContactUsPage } from './pages/ContactUsPage';
 import { AdminPage } from './pages/AdminPage';
 import { AccountPage } from './pages/AccountPage';
 
+// Helper to normalize path and strip subfolder prefixes (e.g. /projects/rtc)
+const normalizePath = (rawPath: string): string => {
+  let path = rawPath.toLowerCase().replace(/\/$/, '');
+  const subdirs = ['/projects/rtc', '/projects/rtc-new', '/rtc'];
+  for (const s of subdirs) {
+    if (path.startsWith(s)) {
+      path = path.substring(s.length);
+      break;
+    }
+  }
+  return path || '';
+};
+
 // Helper to derive view state from window.location.pathname
 const parseLocation = (): { view: string; product: Product | null; blogSlug: string } => {
-  const path = window.location.pathname.toLowerCase().replace(/\/$/, '');
-  if (!path || path === '') {
+  const path = normalizePath(window.location.pathname);
+  if (!path || path === '' || path === '/') {
     return { view: 'home', product: null, blogSlug: '' };
   }
   if (path === '/admin') {
@@ -108,14 +121,26 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Synchronize view state with browser URL & history
+const getBasePrefix = (): string => {
+  const path = window.location.pathname.toLowerCase();
+  const subdirs = ['/projects/rtc', '/projects/rtc-new', '/rtc'];
+  for (const s of subdirs) {
+    if (path.startsWith(s)) {
+      return s;
+    }
+  }
+  return '';
+};
+
+// Synchronize view state with browser URL & history
   const setCurrentView = (view: string, pushHistory = true) => {
+    const base = getBasePrefix();
     if (view.startsWith('blog-') && view !== 'blog-post' && view !== 'blog') {
       const slug = view.replace('blog-', '');
       setSelectedBlogSlug(slug);
       setCurrentViewInternal('blog-post');
       if (pushHistory) {
-        window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `/blog/${slug}`);
+        window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `${base}/blog/${slug}`);
       }
       return;
     }
@@ -140,8 +165,9 @@ export default function App() {
       else if (view === 'contact-us') path = '/contact-us';
       else if (view === 'detail' && selectedProduct) path = `/product/${selectedProduct.slug}`;
 
-      if (window.location.pathname !== path) {
-        window.history.pushState({ view, productSlug: selectedProduct?.slug, blogSlug: selectedBlogSlug }, '', path);
+      const fullTarget = `${base}${path}`.replace(/\/+/g, '/');
+      if (window.location.pathname !== fullTarget) {
+        window.history.pushState({ view, productSlug: selectedProduct?.slug, blogSlug: selectedBlogSlug }, '', fullTarget);
       }
     }
   };
@@ -150,7 +176,8 @@ export default function App() {
     setSelectedProductInternal(product);
     setCurrentViewInternal('detail');
     if (pushHistory) {
-      const path = `/product/${product.slug}`;
+      const base = getBasePrefix();
+      const path = `${base}/product/${product.slug}`.replace(/\/+/g, '/');
       if (window.location.pathname !== path) {
         window.history.pushState({ view: 'detail', productSlug: product.slug }, '', path);
       }
@@ -160,7 +187,8 @@ export default function App() {
   const handleSelectBlogPost = (slug: string) => {
     setSelectedBlogSlug(slug);
     setCurrentViewInternal('blog-post');
-    window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `/blog/${slug}`);
+    const base = getBasePrefix();
+    window.history.pushState({ view: 'blog-post', blogSlug: slug }, '', `${base}/blog/${slug}`.replace(/\/+/g, '/'));
   };
 
   // Handle browser Back & Forward navigation buttons
