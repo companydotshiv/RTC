@@ -1,4 +1,5 @@
 import type { Product, Category } from '../types/product';
+import { resolveAsset } from '../utils/resolveAsset';
 
 export const categories: Category[] = [
   {
@@ -40,7 +41,7 @@ export const categories: Category[] = [
   }
 ];
 
-export const products: Product[] = [
+const rawProducts: Product[] = [
   {
     id: 1,
     slug: 'california-almonds',
@@ -1225,3 +1226,10 @@ export const products: Product[] = [
     ]
   }
 ];
+
+export const products: Product[] = rawProducts.map((p) => ({
+  ...p,
+  image: resolveAsset(p.image),
+  gallery: p.gallery ? p.gallery.map((img) => resolveAsset(img)) : [resolveAsset(p.image)]
+}));
+

@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveAsset } from '../utils/resolveAsset';
 
 interface FooterProps {
   setCurrentView: (view: string) => void;
@@ -13,7 +14,7 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentView }) => {
           {/* Column 1: Logo & Social Icons */}
           <div className="footer-col footer-brand-col" style={{ textAlign: 'left' }}>
             <div style={{ marginBottom: '20px', textAlign: 'left' }}>
-              <img src="/footer_rtc_logo.png" alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
+              <img src={resolveAsset('/footer_rtc_logo.png')} alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
             </div>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'center', justifyContent: 'flex-start' }}>
               <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', opacity: 0.9 }}>

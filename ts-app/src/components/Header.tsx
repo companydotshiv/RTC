@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Search, Heart, User, Truck, X, ChevronDown, Menu } from 'lucide-react';
 import { adminStore } from '../data/adminStore';
+import { resolveAsset } from '../utils/resolveAsset';
 import type { Product } from '../types/product';
 
 interface HeaderProps {
@@ -190,7 +191,7 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <div className="brand-logo" onClick={() => setCurrentView('home')} style={{ cursor: 'pointer', flexShrink: 0 }}>
-              <img src="/rtc-logo.png" alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
+              <img src={resolveAsset('/rtc-logo.png')} alt="RTC Foods" style={{ height: '52px', width: 'auto', objectFit: 'contain' }} />
             </div>
 
             {/* Desktop Navigation Menu matching exact Wordpress Razzi colors & dropdown */}
@@ -390,7 +391,7 @@ export const Header: React.FC<HeaderProps> = ({
       >
         {/* Mobile Drawer Header */}
         <div style={{ padding: '18px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #EFEFEF', background: '#FBF9F4' }}>
-          <img src="/rtc-logo.png" alt="RTC Foods" style={{ height: '42px', width: 'auto' }} />
+          <img src={resolveAsset('/rtc-logo.png')} alt="RTC Foods" style={{ height: '42px', width: 'auto' }} />
           <button
             onClick={() => setIsMobileMenuOpen(false)}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#666', padding: '4px' }}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { resolveAsset } from '../utils/resolveAsset';
 import {
   User,
   Package,
@@ -1242,7 +1243,7 @@ export const AccountPage: React.FC<AccountPageProps> = ({
           <div style={{ background: '#FFFFFF', borderRadius: '16px', padding: '28px', maxWidth: '580px', width: '100%', maxHeight: '90vh', overflowY: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', borderBottom: '1px solid #E5E7EB', paddingBottom: '14px' }}>
               <div>
-                <img src="/footer_rtc_logo.png" alt="RTC Foods" style={{ height: '40px', width: 'auto' }} />
+                <img src={resolveAsset('/footer_rtc_logo.png')} alt="RTC Foods" style={{ height: '40px', width: 'auto' }} />
                 <div style={{ fontSize: '0.8rem', color: '#6B7280', marginTop: '4px' }}>Tax Invoice / Bill of Supply</div>
               </div>
               <button onClick={() => setSelectedOrderForInvoice(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}>

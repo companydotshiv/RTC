@@ -1,4 +1,5 @@
 import React from 'react';
+import { resolveAsset } from '../utils/resolveAsset';
 import { ArrowLeft, Award, ShieldCheck, Heart, Leaf, Sparkles, CheckCircle2, Factory, Users, Globe2, ArrowRight } from 'lucide-react';
 
 interface AboutUsPageProps {
@@ -126,7 +127,7 @@ export const AboutUsPage: React.FC<AboutUsPageProps> = ({ setCurrentView }) => {
               boxShadow: '0 20px 40px rgba(0,0,0,0.06)'
             }}>
               <img
-                src="/hero_dry_fruits_1785924400069.png"
+                src={resolveAsset('/hero_dry_fruits_1785924400069.png')}
                 alt="RTC Foods Premium Collection"
                 style={{ width: '100%', height: '360px', objectFit: 'contain', borderRadius: '12px' }}
               />

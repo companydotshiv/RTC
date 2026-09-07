@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Product } from '../types/product';
 import { adminStore } from '../data/adminStore';
+import { resolveAsset } from '../utils/resolveAsset';
 import { Star, ChevronLeft, ChevronRight, Sparkles, ArrowRight, Handshake, ArrowUpRight, CheckCircle2, Building2, PhoneCall, Send, ShieldCheck, Truck, MessageCircle } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 
@@ -39,10 +40,10 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [inquiryDetails, setInquiryDetails] = useState('');
 
   const heroBanners = [
-    { id: 1, image: '/slide-2.jpg', title: 'RTC Foods Premium Dry Fruits' },
-    { id: 2, image: '/slide-3.png', title: 'Festive & Luxury Gift Boxes' },
-    { id: 3, image: '/slide-4.png', title: 'Pure Natural Quality' },
-    { id: 4, image: '/slide-5.jpg', title: 'Wholesale & Private Labelling' },
+    { id: 1, image: resolveAsset('/slide-2.jpg'), title: 'RTC Foods Premium Dry Fruits' },
+    { id: 2, image: resolveAsset('/slide-3.png'), title: 'Festive & Luxury Gift Boxes' },
+    { id: 3, image: resolveAsset('/slide-4.png'), title: 'Pure Natural Quality' },
+    { id: 4, image: resolveAsset('/slide-5.jpg'), title: 'Wholesale & Private Labelling' },
   ];
   const [currentHeroSlide, setCurrentHeroSlide] = useState<number>(0);
   const [isHoveredHero, setIsHoveredHero] = useState<boolean>(false);
@@ -215,7 +216,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 style={{ '--cat-tint': catItem.tint, '--cat-glow': catItem.glow } as React.CSSProperties}
               >
                 <div className="cat-img-halo">
-                  <img src={catItem.img} alt={catItem.name} className="cat-product-img" />
+                  <img src={resolveAsset(catItem.img)} alt={catItem.name} className="cat-product-img" />
                 </div>
                 <div className="cat-content-wrap">
                   <h3 className="cat-card-title">{catItem.name}</h3>
@@ -288,7 +289,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="reviews-badge-box">
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                 <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#FFF', border: '1px solid #E0E0E0', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src="/rtc-google-pfp.png" alt="RTC Foods" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <img src={resolveAsset('/rtc-google-pfp.png')} alt="RTC Foods" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </div>
                 <div>
                   <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: '#222' }}>RTC Foods</h3>
@@ -356,7 +357,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <div style={{ background: '#ECECEC', padding: '20px', borderRadius: '12px', position: 'relative' }}>
                   <span style={{ position: 'absolute', top: '16px', right: '16px', fontWeight: 'bold', color: '#4285F4' }}>G</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                    <img src="/punita_moriya_pfp.png" alt="Punita moriya" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src={resolveAsset('/punita_moriya_pfp.png')} alt="Punita moriya" style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover' }} />
                     <div>
                       <h4 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: '#1A0DAB' }}>Punita moriya</h4>
                       <span style={{ fontSize: '0.8rem', color: '#777' }}>6 months ago</span>
@@ -440,7 +441,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 ].map((partner, idx) => (
                   <div key={`row1-${idx}`} className="partner-modern-card">
                     <div className="partner-logo-box">
-                      <img src={partner.img} alt={partner.name} />
+                      <img src={resolveAsset(partner.img)} alt={partner.name} />
                     </div>
                     <div className="partner-card-meta">
                       <span className="partner-card-category">{partner.cat}</span>
@@ -467,7 +468,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 ].map((partner, idx) => (
                   <div key={`row2-${idx}`} className="partner-modern-card">
                     <div className="partner-logo-box">
-                      <img src={partner.img} alt={partner.name} />
+                      <img src={resolveAsset(partner.img)} alt={partner.name} />
                     </div>
                     <div className="partner-card-meta">
                       <span className="partner-card-category" style={{ color: '#92400E', background: '#FEF3C7' }}>{partner.cat}</span>
