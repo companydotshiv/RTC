@@ -2587,20 +2587,6 @@ $GLOBALS['COUPONS'] = [
     'value' => 0,
     'min_order' => 399,
     'description' => 'Free standard delivery across India'
-  ],
-  'RTC20' => [
-    'code' => 'RTC20',
-    'type' => 'percentage',
-    'value' => 20,
-    'min_order' => 499,
-    'description' => 'Special 20% OFF discount'
-  ],
-  'WELCOME20' => [
-    'code' => 'WELCOME20',
-    'type' => 'percentage',
-    'value' => 20,
-    'min_order' => 499,
-    'description' => 'Welcome 20% discount on orders above ₹499'
   ]
 ];
 
