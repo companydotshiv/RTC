@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./ts-app/dist/
-          server-dir: ./public_html/
+          server-dir: ./public_html/projects/rtc/
           dangerous-clean-slate: false
 
       - name: ℹ️ Deployment Ready
