@@ -1,35 +1,23 @@
 #!/bin/bash
 # ==============================================================================
-# RTC Foods - cPanel Subfolder Deployment Script
+# RTC Foods - cPanel Deployment Script
+# All website files are pre-built and tracked directly at repository root.
 # ==============================================================================
 set -e
 
-echo "=== RTC Foods Deploy: Cleaning working directory ==="
+echo "=== RTC Foods: Verifying root deployment files ==="
 
-# Reset any uncommitted changes so cPanel can always deploy cleanly
-git reset --hard HEAD 2>/dev/null || :
-git clean -fd 2>/dev/null || :
+# Ensure web server permissions
+find . -maxdepth 2 -type d -exec /bin/chmod 755 {} + 2>/dev/null || :
+find . -maxdepth 2 -type f -exec /bin/chmod 644 {} + 2>/dev/null || :
 
-echo "=== Deploying RTC Foods to public_html ==="
+# If there is an external destination directory that differs from current directory, sync to it
+EXTERNAL_DEST="/home/icanalog/public_html/projects/rtc"
+CURRENT_DIR="$(pwd)"
 
-# Deploy to all possible web root paths for ranchiwebsite.com/projects/rtc
-DESTINATIONS=(
-  "/home/icanalog/ranchiwebsite.com/projects/rtc"
-  "/home/icanalog/public_html/projects/rtc"
-  "/home/icanalog/public_html/ranchiwebsite.com/projects/rtc"
-)
-
-for DEST in "${DESTINATIONS[@]}"; do
-  echo "Deploying to $DEST ..."
-  /bin/mkdir -p "$DEST" 2>/dev/null || :
-
-  if [ -d "ts-app/dist" ]; then
-    /bin/cp -rf ts-app/dist/. "$DEST/" 2>/dev/null || :
-  fi
-
-  /bin/chmod -R 755 "$DEST" 2>/dev/null || :
-  find "$DEST" -type f -exec /bin/chmod 644 {} + 2>/dev/null || :
-  echo "  Done: $DEST"
-done
+if [ "$CURRENT_DIR" != "$EXTERNAL_DEST" ] && [ -d "/home/icanalog/public_html" ]; then
+  /bin/mkdir -p "$EXTERNAL_DEST" 2>/dev/null || :
+  /bin/cp -rf index.html index.php .htaccess assets *.png *.jpg *.svg "$EXTERNAL_DEST/" 2>/dev/null || :
+fi
 
 echo "=== RTC Deployment Completed Successfully ==="
