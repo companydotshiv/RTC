@@ -12,8 +12,9 @@ git clean -fd 2>/dev/null || :
 
 echo "=== Deploying RTC Foods to public_html ==="
 
-# Only deploy to public_html paths (NOT back into the repo directory itself)
+# Deploy to all possible web root paths for ranchiwebsite.com/projects/rtc
 DESTINATIONS=(
+  "/home/icanalog/ranchiwebsite.com/projects/rtc"
   "/home/icanalog/public_html/projects/rtc"
   "/home/icanalog/public_html/ranchiwebsite.com/projects/rtc"
 )
