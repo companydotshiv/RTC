@@ -4,6 +4,7 @@
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteBase /projects/rtc/
 
   # 1. Force HTTPS (Optional - uncomment if SSL is active)
   # RewriteCond %{HTTPS} off
