@@ -14,7 +14,8 @@ CURRENT_DIR="$(pwd)"
 
 if [ "$CURRENT_DIR" != "$EXTERNAL_DEST" ] && [ -d "/home/icanalog/public_html" ]; then
   /bin/mkdir -p "$EXTERNAL_DEST" 2>/dev/null || :
-  /bin/cp -rf index.html index.php assets .htaccess *.png *.jpg *.svg "$EXTERNAL_DEST/" 2>/dev/null || :
+  /bin/rm -f "$EXTERNAL_DEST/index.html" 2>/dev/null || :
+  /bin/cp -rf *.php includes admin assets .htaccess *.png *.jpg *.svg "$EXTERNAL_DEST/" 2>/dev/null || :
 fi
 
 echo "=== RTC Deployment Completed Successfully ==="

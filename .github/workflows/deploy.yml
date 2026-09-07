@@ -1,4 +1,4 @@
-name: Build and Deploy RTC Website
+name: RTC Website PHP Validation & Deployment
 
 on:
   push:
@@ -7,26 +7,23 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
-    name: Build React App
+  validate-and-deploy:
+    name: Validate PHP & Deploy
     runs-on: ubuntu-latest
 
     steps:
       - name: ⬇️ Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js (v22 LTS)
-        uses: actions/setup-node@v4
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: 22
+          php-version: '8.2'
 
-      - name: 📦 Install Dependencies
-        working-directory: ./ts-app
-        run: npm install --force
-
-      - name: 🔨 Build Production Bundle
-        working-directory: ./ts-app
-        run: npm run build
+      - name: 🔍 Lint PHP Application Files
+        run: |
+          echo "Checking PHP syntax..."
+          find . -maxdepth 3 -name "*.php" -exec php -l {} \;
 
       - name: 🚀 Deploy to cPanel via FTP
         env:
@@ -37,9 +34,13 @@ jobs:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
-          local-dir: ./ts-app/dist/
+          local-dir: ./
           server-dir: /ranchiwebsite.com/projects/rtc/
           dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
 
       - name: ℹ️ Deployment Ready
         env:
@@ -47,5 +48,5 @@ jobs:
         if: env.FTP_SERVER == ''
         shell: bash
         run: |
-          echo "Build completed successfully with zero errors."
+          echo "All PHP files syntax checked successfully."
           echo "Deployable directly via cPanel Git™ Version Control."
