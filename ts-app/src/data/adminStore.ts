@@ -1,6 +1,7 @@
 import { products as initialProducts, categories as initialCategories } from './productsData';
 import type { Product, Category } from '../types/product';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
+import { resolveAsset } from '../utils/resolveAsset';
 
 export interface AdminUserAccount {
   id: string;
@@ -299,8 +300,8 @@ const defaultOrders: AdminOrder[] = [
     state: 'Maharashtra',
     pincode: '400063',
     items: [
-      { productId: 1, name: 'California Almonds (Badam Giri)', price: 499, quantity: 2, image: '/hero_dry_fruits_1785924400069.png', weight: '500g' },
-      { productId: 3, name: 'Kashmiri Walnut Kernels (Akhrot)', price: 549, quantity: 1, image: '/hero_dry_fruits_1785924400069.png', weight: '250g' }
+      { productId: 1, name: 'California Almonds (Badam Giri)', price: 499, quantity: 2, image: resolveAsset('/hero_dry_fruits_1785924400069.png'), weight: '500g' },
+      { productId: 3, name: 'Kashmiri Walnut Kernels (Akhrot)', price: 549, quantity: 1, image: resolveAsset('/hero_dry_fruits_1785924400069.png'), weight: '250g' }
     ],
     subtotal: 1547,
     discount: 200,
@@ -324,7 +325,7 @@ const defaultOrders: AdminOrder[] = [
     state: 'West Bengal',
     pincode: '700091',
     items: [
-      { productId: 2, name: 'Whole Cashews W-240 (Kaju)', price: 449, quantity: 1, image: '/hero_dry_fruits_1785924400069.png', weight: '500g' }
+      { productId: 2, name: 'Whole Cashews W-240 (Kaju)', price: 449, quantity: 1, image: resolveAsset('/hero_dry_fruits_1785924400069.png'), weight: '500g' }
     ],
     subtotal: 449,
     discount: 0,
@@ -346,7 +347,7 @@ const defaultOrders: AdminOrder[] = [
     state: 'Delhi',
     pincode: '110016',
     items: [
-      { productId: 5, name: 'Royal Kashmiri Mongra Saffron (Kesar)', price: 449, quantity: 2, image: '/hero_dry_fruits_1785924400069.png', weight: '1g' }
+      { productId: 5, name: 'Royal Kashmiri Mongra Saffron (Kesar)', price: 449, quantity: 2, image: resolveAsset('/hero_dry_fruits_1785924400069.png'), weight: '1g' }
     ],
     subtotal: 898,
     discount: 100,

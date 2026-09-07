@@ -1,3 +1,5 @@
+import { resolveAsset } from '../utils/resolveAsset';
+
 export interface BlogPost {
   id: string;
   slug: string;
@@ -25,7 +27,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Feb 24, 2026',
     author: 'Dr. Neha Verma',
     authorRole: 'Senior Clinical Nutritionist',
-    image: '/cat_almond.png',
+    image: resolveAsset('/cat_almond.png'),
     summary: 'Explore the key nutritional differences between California Badam and Iranian Mamra almonds in oil content, vitamin E potency, and daily cognitive benefits.',
     content: [
       'Almonds have been revered in Ayurveda and modern clinical nutrition for centuries as memory boosters, bone fortifiers, and heart health saviors. However, when selecting almonds, consumers frequently encounter two prime choices: California Almonds and Mamra Badam.',
@@ -55,7 +57,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Feb 18, 2026',
     author: 'RTC Nutrition Lab',
     authorRole: 'Research & Quality Wing',
-    image: '/cat_walnut.png',
+    image: resolveAsset('/cat_walnut.png'),
     summary: 'How the distinctive omega-3 ALA and polyphenols in snow-fed Kashmiri walnuts lower bad LDL cholesterol and preserve neuro-cognitive agility.',
     content: [
       'It is no coincidence that a walnut kernel resembles the human brain. Science now confirms that walnuts are the single richest nut source of Alpha-Linolenic Acid (ALA), a plant-based omega-3 fatty acid crucial for neural membrane flexibility.',
@@ -85,7 +87,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Feb 10, 2026',
     author: 'RTC Quality Assurance Team',
     authorRole: 'Packaging & Shelf-life Experts',
-    image: '/cat_cashew.png',
+    image: resolveAsset('/cat_cashew.png'),
     summary: 'Expert temperature and moisture control techniques to protect your dry fruit supply from humidity, rancidity, and pantry pests.',
     content: [
       'The tropical heat and monsoon humidity in India pose a major challenge for storing premium dry fruits. Exposure to ambient air, light, and warmth can cause precious natural oils to oxidize, resulting in loss of crunch and a stale taste.',
@@ -115,7 +117,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Jan 28, 2026',
     author: 'Pooja Sharma',
     authorRole: 'Sports Dietitian & Fitness Coach',
-    image: '/cat_seeds.png',
+    image: resolveAsset('/cat_seeds.png'),
     summary: 'Discover how combining chia, flax, and roasted pumpkin seeds delivers complete dietary fiber, zinc, and plant-based protein for digestion and immune power.',
     content: [
       'Tiny in size but colossal in nutrient density, superfood seeds have transitioned from ancient health remedies into essential components of the modern wellness pantry.',
@@ -145,7 +147,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Jan 15, 2026',
     author: 'Acharya Manish Joshi',
     authorRole: 'Ayurvedic Practitioner',
-    image: '/cat_saffron.png',
+    image: resolveAsset('/cat_apricot.png'),
     summary: 'How authentic grade-A Kashmiri saffron strands with crocin levels above 220 enhance radiant complexion, uplift mood, and promote restful sleep.',
     content: [
       'Harvested under the crisp autumn skies of Pampore, Kashmir, authentic Mongra saffron consists solely of the dark red stigma tips containing the highest natural concentrations of Crocin (color/antioxidant), Picrocrocin (flavor), and Safranal (aroma).',
@@ -175,7 +177,7 @@ export const blogPosts: BlogPost[] = [
     date: 'Jan 05, 2026',
     author: 'RTC Corporate Services',
     authorRole: 'Bulk B2B Packaging Division',
-    image: '/cat_gift_boxes.png',
+    image: resolveAsset('/cat_snacking.png'),
     summary: 'The shift from perishable sweets to customized, long-shelf-life luxury dry fruit hampers that convey genuine health, prosperity, and respect.',
     content: [
       'Corporate and wedding gifting in India has witnessed a profound transformation. Sugar-heavy sweets with short shelf lives have been rapidly replaced by elegant, wellness-centric dry fruit hampers.',
