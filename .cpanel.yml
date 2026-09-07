@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/icanalog/ranchiwebsite.com/projects/rtc
-    - /bin/mkdir -p $DEPLOYPATH
-    - /bin/cp -rf ts-app/dist/* $DEPLOYPATH/
-    - /bin/cp -f ts-app/dist/.htaccess $DEPLOYPATH/.htaccess
+    - /bin/mkdir -p /home/icanalog/ranchiwebsite.com/projects/rtc
+    - /bin/cp -rf ts-app/dist/* /home/icanalog/ranchiwebsite.com/projects/rtc/
+    - /bin/cp -f ts-app/dist/.htaccess /home/icanalog/ranchiwebsite.com/projects/rtc/.htaccess
+
