@@ -1,7 +1,11 @@
 ---
 deployment:
   tasks:
-    - /bin/mkdir -p /home/icanalog/ranchiwebsite.com/projects/rtc
-    - /bin/cp -rf ts-app/dist/* /home/icanalog/ranchiwebsite.com/projects/rtc/
-    - /bin/cp -f ts-app/dist/.htaccess /home/icanalog/ranchiwebsite.com/projects/rtc/.htaccess
+    - /bin/mkdir -p /home/icanalog/public_html/projects/rtc
+    - /bin/cp -rf ts-app/dist/* /home/icanalog/public_html/projects/rtc/
+    - /bin/cp -f ts-app/dist/.htaccess /home/icanalog/public_html/projects/rtc/.htaccess
+    - /bin/mkdir -p /home/icanalog/public_html/rtc
+    - /bin/cp -rf ts-app/dist/* /home/icanalog/public_html/rtc/
+    - /bin/cp -f ts-app/dist/.htaccess /home/icanalog/public_html/rtc/.htaccess
+
 
