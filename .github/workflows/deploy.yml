@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-deploy:
     name: Build React App
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: ⬇️ Checkout Repository
@@ -38,7 +38,7 @@ jobs:
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
           password: ${{ secrets.CPANEL_FTP_PASSWORD }}
           local-dir: ./ts-app/dist/
-          server-dir: ./public_html/projects/rtc/
+          server-dir: /ranchiwebsite.com/projects/rtc/
           dangerous-clean-slate: false
 
       - name: ℹ️ Deployment Ready
