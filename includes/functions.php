@@ -8,11 +8,12 @@ require_once __DIR__ . '/config.php';
  * Generate a relative internal URL respecting subdirectory hosting
  */
 function url($path = '') {
-    $cleanPath = ltrim($path, '/');
-    if (BASE_URL === '') {
+    $cleanPath = ltrim(str_replace('\\', '/', $path), '/');
+    $base = trim(str_replace('\\', '/', BASE_URL), '/');
+    if ($base === '') {
         return '/' . $cleanPath;
     }
-    return BASE_URL . '/' . $cleanPath;
+    return '/' . $base . '/' . $cleanPath;
 }
 
 /**

@@ -25,11 +25,11 @@ function get_base_url_prefix() {
     
     // If inside includes/ or admin/, go up to root
     if (preg_match('#/(includes|admin)$#', $scriptDir)) {
-        $scriptDir = dirname($scriptDir);
+        $scriptDir = str_replace('\\', '/', dirname($scriptDir));
     }
     
-    $scriptDir = rtrim($scriptDir, '/');
-    return $scriptDir === '' ? '' : $scriptDir;
+    $scriptDir = trim(str_replace('\\', '/', $scriptDir), '/');
+    return $scriptDir === '' ? '' : '/' . $scriptDir;
 }
 
 define('BASE_URL', get_base_url_prefix());
