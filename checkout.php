@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['cart'] = [];
         unset($_SESSION['applied_coupon']);
 
-        header('Location: ' . url('order-confirmation.php?order_id=' . urlencode($orderId)));
+        header('Location: ' . url('thank-you.php?order_id=' . urlencode($orderId)));
         exit;
     }
 }

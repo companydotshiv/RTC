@@ -7,45 +7,106 @@
 // Categories Catalog
 $GLOBALS['CATEGORIES'] = [
   [
-    'id' => "dry-fruits",
-    'name' => "Dry Fruits & Nuts",
+    'id' => "dry-figs",
+    'name' => "Dry Figs",
+    'image' => "cat_dry_figs.png",
     'icon' => "Apple",
-    'desc' => "Handpicked jumbo cashews, almonds, walnuts & pistachios sourced directly from premium growers.",
-    'subcategories' => [
-      "Almonds",
-      "Cashew",
-      "Dried Apricot",
-      "Raisins",
-      "Walnut"
-    ]
+    'desc' => "Premium sun-dried anjeer figs rich in dietary fiber and essential minerals.",
+    'subcategories' => ["Diamond Figs", "Gold Figs"]
   ],
   [
-    'id' => "spices",
-    'name' => "Spices & Herbs",
+    'id' => "dried-apricot",
+    'name' => "Dried Apricot",
+    'image' => "cat_apricot.png",
+    'icon' => "Apple",
+    'desc' => "Sun-dried golden apricots bursting with natural sweetness and wholesome vitamins."
+  ],
+  [
+    'id' => "raisins",
+    'name' => "Raisins",
+    'image' => "cat_raisins.png",
+    'icon' => "Apple",
+    'desc' => "Plump green Indian raisins and jumbo black seedless raisins packed with iron and antioxidants.",
+    'subcategories' => ["Indian Raisins", "Black Raisins"]
+  ],
+  [
+    'id' => "walnut",
+    'name' => "Walnut",
+    'image' => "cat_walnut.png",
+    'icon' => "Nut",
+    'desc' => "Crunchy walnut kernels packed with brain-boosting Omega-3 fatty acids and healthy fats.",
+    'subcategories' => ["Platinum Grade", "Diamond Grade", "Gold Grade", "Silver Grade"]
+  ],
+  [
+    'id' => "almond",
+    'name' => "Almond",
+    'image' => "cat_almond.png",
+    'icon' => "Nut",
+    'desc' => "Crisp California badam kernels packed with plant protein, vitamin E, and natural energy."
+  ],
+  [
+    'id' => "cashew",
+    'name' => "Cashew",
+    'image' => "cat_cashew.png",
+    'icon' => "Nut",
+    'desc' => "Creamy, buttery jumbo whole kaju nuts handpicked for pure crunch and rich flavor."
+  ],
+  [
+    'id' => "chemical-herbs",
+    'name' => "Chemical and Herbs",
+    'image' => "cat_herbs.png",
     'icon' => "Flame",
-    'desc' => "Aromatic spices and authentic herbs crafted to elevate taste and rich culinary traditions."
+    'desc' => "Essential culinary ingredients including pure kasuri methi, monosodium glutamate, and seasonings.",
+    'subcategories' => ["Ajino", "Kasuri Methi"]
   ],
   [
-    'id' => "seeds-berries",
-    'name' => "Seeds & Berries",
+    'id' => "seeds",
+    'name' => "Seeds",
+    'image' => "cat_seeds.png",
     'icon' => "Leaf",
-    'desc' => "Nutrient-rich poppy seeds, chia, pumpkin, flax seeds and delicious sun-dried berries."
+    'desc' => "Nutrient-dense chia seeds, poppy seeds, and superfood seeds for active daily wellness."
+  ],
+  [
+    'id' => "fusion",
+    'name' => "Fusion",
+    'image' => "cat_fusion.png",
+    'icon' => "Sparkles",
+    'desc' => "Signature wholesome trail blends, berry-nutty medleys, and curated gourmet fusion packs."
   ],
   [
     'id' => "dehydrated-fruits",
     'name' => "Dehydrated Fruits",
+    'image' => "cat_dehydrated.png",
     'icon' => "Apple",
-    'desc' => "Exotic dried kiwis, whole cranberries, and tangy dehydrated fruits."
+    'desc' => "Exotic dried kiwis, whole cranberries, blueberries, and sun-ripened luscious prunes.",
+    'subcategories' => ["Dried Kiwi", "Cranberries", "Blueberries", "Prunes"]
   ],
   [
-    'id' => "chemical-herbs",
-    'name' => "Chemical & Herbs",
+    'id' => "snacking",
+    'name' => "Snacking",
+    'image' => "cat_snacking.png",
+    'icon' => "Cookie",
+    'desc' => "Wholesome, guilt-free everyday snacking dry fruits, crispy roasted nuts, and berry mixes."
+  ],
+  [
+    'id' => "dry-fruits",
+    'name' => "Dry Fruits",
+    'image' => "cat_dry_fruits_all.png",
+    'icon' => "Apple",
+    'desc' => "Complete handpicked collection of farm-fresh almonds, cashews, walnuts, dates, and figs.",
+    'subcategories' => ["Almond", "Cashew", "Dried Apricot", "Dry Figs", "Raisins", "Walnut"]
+  ],
+  [
+    'id' => "spices",
+    'name' => "Spices",
+    'image' => "cat_spices.png",
     'icon' => "Flame",
-    'desc' => "Pure quality monosodium glutamate, kasuri methi and premium culinary herbs & seasonings."
+    'desc' => "Aromatic whole spices, fragrant herbs, and authentic seasonings crafted to elevate every dish."
   ],
   [
     'id' => "gifting",
     'name' => "Corporate & Festive Gifting",
+    'image' => "thoughtful_gift_boxes.jpg",
     'icon' => "Gift",
     'desc' => "Custom packaged luxury boxes for corporate celebrations, weddings, and special events."
   ]
@@ -2624,12 +2685,68 @@ function get_product_by_slug($slug) {
     return null;
 }
 
+/**
+ * Match product to category ID intelligently
+ */
+function product_matches_category($product, $categoryId) {
+    if (empty($categoryId) || $categoryId === 'all') {
+        return true;
+    }
+    $catIdLower = strtolower(trim((string)$categoryId));
+    $pCat  = strtolower($product['category'] ?? '');
+    $pSub  = strtolower($product['subCategory'] ?? '');
+    $pName = strtolower($product['name'] ?? '');
+    $pSlug = strtolower($product['slug'] ?? '');
+
+    if ($pCat === $catIdLower) return true;
+
+    switch ($catIdLower) {
+        case 'almond':
+            return $pCat === 'almond' || str_contains($pSub, 'almond') || str_contains($pSlug, 'almond') || str_contains($pName, 'almond');
+        case 'cashew':
+            return $pCat === 'cashew' || str_contains($pSub, 'cashew') || str_contains($pSlug, 'cashew') || str_contains($pName, 'cashew');
+        case 'walnut':
+            return $pCat === 'walnut' || str_contains($pSub, 'walnut') || str_contains($pSlug, 'walnut') || str_contains($pName, 'walnut');
+        case 'dry-figs':
+            return $pCat === 'dry-figs' || str_contains($pSlug, 'fig') || str_contains($pName, 'fig') || str_contains($pSlug, 'anjeer');
+        case 'dried-apricot':
+            return $pCat === 'dried-apricot' || str_contains($pSub, 'apricot') || str_contains($pSlug, 'apricot') || str_contains($pName, 'apricot');
+        case 'raisins':
+            return $pCat === 'raisins' || str_contains($pSub, 'raisin') || str_contains($pSlug, 'raisin') || str_contains($pName, 'raisin');
+        case 'chemical-herbs':
+            return in_array($pCat, ['chemical-herbs', 'chemical & herbs']) || str_contains($pSlug, 'ajino') || str_contains($pSlug, 'methi') || str_contains($pName, 'ajino') || str_contains($pName, 'methi');
+        case 'seeds':
+        case 'seeds-berries':
+            return in_array($pCat, ['seeds', 'seeds-berries']) || str_contains($pSlug, 'seed') || str_contains($pName, 'seed');
+        case 'dehydrated-fruits':
+            return $pCat === 'dehydrated-fruits' || str_contains($pSlug, 'kiwi') || str_contains($pSlug, 'cranberr') || str_contains($pSlug, 'blueberr') || str_contains($pSlug, 'prune');
+        case 'dry-fruits':
+            return in_array($pCat, ['dry-fruits', 'almond', 'cashew', 'walnut', 'dry-figs', 'dried-apricot', 'raisins']) ||
+                   str_contains($pSlug, 'almond') || str_contains($pSlug, 'cashew') || str_contains($pSlug, 'walnut') ||
+                   str_contains($pSlug, 'fig') || str_contains($pSlug, 'apricot') || str_contains($pSlug, 'raisin') ||
+                   str_contains($pSlug, 'dates') || str_contains($pName, 'date');
+        case 'spices':
+            return $pCat === 'spices' || str_contains($pSlug, 'spice') || str_contains($pSlug, 'methi') || str_contains($pName, 'methi');
+        case 'snacking':
+            return str_contains($pSlug, 'almond') || str_contains($pSlug, 'cashew') || str_contains($pSlug, 'walnut') ||
+                   str_contains($pSlug, 'raisin') || str_contains($pSlug, 'cranberr') || str_contains($pSlug, 'blueberr') ||
+                   str_contains($pSlug, 'apricot');
+        case 'fusion':
+            return str_contains($pSlug, 'raisin') || str_contains($pSlug, 'blueberr') || str_contains($pSlug, 'cranberr') ||
+                   str_contains($pSlug, 'chia') || str_contains($pSlug, 'fig');
+        case 'gifting':
+            return $pCat === 'gifting' || str_contains($pSlug, 'gift') || str_contains($pSlug, 'platinum') || str_contains($pSlug, 'gold');
+        default:
+            return false;
+    }
+}
+
 function get_products_by_category($categoryId) {
     if (empty($categoryId) || $categoryId === 'all') {
         return get_all_products();
     }
     return array_filter(get_all_products(), function($product) use ($categoryId) {
-        return ($product['category'] ?? '') === $categoryId;
+        return product_matches_category($product, $categoryId);
     });
 }
 

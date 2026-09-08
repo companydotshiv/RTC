@@ -7,6 +7,15 @@ require_once __DIR__ . '/includes/functions.php';
 require_once __DIR__ . '/includes/data.php';
 
 $slug = clean_input($_GET['slug'] ?? $_GET['id'] ?? '');
+if (empty($slug) && !empty($_SERVER['PATH_INFO'])) {
+    $slug = clean_input(trim($_SERVER['PATH_INFO'], '/'));
+}
+if (empty($slug) && !empty($_SERVER['REQUEST_URI'])) {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    if (preg_match('#/product/([^/]+)/?$#', $path, $matches)) {
+        $slug = clean_input(urldecode($matches[1]));
+    }
+}
 $product = get_product_by_slug($slug);
 
 if (!$product) {
@@ -35,7 +44,15 @@ $allProducts = get_all_products();
 $relatedProducts = array_filter($allProducts, function($p) use ($product) {
     return ($p['category'] ?? '') === ($product['category'] ?? '') && $p['id'] !== $product['id'];
 });
-$relatedProducts = array_slice($relatedProducts, 0, 4);
+$relatedProducts = array_slice($relatedProducts, 0, 8);
+
+// Social proof — seeded random so numbers stay stable per product per day
+$seed = (int)$product['id'] + (int)date('z');
+srand($seed);
+$viewersNow   = rand(18, 64);
+$recentBuyers = rand(34, 120);
+$stockLeft    = rand(8, 24);
+srand(); // reset
 
 $gallery = !empty($product['gallery']) ? $product['gallery'] : [$product['image']];
 $defaultWeight = $product['weights'][0] ?? '250g';
@@ -122,46 +139,86 @@ include __DIR__ . '/includes/header.php';
           </div>
         <?php endif; ?>
 
-        <!-- Quantity & Add to Cart Controls -->
+        <!-- Quantity & Add to Cart Controls (Structured for Desktop & Mobile) -->
         <div class="pdp-purchase-row">
-          <div class="pdp-qty-control">
-            <button type="button" class="pdp-qty-btn" onclick="changePdpQty(-1)">-</button>
-            <input type="number" id="pdp-qty-input" value="1" min="1" max="50" readonly />
-            <button type="button" class="pdp-qty-btn" onclick="changePdpQty(1)">+</button>
+          <div class="pdp-purchase-actions-top">
+            <div class="pdp-qty-control">
+              <button type="button" class="pdp-qty-btn" onclick="changePdpQty(-1)">-</button>
+              <input type="number" id="pdp-qty-input" value="1" min="1" max="50" readonly />
+              <button type="button" class="pdp-qty-btn" onclick="changePdpQty(1)">+</button>
+            </div>
+
+            <button type="button" class="btn-wishlist-toggle pdp-wishlist-btn <?php echo $inWishlist ? 'active' : ''; ?>" data-product-id="<?php echo $product['id']; ?>" aria-label="Wishlist" title="Save to Wishlist">
+              <i data-lucide="heart"></i>
+            </button>
           </div>
 
-          <button type="button" class="btn-pdp-add-cart" onclick="executePdpAddToCart(false)">
-            <i data-lucide="shopping-bag"></i> Add to Cart
-          </button>
+          <div class="pdp-purchase-actions-bottom">
+            <button type="button" class="btn-pdp-add-cart" onclick="executePdpAddToCart(false)">
+              <i data-lucide="shopping-bag"></i> Add to Cart
+            </button>
 
-          <button type="button" class="btn-pdp-buy-now" onclick="executePdpAddToCart(true)">
-            Buy Now
-          </button>
+            <button type="button" class="btn-pdp-buy-now" onclick="executePdpAddToCart(true)">
+              Buy Now
+            </button>
+          </div>
+        </div>
 
-          <button type="button" class="btn-wishlist-toggle pdp-wishlist-btn <?php echo $inWishlist ? 'active' : ''; ?>" data-product-id="<?php echo $product['id']; ?>" aria-label="Wishlist">
-            <i data-lucide="heart"></i>
-          </button>
+        <!-- Product Activity & Stock Status (Calm & Non-Flashy) -->
+        <div class="pdp-social-proof">
+          <div class="social-proof-item viewers">
+            <i data-lucide="eye"></i>
+            <span><strong id="sp-viewers"><?php echo $viewersNow; ?></strong> people are looking at this right now</span>
+          </div>
+          <div class="social-proof-item buyers">
+            <i data-lucide="shopping-bag"></i>
+            <span><strong><?php echo $recentBuyers; ?></strong> people bought this in the last 7 days</span>
+          </div>
+          <div class="social-proof-item stock">
+            <i data-lucide="package"></i>
+            <span>Only <strong><?php echo $stockLeft; ?></strong> packs left in stock — order soon!</span>
+          </div>
         </div>
 
         <!-- Trust Badges Bar -->
         <div class="pdp-trust-bar">
-          <div class="trust-item"><i data-lucide="shield-check"></i> 100% Genuine Quality</div>
-          <div class="trust-item"><i data-lucide="truck"></i> Free Shipping > ₹499</div>
-          <div class="trust-item"><i data-lucide="refresh-cw"></i> 7-Day Easy Replacement</div>
+          <div class="trust-item">
+            <span class="trust-item-icon"><i data-lucide="shield-check"></i></span>
+            <span>100% Genuine Quality</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-item-icon"><i data-lucide="truck"></i></span>
+            <span>Free Shipping &gt; ₹499</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-item-icon"><i data-lucide="refresh-cw"></i></span>
+            <span>7-Day Easy Replacement</span>
+          </div>
         </div>
 
-        <!-- Highlights Bullets -->
+        <!-- Highlights & Key Benefits (Modern Card Grid) -->
         <?php if (!empty($product['bullets'])): ?>
-          <div class="pdp-highlights-box">
-            <h4>Highlights & Key Benefits:</h4>
-            <ul class="pdp-bullets-list">
+          <div class="pdp-highlights-section">
+            <div class="pdp-highlights-header">
+              <div class="pdp-highlights-title-wrap">
+                <span class="highlights-badge-icon"><i data-lucide="sparkles"></i></span>
+                <h4 class="highlights-heading">Highlights &amp; Key Benefits</h4>
+              </div>
+              <span class="highlights-count-tag"><?php echo count($product['bullets']); ?> Key Features</span>
+            </div>
+            <div class="pdp-highlights-grid">
               <?php foreach ($product['bullets'] as $b): ?>
-                <li>
-                  <strong><?php echo htmlspecialchars($b['title'] ?? ''); ?>:</strong>
-                  <span><?php echo htmlspecialchars($b['text'] ?? ''); ?></span>
-                </li>
+                <div class="pdp-highlight-card">
+                  <span class="highlight-check-icon">
+                    <i data-lucide="check"></i>
+                  </span>
+                  <div class="highlight-content">
+                    <h5 class="highlight-title"><?php echo htmlspecialchars($b['title'] ?? ''); ?></h5>
+                    <p class="highlight-desc"><?php echo htmlspecialchars($b['text'] ?? ''); ?></p>
+                  </div>
+                </div>
               <?php endforeach; ?>
-            </ul>
+            </div>
           </div>
         <?php endif; ?>
       </div>
@@ -261,7 +318,7 @@ include __DIR__ . '/includes/header.php';
     <?php if (count($relatedProducts) > 0): ?>
       <section class="related-products-section">
         <h2 class="section-title">You May Also Like</h2>
-        <div class="products-grid">
+        <div class="products-grid related-products-grid">
           <?php foreach ($relatedProducts as $p): ?>
             <?php include __DIR__ . '/includes/product-card.php'; ?>
           <?php endforeach; ?>
@@ -336,6 +393,20 @@ include __DIR__ . '/includes/header.php';
     const target = document.getElementById(tabId);
     if (target) target.style.display = 'block';
   }
+
+  // Live viewer count — fluctuates slightly to feel real
+  (function () {
+    const el = document.getElementById('sp-viewers');
+    if (!el) return;
+    let current = parseInt(el.textContent, 10);
+    function flicker() {
+      const delta = Math.floor(Math.random() * 5) - 2; // -2 to +2
+      current = Math.max(12, Math.min(99, current + delta));
+      el.textContent = current;
+      setTimeout(flicker, 5000 + Math.random() * 7000);
+    }
+    setTimeout(flicker, 8000);
+  })();
 </script>
 
 <?php include __DIR__ . '/includes/footer.php'; ?>

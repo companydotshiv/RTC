@@ -6,9 +6,12 @@
 if (!isset($p) || empty($p)) return;
 
 $inWishlist = is_in_wishlist($p['id']);
-$productUrl = url('product.php?slug=' . urlencode($p['slug'] ?? $p['id']));
+$productUrl = product_url($p['slug'] ?? $p['id']);
 ?>
 <div class="product-card" data-product-id="<?php echo $p['id']; ?>">
+  <!-- Full Clickable Card Overlay Link -->
+  <a href="<?php echo $productUrl; ?>" class="product-card-full-link" aria-label="View <?php echo htmlspecialchars($p['name']); ?>"></a>
+
   <div class="product-card-badge-wrap">
     <?php if (!empty($p['badge'])): ?>
       <span class="product-badge <?php echo strtolower(str_replace(' ', '-', $p['badge'])); ?>"><?php echo htmlspecialchars($p['badge']); ?></span>
@@ -18,9 +21,9 @@ $productUrl = url('product.php?slug=' . urlencode($p['slug'] ?? $p['id']));
     </button>
   </div>
 
-  <a href="<?php echo $productUrl; ?>" class="product-card-image-link">
+  <div class="product-card-image-link">
     <img src="<?php echo asset($p['image']); ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="product-card-img" loading="lazy" />
-  </a>
+  </div>
 
   <div class="product-card-body">
     <div class="product-card-meta">
@@ -32,9 +35,7 @@ $productUrl = url('product.php?slug=' . urlencode($p['slug'] ?? $p['id']));
       </div>
     </div>
 
-    <h3 class="product-card-title">
-      <a href="<?php echo $productUrl; ?>"><?php echo htmlspecialchars($p['name']); ?></a>
-    </h3>
+    <h3 class="product-card-title"><?php echo htmlspecialchars($p['name']); ?></h3>
 
     <?php if (!empty($p['shortDesc'])): ?>
       <p class="product-card-desc"><?php echo htmlspecialchars(mb_strimwidth($p['shortDesc'], 0, 75, '...')); ?></p>
@@ -48,8 +49,9 @@ $productUrl = url('product.php?slug=' . urlencode($p['slug'] ?? $p['id']));
         <?php endif; ?>
       </div>
 
-      <button type="button" class="btn-add-to-cart btn-cart-gold" data-product-id="<?php echo $p['id']; ?>" data-weight="<?php echo htmlspecialchars($p['weights'][0] ?? '250g'); ?>">
-        <i data-lucide="shopping-bag"></i> Add
+      <button type="button" class="btn-add-to-cart btn-cart-animated" data-product-id="<?php echo $p['id']; ?>" data-weight="<?php echo htmlspecialchars($p['weights'][0] ?? '250g'); ?>" aria-label="Add <?php echo htmlspecialchars($p['name']); ?> to Cart">
+        <i data-lucide="shopping-bag" class="cart-btn-icon"></i>
+        <span class="cart-btn-text">Add to Cart</span>
       </button>
     </div>
   </div>

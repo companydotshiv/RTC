@@ -20,10 +20,10 @@ $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
   <meta name="description" content="<?php echo isset($pageDescription) ? htmlspecialchars($pageDescription) : 'Shop premium quality dry fruits, whole spices, berries, seeds, and luxury festive gifting boxes online from RTC Foods.'; ?>" />
   <link rel="icon" type="image/svg+xml" href="<?php echo asset('favicon.svg'); ?>" />
 
-  <!-- Google Fonts: Jost, Outfit, Roboto -->
+  <!-- Google Fonts: Poppins (Body/General) & Roboto (Headings/Titles) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Roboto:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet" />
 
   <!-- Lucide Icons Library -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -37,20 +37,51 @@ $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
 </head>
 <body>
 
-  <!-- Top Announcement Bar -->
+  <!-- Top Announcement Bar (Carousel + Centered Phone) -->
   <div class="announcement-bar">
     <div class="announcement-container">
-      <div class="announcement-text">
-        <span>✨ Use Code <strong>WELCOME10</strong> for 10% OFF your first order!</span>
-        <span class="announcement-separator">•</span>
-        <span>🚚 Free Express Shipping across India on orders above ₹499</span>
+      <!-- Promo Messages Carousel (One-by-One) -->
+      <div class="announcement-carousel" id="announcement-carousel">
+        <div class="announcement-track">
+          <div class="announcement-slide active">
+            <span>✨ Use Code <strong>WELCOME10</strong> for 10% OFF your first order!</span>
+          </div>
+          <div class="announcement-slide">
+            <span>🚚 Free Express Shipping across India on orders above ₹499</span>
+          </div>
+          <div class="announcement-slide mobile-only-slide">
+            <a href="tel:+919876543210" class="announcement-phone-mobile">
+              <i data-lucide="phone"></i> Call Us: <strong>+91 98765 43210</strong>
+            </a>
+          </div>
+        </div>
       </div>
-      <div class="announcement-links">
-        <a href="tel:+919876543210" class="announcement-link"><i data-lucide="phone"></i> +91 98765 43210</a>
-        <a href="<?php echo url('account.php'); ?>" class="announcement-link"><i data-lucide="truck"></i> Track Order</a>
+
+      <!-- Centered Phone Number (Desktop) -->
+      <div class="announcement-center-phone">
+        <a href="tel:+919876543210" class="announcement-phone-link">
+          <i data-lucide="phone"></i> +91 98765 43210
+        </a>
       </div>
+
+      <!-- Right Spacer for Symmetric Dead-Centering -->
+      <div class="announcement-right-space" aria-hidden="true"></div>
     </div>
   </div>
+
+  <script>
+    // Announcement Bar Ticker Carousel
+    (function () {
+      const slides = document.querySelectorAll('.announcement-slide');
+      if (!slides || slides.length < 2) return;
+      let idx = 0;
+      setInterval(function () {
+        slides[idx].classList.remove('active');
+        idx = (idx + 1) % slides.length;
+        slides[idx].classList.add('active');
+      }, 3500);
+    })();
+  </script>
 
   <!-- Main Header -->
   <header class="site-header">

@@ -4,19 +4,33 @@
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
-  RewriteBase /projects/rtc/
 
-  # 1. Force HTTPS (Optional - uncomment if SSL is active)
-  # RewriteCond %{HTTPS} off
-  # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-  # 2. If the requested resource exists as a physical file or directory, serve it directly
+  # 1. If the requested resource exists as a physical file or directory, serve it directly
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 3. Otherwise, rewrite all SPA routes (e.g. /products, /admin, /account, /blog/*) to index.html
-  RewriteRule ^ index.html [L,QSA]
+  # 2. Clean Product URLs (/product/cashew -> product.php?slug=cashew)
+  RewriteRule ^product/([^/]+)/?$ product.php?slug=$1 [L,QSA]
+
+  # 3. Clean Category URLs (/category/dry-fruits -> products.php?category=dry-fruits)
+  RewriteRule ^category/([^/]+)/?$ products.php?category=$1 [L,QSA]
+
+  # 4. Clean page URLs (no .php extension)
+  RewriteRule ^thank-you/?$ thank-you.php [L,QSA]
+  RewriteRule ^order-confirmation/?$ order-confirmation.php [L,QSA]
+  RewriteRule ^about-us/?$ about-us.php [L,QSA]
+  RewriteRule ^about/?$ about-us.php [L,QSA]
+  RewriteRule ^certificates/?$ certificates.php [L,QSA]
+  RewriteRule ^checkout/?$ checkout.php [L,QSA]
+  RewriteRule ^cart/?$ cart.php [L,QSA]
+  RewriteRule ^account/?$ account.php [L,QSA]
+  RewriteRule ^contact-us/?$ contact-us.php [L,QSA]
+  RewriteRule ^faqs/?$ faqs.php [L,QSA]
+  RewriteRule ^blog/?$ blog.php [L,QSA]
+  RewriteRule ^wishlist/?$ wishlist.php [L,QSA]
+  RewriteRule ^policy/?$ policy.php [L,QSA]
+  RewriteRule ^products/?$ products.php [L,QSA]
 </IfModule>
 
 # ==============================================================================

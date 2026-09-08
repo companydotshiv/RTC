@@ -57,7 +57,7 @@ include __DIR__ . '/includes/header.php';
                   <td class="cart-col-product">
                     <img src="<?php echo asset($item['image']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" class="cart-product-img" />
                     <div>
-                      <h3 class="cart-product-name"><a href="<?php echo url('product.php?slug=' . urlencode($item['slug'] ?? $item['id'])); ?>"><?php echo htmlspecialchars($item['name']); ?></a></h3>
+                      <h3 class="cart-product-name"><a href="<?php echo product_url($item['slug'] ?? $item['id']); ?>"><?php echo htmlspecialchars($item['name']); ?></a></h3>
                       <span class="cart-product-weight">Pack Size: <?php echo htmlspecialchars($item['weight'] ?? '250g'); ?></span>
                     </div>
                   </td>

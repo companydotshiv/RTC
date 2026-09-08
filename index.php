@@ -17,26 +17,77 @@ $featuredProducts = array_slice($products, 0, 8);
 include __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Hero Slider Section -->
+<!-- Hero Section (Clean Banner Only) -->
 <section class="hero-section">
   <div class="hero-slider-container">
     <div class="hero-slide active">
-      <img src="<?php echo asset('slide-2.jpg'); ?>" alt="Premium Dry Fruits & Nuts" class="hero-bg-img" />
-      <div class="hero-overlay-content">
-        <div class="hero-badge">Pure Harvest 2026</div>
-        <h1 class="hero-title">Nature's Finest Crunch, <br /><span class="gold-gradient-text">Delivered to Your Door.</span></h1>
-        <p class="hero-subtitle">
-          Handpicked California almonds, Kashmiri walnuts, and Afghan figs sourced directly from certified orchards for unmatched freshness and wholesome nutrition.
-        </p>
-        <div class="hero-cta-group">
-          <a href="<?php echo url('products.php'); ?>" class="btn-hero-primary">
-            Explore All Products <i data-lucide="arrow-right"></i>
-          </a>
-          <a href="<?php echo url('products.php?category=gifting'); ?>" class="btn-hero-secondary">
-            Corporate & Festive Gifting
-          </a>
-        </div>
+      <a href="<?php echo url('products.php'); ?>" class="hero-banner-link">
+        <img src="<?php echo asset('slide-2.jpg'); ?>" alt="RTC Foods Premium Dry Fruits & Nuts" class="hero-banner-img" />
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Visual Product Categories Grid (13 Items As Requested) -->
+<section class="home-categories-grid-section">
+  <div class="site-container">
+    <div class="section-header text-center">
+      <span class="section-pre-title">Curated Selection</span>
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-desc">Handpicked dry fruits, nutrient-rich seeds, dehydrated treats &amp; authentic spices.</p>
+    </div>
+
+    <div class="home-cat-grid">
+      <?php
+      // 13 categories strictly in order of user reference image:
+      // Row 1: Dry Figs, Dried Apricot, Raisins, Walnut, Almond, Cashew
+      // Row 2: Chemical and Herbs, Seeds, Fusion, Dehydrated Fruits, Snacking, Dry Fruits
+      // Row 3: Spices
+      $homeVisualCategories = [
+        ['id' => 'dry-figs',          'name' => 'Dry Figs',            'img' => 'cat_dry_figs.png'],
+        ['id' => 'dried-apricot',      'name' => 'Dried Apricot',        'img' => 'cat_apricot.png'],
+        ['id' => 'raisins',           'name' => 'Raisins',             'img' => 'cat_raisins.png'],
+        ['id' => 'walnut',            'name' => 'Walnut',              'img' => 'cat_walnut.png'],
+        ['id' => 'almond',            'name' => 'Almond',              'img' => 'cat_almond.png'],
+        ['id' => 'cashew',            'name' => 'Cashew',              'img' => 'cat_cashew.png'],
+        ['id' => 'chemical-herbs',    'name' => 'Chemical and Herbs',  'img' => 'cat_herbs.png'],
+        ['id' => 'seeds',             'name' => 'Seeds',               'img' => 'cat_seeds.png'],
+        ['id' => 'fusion',            'name' => 'Fusion',              'img' => 'cat_fusion.png'],
+        ['id' => 'dehydrated-fruits', 'name' => 'Dehydrated Fruits',   'img' => 'cat_dehydrated.png'],
+        ['id' => 'snacking',          'name' => 'Snacking',            'img' => 'cat_snacking.png'],
+        ['id' => 'dry-fruits',        'name' => 'Dry Fruits',          'img' => 'cat_dry_fruits_all.png'],
+        ['id' => 'spices',            'name' => 'Spices',              'img' => 'cat_spices.png']
+      ];
+      ?>
+      <?php foreach ($homeVisualCategories as $item): ?>
+        <a href="<?php echo url('products.php?category=' . urlencode($item['id'])); ?>" class="home-cat-item">
+          <div class="home-cat-thumb">
+            <img src="<?php echo asset($item['img']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" loading="lazy" />
+          </div>
+          <span class="home-cat-label"><?php echo htmlspecialchars($item['name']); ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Bestsellers Section -->
+<section class="featured-products-section">
+  <div class="site-container">
+    <div class="section-header-flex">
+      <div>
+        <span class="section-pre-title">Handpicked Favorites</span>
+        <h2 class="section-title">Best Sellers of the Season</h2>
       </div>
+      <a href="<?php echo url('products.php'); ?>" class="view-all-link">
+        View Full Collection <i data-lucide="arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="products-grid">
+      <?php foreach ($featuredProducts as $p): ?>
+        <?php include __DIR__ . '/includes/product-card.php'; ?>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -76,67 +127,6 @@ include __DIR__ . '/includes/header.php';
           <p>Free standard shipping across India on orders above ₹499.</p>
         </div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- Category Showcase Section -->
-<section class="category-showcase-section">
-  <div class="site-container">
-    <div class="section-header text-center">
-      <span class="section-pre-title">Curated Collections</span>
-      <h2 class="section-title">Explore by Category</h2>
-      <p class="section-desc">From nourishing everyday snacking nuts to royal whole spices and festive celebration boxes.</p>
-    </div>
-
-    <div class="category-cards-grid">
-      <?php
-      $catImages = [
-        'dry-fruits' => 'cat_dry_fruits_all.png',
-        'spices' => 'whole_spices_cardamom.jpg',
-        'seeds-berries' => 'cat_seeds.png',
-        'dehydrated-fruits' => 'cat_dehydrated.png',
-        'chemical-herbs' => 'cat_herbs.png',
-        'gifting' => 'thoughtful_gift_boxes.jpg'
-      ];
-      ?>
-      <?php foreach ($categories as $cat): ?>
-        <?php
-          $catImg = $catImages[$cat['id']] ?? 'cat_dry_fruits_all.png';
-          $catUrl = url('products.php?category=' . urlencode($cat['id']));
-        ?>
-        <a href="<?php echo $catUrl; ?>" class="category-card">
-          <div class="category-card-img-wrap">
-            <img src="<?php echo asset($catImg); ?>" alt="<?php echo htmlspecialchars($cat['name']); ?>" loading="lazy" />
-          </div>
-          <div class="category-card-overlay">
-            <h3 class="category-card-title"><?php echo htmlspecialchars($cat['name']); ?></h3>
-            <p class="category-card-desc"><?php echo htmlspecialchars($cat['desc']); ?></p>
-            <span class="category-card-btn">Explore Range <i data-lucide="chevron-right"></i></span>
-          </div>
-        </a>
-      <?php endforeach; ?>
-    </div>
-  </div>
-</section>
-
-<!-- Featured Bestsellers Section -->
-<section class="featured-products-section">
-  <div class="site-container">
-    <div class="section-header-flex">
-      <div>
-        <span class="section-pre-title">Handpicked Favorites</span>
-        <h2 class="section-title">Best Sellers of the Season</h2>
-      </div>
-      <a href="<?php echo url('products.php'); ?>" class="view-all-link">
-        View Full Collection <i data-lucide="arrow-right"></i>
-      </a>
-    </div>
-
-    <div class="products-grid">
-      <?php foreach ($featuredProducts as $p): ?>
-        <?php include __DIR__ . '/includes/product-card.php'; ?>
-      <?php endforeach; ?>
     </div>
   </div>
 </section>

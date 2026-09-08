@@ -296,25 +296,28 @@ document.addEventListener('DOMContentLoaded', function () {
   const mobileNavClose = document.getElementById('mobile-nav-close');
   const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
 
+  const closeMobileNav = () => {
+    if (mobileNavDrawer) mobileNavDrawer.classList.remove('open');
+    if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  const openMobileNav = () => {
+    if (mobileNavDrawer) mobileNavDrawer.classList.add('open');
+    if (mobileNavOverlay) mobileNavOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
   if (mobileMenuBtn && mobileNavDrawer) {
-    mobileMenuBtn.addEventListener('click', () => {
-      mobileNavDrawer.classList.add('open');
-      if (mobileNavOverlay) mobileNavOverlay.classList.add('open');
-    });
+    mobileMenuBtn.addEventListener('click', openMobileNav);
   }
 
-  if (mobileNavClose && mobileNavDrawer) {
-    mobileNavClose.addEventListener('click', () => {
-      mobileNavDrawer.classList.remove('open');
-      if (mobileNavOverlay) mobileNavOverlay.classList.remove('open');
-    });
+  if (mobileNavClose) {
+    mobileNavClose.addEventListener('click', closeMobileNav);
   }
 
-  if (mobileNavOverlay && mobileNavDrawer) {
-    mobileNavOverlay.addEventListener('click', () => {
-      mobileNavDrawer.classList.remove('open');
-      mobileNavOverlay.classList.remove('open');
-    });
+  if (mobileNavOverlay) {
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
   }
 
   // Quick Search Overlay
@@ -322,6 +325,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const searchModal = document.getElementById('search-modal');
   const searchClose = document.getElementById('search-modal-close');
   const searchInput = document.getElementById('search-modal-input');
+
+  const closeSearchModal = () => {
+    if (searchModal) searchModal.classList.remove('open');
+  };
 
   if (searchBtn && searchModal) {
     searchBtn.addEventListener('click', (e) => {
@@ -334,8 +341,26 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (searchClose && searchModal) {
-    searchClose.addEventListener('click', () => {
-      searchModal.classList.remove('open');
+    searchClose.addEventListener('click', closeSearchModal);
+  }
+
+  if (searchModal) {
+    searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) {
+        closeSearchModal();
+      }
     });
   }
+
+  // Global ESC Key Handler for Drawers & Modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileNav();
+      closeSearchModal();
+      const cartDrawer = document.getElementById('cart-drawer');
+      const cartOverlay = document.getElementById('cart-overlay');
+      if (cartDrawer) cartDrawer.classList.remove('open');
+      if (cartOverlay) cartOverlay.classList.remove('open');
+    }
+  });
 });

@@ -16,6 +16,14 @@ function url($path = '') {
 }
 
 /**
+ * Generate clean product detail URL
+ */
+function product_url($slug = '') {
+    $cleanSlug = trim($slug, '/');
+    return url('product/' . urlencode($cleanSlug));
+}
+
+/**
  * Resolve static assets (images, css, js)
  */
 function asset($path = '') {
