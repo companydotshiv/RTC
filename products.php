@@ -71,47 +71,102 @@ foreach ($categories as $cat) {
     $categoryCounts[$cat['id']] = count(array_filter($allProducts, fn($p) => product_matches_category($p, $cat['id'])));
 }
 
-// --- Page meta ---
+// --- Page meta & SEO Optimization ---
 $currentCategoryObj = null;
 foreach ($categories as $cat) {
     if ($cat['id'] === $selectedCategory) { $currentCategoryObj = $cat; break; }
 }
-$pageTitle       = $currentCategoryObj ? $currentCategoryObj['name'] . ' — Shop Online' : ($searchQuery ? 'Search: "' . htmlspecialchars($searchQuery) . '"' : 'All Products');
-$pageDescription = $currentCategoryObj ? $currentCategoryObj['desc'] : 'Browse our full range of premium dry fruits, nuts, spices, seeds, and gift hampers.';
+
+if ($currentCategoryObj) {
+    $pageTitle       = 'Buy ' . $currentCategoryObj['name'] . ' Online at Best Price in India';
+    $heroHeading     = 'Buy ' . $currentCategoryObj['name'] . ' Online';
+    $pageDescription = $currentCategoryObj['desc'] ?? ('Order fresh, 100% natural ' . strtolower($currentCategoryObj['name']) . ' online from RTC Foods with fast doorstep delivery across India.');
+} elseif (!empty($searchQuery)) {
+    $pageTitle       = 'Search results for "' . htmlspecialchars($searchQuery) . '"';
+    $heroHeading     = 'Search: "' . htmlspecialchars($searchQuery) . '"';
+    $pageDescription = 'Browse products matching your search query.';
+} else {
+    $pageTitle       = 'Buy Premium Dry Fruits, Nuts & Spices Online at Best Price';
+    $heroHeading     = 'Premium Dry Fruits, Nuts &amp; Spices';
+    $pageDescription = 'Browse our complete range of pure, farm-fresh dry fruits, healthy seeds, exotic berries, and whole spices online.';
+}
 
 // Build base URL for filter links
 function filterUrl($overrides = []) {
-    $params = [
-        'category'  => $_GET['category'] ?? 'all',
-        'q'         => $_GET['q'] ?? '',
-        'sort'      => $_GET['sort'] ?? 'featured',
-        'min_price' => $_GET['min_price'] ?? '',
-        'max_price' => $_GET['max_price'] ?? '',
-        'rating'    => $_GET['rating'] ?? '',
-        'in_stock'  => $_GET['in_stock'] ?? '',
-    ];
-    foreach ($overrides as $k => $v) { $params[$k] = $v; }
+    // If a category is selected or changed, reset all active filters (price, rating, search, stock, sort)
+    if (isset($overrides['category'])) {
+        $params = [
+            'category' => $overrides['category'],
+        ];
+        if (isset($overrides['sort'])) {
+            $params['sort'] = $overrides['sort'];
+        }
+    } else {
+        $params = [
+            'category'  => $_GET['category'] ?? 'all',
+            'q'         => $_GET['q'] ?? '',
+            'sort'      => $_GET['sort'] ?? 'featured',
+            'min_price' => $_GET['min_price'] ?? '',
+            'max_price' => $_GET['max_price'] ?? '',
+            'rating'    => $_GET['rating'] ?? '',
+            'in_stock'  => $_GET['in_stock'] ?? '',
+        ];
+        foreach ($overrides as $k => $v) { $params[$k] = $v; }
+    }
     $query = http_build_query(array_filter($params, fn($v) => $v !== '' && $v !== 'all' && $v !== '0'));
     return url('products.php') . ($query ? '?' . $query : '');
 }
 
 $activeFilters = ($selectedCategory !== 'all' || $minPrice > 0 || $maxPrice < 99999 || $minRating > 0 || !empty($searchQuery));
 
+// Determine hero image
+$heroImg = 'cat_dry_fruits_all.png';
+if ($currentCategoryObj && !empty($currentCategoryObj['image'])) {
+    $heroImg = $currentCategoryObj['image'];
+}
+
 include __DIR__ . '/includes/header.php';
 ?>
 
-<!-- Shop Header Banner -->
-<div class="shop-header-banner">
+<!-- Clean Category & Catalog Hero Section -->
+<section class="cat-catalog-hero">
   <div class="site-container">
-    <div class="breadcrumbs">
-      <a href="<?php echo url('index.php'); ?>">Home</a>
-      <span class="crumb-separator">/</span>
-      <span class="crumb-current"><?php echo htmlspecialchars($pageTitle); ?></span>
+    <div class="cat-hero-grid">
+      <!-- Left Column: Content & Metadata -->
+      <div class="cat-hero-content">
+        <nav class="cat-hero-breadcrumbs" aria-label="Breadcrumb">
+          <a href="<?php echo url('index.php'); ?>"><i data-lucide="home"></i> Home</a>
+          <span class="crumb-separator">/</span>
+          <a href="<?php echo url('products.php'); ?>">Categories</a>
+          <?php if ($currentCategoryObj): ?>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-current"><?php echo htmlspecialchars($currentCategoryObj['name']); ?></span>
+          <?php elseif (!empty($searchQuery)): ?>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-current">Search</span>
+          <?php else: ?>
+            <span class="crumb-separator">/</span>
+            <span class="crumb-current">All Products</span>
+          <?php endif; ?>
+        </nav>
+
+        <h1 class="cat-hero-title"><?php echo $heroHeading; ?></h1>
+        <p class="cat-hero-desc"><?php echo htmlspecialchars($pageDescription); ?></p>
+      </div>
+
+      <!-- Right Column: Visual Category Card -->
+      <div class="cat-hero-visual">
+        <div class="cat-hero-card">
+          <div class="cat-hero-halo">
+            <img src="<?php echo asset($heroImg); ?>"
+                 alt="<?php echo htmlspecialchars($heroHeading); ?>"
+                 class="cat-hero-product-img" />
+          </div>
+        </div>
+      </div>
     </div>
-    <h1 class="shop-page-title"><?php echo htmlspecialchars($pageTitle); ?></h1>
-    <p class="shop-page-desc"><?php echo htmlspecialchars($pageDescription); ?></p>
   </div>
-</div>
+</section>
 
 <!-- Shop Main: Sidebar + Grid -->
 <div class="shop-content-section">
@@ -125,7 +180,7 @@ include __DIR__ . '/includes/header.php';
         <div class="sidebar-header">
           <h3 class="sidebar-heading"><i data-lucide="sliders-horizontal"></i> Filters</h3>
           <?php if ($activeFilters): ?>
-            <a href="<?php echo url('products.php'); ?>" class="clear-all-filters">Clear All</a>
+            <a href="<?php echo filterUrl(['category' => $selectedCategory]); ?>" class="clear-all-filters">Clear All</a>
           <?php endif; ?>
         </div>
 

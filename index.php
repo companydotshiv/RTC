@@ -65,6 +65,10 @@ include __DIR__ . '/includes/header.php';
             <img src="<?php echo asset($item['img']); ?>" alt="<?php echo htmlspecialchars($item['name']); ?>" loading="lazy" />
           </div>
           <span class="home-cat-label"><?php echo htmlspecialchars($item['name']); ?></span>
+          <span class="home-cat-cta">
+            <span>Shop Now</span>
+            <i data-lucide="arrow-right"></i>
+          </span>
         </a>
       <?php endforeach; ?>
     </div>

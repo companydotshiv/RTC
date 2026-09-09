@@ -79,6 +79,9 @@ include __DIR__ . '/includes/header.php';
       <div class="product-gallery-col">
         <div class="main-image-viewport">
           <img id="pdp-main-image" src="<?php echo asset($gallery[0]); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" />
+          <?php if (count($gallery) > 1): ?>
+            <img id="pdp-fade-image" class="pdp-fade-img" src="<?php echo asset($gallery[1]); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" aria-hidden="true" />
+          <?php endif; ?>
           <?php if (!empty($product['badge'])): ?>
             <span class="product-badge pdp-badge <?php echo strtolower(str_replace(' ', '-', $product['badge'])); ?>">
               <?php echo htmlspecialchars($product['badge']); ?>
@@ -331,12 +334,87 @@ include __DIR__ . '/includes/header.php';
 <script>
   let selectedWeight = '<?php echo $defaultWeight; ?>';
   const basePrice = <?php echo (float)$product['price']; ?>;
+  const pdpGallery = <?php echo json_encode(array_values(array_filter(array_map('asset', $gallery)))); ?>;
+  let currentPdpIndex = 0;
+  let pdpAutoScrollTimer = null;
+  let isPdpHovered = false;
+
+  // Preload all gallery images
+  if (Array.isArray(pdpGallery)) {
+    pdpGallery.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  }
+
+  let isPdpFadeOnTop = false;
+
+  function setPdpImage(index) {
+    if (!Array.isArray(pdpGallery) || pdpGallery.length <= 1) return;
+    currentPdpIndex = (index + pdpGallery.length) % pdpGallery.length;
+    const targetSrc = pdpGallery[currentPdpIndex];
+    const mainImg = document.getElementById('pdp-main-image');
+    const fadeImg = document.getElementById('pdp-fade-image');
+
+    if (fadeImg && mainImg) {
+      if (!isPdpFadeOnTop) {
+        fadeImg.src = targetSrc;
+        fadeImg.style.opacity = '1';
+        isPdpFadeOnTop = true;
+      } else {
+        mainImg.src = targetSrc;
+        fadeImg.style.opacity = '0';
+        isPdpFadeOnTop = false;
+      }
+    } else if (mainImg) {
+      mainImg.src = targetSrc;
+    }
+
+    const thumbs = document.querySelectorAll('.thumb-btn');
+    thumbs.forEach((t, i) => {
+      if (i === currentPdpIndex) t.classList.add('active');
+      else t.classList.remove('active');
+    });
+  }
+
+  function startPdpAutoScroll() {
+    if (!Array.isArray(pdpGallery) || pdpGallery.length <= 1) return;
+    stopPdpAutoScroll();
+    pdpAutoScrollTimer = setInterval(() => {
+      if (!isPdpHovered) {
+        setPdpImage(currentPdpIndex + 1);
+      }
+    }, 3500); // Relaxing, premium 3.5-second interval
+  }
+
+  function stopPdpAutoScroll() {
+    if (pdpAutoScrollTimer) {
+      clearInterval(pdpAutoScrollTimer);
+      pdpAutoScrollTimer = null;
+    }
+  }
 
   function switchPdpImage(src, btn) {
-    document.getElementById('pdp-main-image').src = src;
-    document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    const thumbs = Array.from(document.querySelectorAll('.thumb-btn'));
+    const idx = thumbs.indexOf(btn);
+    if (idx !== -1) {
+      setPdpImage(idx);
+    }
+    startPdpAutoScroll();
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const galleryViewport = document.querySelector('.main-image-viewport') || document.querySelector('.product-gallery-col');
+    if (galleryViewport) {
+      galleryViewport.addEventListener('mouseenter', () => {
+        isPdpHovered = true;
+      });
+      galleryViewport.addEventListener('mouseleave', () => {
+        isPdpHovered = false;
+      });
+    }
+    startPdpAutoScroll();
+  });
 
   function selectWeightVariant(weight, btn) {
     selectedWeight = weight;

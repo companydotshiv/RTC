@@ -352,15 +352,106 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Global ESC Key Handler for Drawers & Modals
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeMobileNav();
-      closeSearchModal();
-      const cartDrawer = document.getElementById('cart-drawer');
-      const cartOverlay = document.getElementById('cart-overlay');
-      if (cartDrawer) cartDrawer.classList.remove('open');
-      if (cartOverlay) cartOverlay.classList.remove('open');
-    }
-  });
+  // ==========================================================
+  // Auto-scroll Product Card Images at Smooth Random 3-5.5s Intervals
+  // ==========================================================
+  function initProductCardsAutoScroll() {
+    const cardLinks = document.querySelectorAll('.product-card-image-link[data-gallery]');
+    if (!cardLinks || cardLinks.length === 0) return;
+
+    cardLinks.forEach((wrap) => {
+      let gallery = [];
+      try {
+        gallery = JSON.parse(wrap.getAttribute('data-gallery') || '[]');
+      } catch (err) {
+        return;
+      }
+
+      if (!Array.isArray(gallery) || gallery.length <= 1) return;
+
+      const img = wrap.querySelector('.product-card-img');
+      const dots = wrap.querySelectorAll('.card-img-dot');
+      if (!img) return;
+
+      // Ensure we have a secondary overlay layer for seamless ping-pong cross-fade
+      let fadeImg = wrap.querySelector('.product-card-img-fade');
+      if (!fadeImg) {
+        fadeImg = document.createElement('img');
+        fadeImg.className = 'product-card-img product-card-img-fade';
+        fadeImg.alt = img.alt || '';
+        fadeImg.setAttribute('aria-hidden', 'true');
+        fadeImg.loading = 'lazy';
+        const dotsWrap = wrap.querySelector('.card-img-dots');
+        wrap.insertBefore(fadeImg, dotsWrap || null);
+      }
+
+      let currentIndex = 0;
+      let isFadeOnTop = false; // false = img visible, true = fadeImg visible
+      let timer = null;
+      let isHovered = false;
+
+      // Preload images for seamless transitions
+      gallery.forEach((src) => {
+        const preload = new Image();
+        preload.src = src;
+      });
+
+      function switchCardImage(nextIndex) {
+        currentIndex = (nextIndex + gallery.length) % gallery.length;
+        const targetSrc = gallery[currentIndex];
+
+        if (!isFadeOnTop) {
+          // fadeImg is transparent; load target image into fadeImg and smoothly fade it IN
+          fadeImg.src = targetSrc;
+          fadeImg.style.opacity = '1';
+          isFadeOnTop = true;
+        } else {
+          // fadeImg is visible; load target image into base img underneath, then fade fadeImg OUT
+          img.src = targetSrc;
+          fadeImg.style.opacity = '0';
+          isFadeOnTop = false;
+        }
+
+        // Update indicator dots smoothly
+        if (dots && dots.length > 0) {
+          dots.forEach((dot, idx) => {
+            if (idx === currentIndex) dot.classList.add('active');
+            else dot.classList.remove('active');
+          });
+        }
+      }
+
+      function scheduleNextFlip() {
+        if (timer) clearTimeout(timer);
+        if (isHovered) return;
+
+        // Gentle, relaxing random interval between 3200ms and 5500ms
+        const randomDelay = Math.floor(Math.random() * (5500 - 3200 + 1)) + 3200;
+
+        timer = setTimeout(() => {
+          if (!isHovered) {
+            switchCardImage(currentIndex + 1);
+          }
+          scheduleNextFlip();
+        }, randomDelay);
+      }
+
+      // Pause on user hover, resume on leave
+      const card = wrap.closest('.product-card') || wrap;
+      card.addEventListener('mouseenter', () => {
+        isHovered = true;
+        if (timer) clearTimeout(timer);
+      });
+
+      card.addEventListener('mouseleave', () => {
+        isHovered = false;
+        scheduleNextFlip();
+      });
+
+      // Start initial flip timer with a randomized stagger
+      scheduleNextFlip();
+    });
+  }
+
+  initProductCardsAutoScroll();
 });

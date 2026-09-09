@@ -7,6 +7,7 @@ if (!isset($p) || empty($p)) return;
 
 $inWishlist = is_in_wishlist($p['id']);
 $productUrl = product_url($p['slug'] ?? $p['id']);
+$cardGallery = !empty($p['gallery']) ? array_values(array_unique(array_filter(array_map('asset', $p['gallery'])))) : [asset($p['image'])];
 ?>
 <div class="product-card" data-product-id="<?php echo $p['id']; ?>">
   <!-- Full Clickable Card Overlay Link -->
@@ -21,8 +22,16 @@ $productUrl = product_url($p['slug'] ?? $p['id']);
     </button>
   </div>
 
-  <div class="product-card-image-link">
+  <div class="product-card-image-link" data-gallery="<?php echo htmlspecialchars(json_encode($cardGallery), ENT_QUOTES, 'UTF-8'); ?>">
     <img src="<?php echo asset($p['image']); ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="product-card-img" loading="lazy" />
+    <?php if (count($cardGallery) > 1): ?>
+      <img src="<?php echo $cardGallery[1] ?? asset($p['image']); ?>" alt="<?php echo htmlspecialchars($p['name']); ?>" class="product-card-img product-card-img-fade" aria-hidden="true" loading="lazy" />
+      <div class="card-img-dots" aria-hidden="true">
+        <?php foreach ($cardGallery as $gIdx => $gSrc): ?>
+          <span class="card-img-dot <?php echo $gIdx === 0 ? 'active' : ''; ?>"></span>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
   </div>
 
   <div class="product-card-body">

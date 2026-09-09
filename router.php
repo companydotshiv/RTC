@@ -28,6 +28,7 @@ if (preg_match('#^/category/([a-zA-Z0-9\-_]+)/?$#', $uri, $matches)) {
 
 // Direct clean page mappings
 $pageMap = [
+    '/admin' => '/admin/index.php',
     '/products' => '/products.php',
     '/catalog' => '/products.php',
     '/about-us' => '/about-us.php',
@@ -49,6 +50,12 @@ $pageMap = [
 
 if (isset($pageMap[rtrim($uri, '/')])) {
     require __DIR__ . $pageMap[rtrim($uri, '/')];
+    return;
+}
+
+// Directory index fallback (e.g. /admin/)
+if (is_dir($filePath) && file_exists($filePath . '/index.php')) {
+    require $filePath . '/index.php';
     return;
 }
 
